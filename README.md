@@ -8,6 +8,12 @@ I/O expanders, displays, LEDs, sensors and Home Assistant integration.
 [![Arduino Library](https://img.shields.io/badge/Arduino-Library-blue.svg)](library.properties)
 [![Platform: ESP32](https://img.shields.io/badge/platform-ESP32-orange.svg)]()
 
+> **Repository visibility.** This repository is currently **private**: it is unpublished and
+> accessible only to its owner, for manual review. Flip it to public with
+> `gh api -X PATCH /repos/djairjr/esp32_escaperoom -f private=false` only when that review is
+> done and the publication is intended. The license below already grants public use of the
+> *code*; the note concerns the *repository's* visibility.
+
 ---
 
 ## Table of contents
