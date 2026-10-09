@@ -896,7 +896,7 @@ private:
 // MAIN
 // ============================================================================
 
-propmaker_escaperoom::LogicManager master(30, false);  // ID 30, without RS485
+esp32_escaperoom::LogicManager master(30, false);  // ID 30, without RS485
 VintageRadioPuzzle puzzle;
 
 void setup() {

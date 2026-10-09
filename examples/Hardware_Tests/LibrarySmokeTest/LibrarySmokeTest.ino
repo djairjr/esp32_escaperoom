@@ -21,6 +21,8 @@
 // ============================================================================
 // HOME ASSISTANT + WIFI (added by the ESP32 port)
 // ============================================================================
+using namespace esp32_escaperoom;
+
 ConfigManager netConfig;
 WiFiClient wifiClient;
 HADevice haDevice;
@@ -45,12 +47,12 @@ void loopHA() {
 }
 
 
-using propmaker_escaperoom::PuzzleState;
+using esp32_escaperoom::PuzzleState;
 
 // ============================================
 // HardwareTestPuzzle - Diagnostic puzzle
 // ============================================
-class HardwareTestPuzzle : public propmaker_escaperoom::PuzzleBase {
+class HardwareTestPuzzle : public esp32_escaperoom::PuzzleBase {
 public:
   HardwareTestPuzzle()
     : PuzzleBase(0) {}
@@ -383,7 +385,7 @@ void setup() {
   // hw.addPcf8574(0x21);  // Uncomment if you have a PCF8574 (8 channels)
 
   Serial.println();
-  Serial.println(F("== propmaker_escaperoom smoke test =="));
+  Serial.println(F("== esp32_escaperoom smoke test =="));
   Serial.print(F("System Healthy: "));
   Serial.println(hw.isSystemHealthy() ? F("YES") : F("NO"));
 

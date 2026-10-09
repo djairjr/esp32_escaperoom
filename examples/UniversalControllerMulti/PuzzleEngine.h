@@ -1,10 +1,10 @@
 #pragma once
 
 #include <Arduino.h>
-#include <PropMakerEscapeRoom.h>
+#include <ESP32EscapeRoom.h>
 #include "ConfigManager.h"
 
-using namespace propmaker_escaperoom;
+using namespace esp32_escaperoom;
 
 namespace universal_controller {
 

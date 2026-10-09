@@ -46,7 +46,6 @@
 
 #include "esp32_escaperoom/RotaryEncoder.h"            // GPIO native
 #include "esp32_escaperoom/RotaryDialReader.h"         // RotaryDial library wrapper
-#include "esp32_escaperoom/MicInput.h"                   // INMP441 I2S RX + FFT
 
 // Core hardware and puzzle framework
 #include "esp32_escaperoom/Hardware.h"

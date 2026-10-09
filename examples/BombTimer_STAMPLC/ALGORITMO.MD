@@ -20,7 +20,7 @@ Port of the original GameTimerPro (RP2040/PropMaker) and BombTimer (ESP32-S3/XIA
 
 **I2C Buses:**
 - **Internal (Wire):** G13(SDA) / G15(SCL) — PI4IOE5V6408(0x43), AW9523B(0x59), RX8130CE(0x32), LM75B(0x48), INA226(0x40)
-- **PORT.A (PortA):** G2(SDA) / G1(SCL) — PCF8574(0x20-0x27), MFRC522(0x28)
+- PORT.A (PortA): G2(SDA) / G1(SCL) — PCF8574(0x20-0x27), MFRC522(0x28)
 
 ---
 

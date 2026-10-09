@@ -47,7 +47,7 @@ I/O expanders, displays, LEDs, sensors and Home Assistant integration.
 - a **hardware singleton** (`hw`) that auto-detects I2C devices at boot and exposes one
   uniform API — MP3 audio over I2S, PCF8574/PCF8575 I/O expanders, an HT16K33 14-segment
   display, NeoPixel strips, servo, LIS3DH accelerometer, ADS1115 ADC, PCA9685 PWM,
-  PN532 NFC, a phone rotary dial, a native rotary encoder and an INMP441 microphone;
+  PN532 NFC, a phone rotary dial and a native rotary encoder;
 - a **JSON configuration layer** (`ConfigManager`) that reads configuration from SD card
   or LittleFS and falls back to an **AP-mode captive portal** when there is none;
 - **Home Assistant auto-discovery** over MQTT (via ArduinoHA), which replaces the RS485
@@ -55,7 +55,7 @@ I/O expanders, displays, LEDs, sensors and Home Assistant integration.
 
 The library is the ESP32 port of **`propmaker_escaperoom`** (Adafruit PropMaker Feather
 RP2040), the sibling RP2040 library. The port replaces RS485 with WiFi/MQTT and adds
-per-board pin mapping, the microphone and the configuration layer.
+per-board pin mapping and the configuration layer.
 
 ---
 
@@ -192,12 +192,13 @@ A `LogicManager` **without** levels ticks every registered puzzle unconditionall
 
 ### Example-level FSM (`PuzzleEngine`)
 
-A second, **data-driven state machine** ships in the library tree:
-`src/esp32_escaperoom/PuzzleEngine.h` (states `IDLE`, `RUNNING`, `INPUT_CORRECT`,
+A second, **data-driven state machine** ships with the examples:
+each `UniversalController*` example carries its own `PuzzleEngine.h` / `.cpp`
+(states `IDLE`, `RUNNING`, `INPUT_CORRECT`,
 `INPUT_WRONG`, `SOLVED`, `ERROR`, `TIMEOUT`). It interprets a JSON description of a puzzle
-(inputs, mode, timeout) at runtime — custom sequence, linear sequence, all-connected,
-random and musical-sequence modes. It is **not** pulled in by `ESP32EscapeRoom.h` (include it
-explicitly), and it is used by the `UniversalController` examples. See
+(inputs, mode, timeout) at runtime — custom sequence, linear sequence, all-connected and
+random modes. It is **not** part of the library `src/`, and it is used by the
+`UniversalController` examples. See
 [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).
 
 ---
@@ -332,7 +333,6 @@ Everything is reached through the `hw` macro (a singleton:
 | NFC | `hw.createNfcReader()` | PN532 (I2C) |
 | Rotary dial | `hw.createRotaryDial(pin)` / `createRotaryDialOptical(...)` | phone pulse dial |
 | Rotary encoder | `hw.createEncoder(pinA, pinB)` | quadrature encoder |
-| Microphone | `MicInput` | INMP441 I2S + YIN pitch detection |
 | Battery | `hw.readBatteryVoltage()`, `hw.readBatteryPercent()`, `hw.setLowPowerMode()` | LiPo divider |
 | Detection | `hw.hasAccelerometer()`, `hasDisplay()`, `hasAdc()`, `hasPwmDriver()`, `hasRtc()`, `hasOled()`, `hasNfc()` | boot I2C scan |
 
@@ -367,7 +367,7 @@ Boot prints a full hardware report (I2C scan, filesystem mount, expanders, audio
   Install from <https://github.com/pschatzmann/arduino-libhelix> (Sketch → Include
   Library → Add .ZIP Library), or clone it into your `libraries/` folder.
 
-Example sketches additionally use `ArduinoHA`, `arduinoFFT` and `lvgl`; install those only
+Example sketches additionally use `ArduinoHA` and `lvgl`; install those only
 for the examples that need them (see [`docs/EXAMPLES.md`](docs/EXAMPLES.md)).
 
 **Library**: clone this repository into your Arduino `libraries/` folder and restart the

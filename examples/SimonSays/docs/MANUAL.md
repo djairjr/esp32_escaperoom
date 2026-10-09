@@ -122,7 +122,7 @@ If necessary, check whether the audio files are correct:
 
 - Check whether there are MP3 files in the correct folder (LittleFS or SD)
 - Check whether the files are in the correct format: 44.1kHz, stereo, 128kbps
-- Try increasing the volume in the configuration (if available in the menu)
+- Try increasing the volume in the settings (if available in the menu).
 
 ### The box does not open on winning
 

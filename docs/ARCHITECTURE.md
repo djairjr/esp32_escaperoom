@@ -25,7 +25,7 @@ orchestration model and the two ways of writing a puzzle.
 │    boot I2C/SPI scan, detection flags, one uniform API per peripheral    │
 │    AudioPlayer · Display14Seg · NeoPixel (int/ext) · Servo · ADS1115 ·    │
 │    PCA9685 · LIS3DH · PN532 · PCF857x · RotaryDialReader · Encoder ·      │
-│    MicInput · battery/low-power                                            │
+│    battery/low-power                                                      │
 ├───────────────────────────────────────────────────────────────────────────┤
 │  BOARD PIN MAP  —  PlatformPins.h → pins/<board>.h                        │
 │    compile-time selection by board macro; one file per supported board    │
@@ -168,7 +168,7 @@ pattern for *generic* props; it is example code, not library API.
 ```
 config.json ──► ConfigManager.loadPuzzleConfig() ──► PuzzleEngine
    inputs.pcfAddress / pinMapping
-   logic.mode = CUSTOM_SEQUENCE | LINEAR_SEQUENCE | ALL_CONNECTED | RANDOM | MUSICAL_SEQUENCE
+   logic.mode = CUSTOM_SEQUENCE | LINEAR_SEQUENCE | ALL_CONNECTED | RANDOM
    logic.sequence / timeoutSeconds / resetOnError / allowRepeat
    pwm / audio / neopixel / output
 ```
@@ -217,36 +217,13 @@ MP3 file (SD or LittleFS)
   iteration. Nothing in the library calls it for you.
 - `playOnce()` is non-blocking and is the default for cues; `playOnceBlocking()` blocks
   until the file ends (use sparingly, e.g. a diegetic countdown); `playLoop()` loops.
-- `tone(frequency, volume)` stops any MP3 and emits a sine wave — used for Morse, beeps
+- `tone(frequency, volume)` stops any MP3 player and emits a sine wave – used for Morse code and beeping sounds.
   and calibration. `noTone()` stops it.
 - Preferred example format: 128 kbps, 44.1 kHz stereo, no ID3 tags.
 
 ---
 
-## 6. Microphone and pitch detection (`MicInput`)
-
-`MicInput` reads an **INMP441** MEMS microphone over I2S (RX, 48 kHz, 32-bit stereo) and
-detects pitch. It exists because the `MUSICAL_SEQUENCE` mode needs a *sensor*, not a
-display:
-
-- filtering — two cascaded 2nd-order Butterworth IIR filters (high-pass 60 Hz, low-pass
-  6 kHz);
-- pitch — **YIN** autocorrelation (coarse pass + refined pass with a window), harmonic
-  validation (2nd/3rd/4th), parabolic interpolation for sub-sample accuracy, EMA smoothing
-  with note-change detection, and a silence gate on RMS;
-- why not FFT — a 512-point FFT at 16 kHz is 31.25 Hz/bin, ≈35 cents per bin at C4, too
-  coarse for musical sequences; time-domain autocorrelation finds the period of the
-  fundamental;
-- the I²S read must be stereo with slot selection — mono 32-bit returns a zero-stuffed
-  buffer (`[d,0,d,0,…]`) that the DC-removal turns into a square wave at fs/2, making every
-  note read as B8.
-
-`MicInput::setYieldPump()` lets the sketch pump its own cooperative work (e.g. an HTTP
-handler) during the YIN analysis.
-
----
-
-## 7. Repository layout
+## 6. Repository layout
 
 ```
 esp32_escaperoom/
@@ -270,7 +247,6 @@ esp32_escaperoom/
 │       ├── Pcf857x.h              ← PCF8574/8575 wrapper
 │       ├── RotaryDialReader.h/.cpp← phone pulse dial
 │       ├── RotaryEncoder.h        ← native quadrature encoder
-│       ├── MicInput.h / .cpp      ← INMP441 + YIN
 │       ├── ConfigManager.h        ← SD/LittleFS/AP + JSON
 │       ├── SerialDebug.h          ← serial command console
 │       ├── PlatformPins.h         ← board dispatch

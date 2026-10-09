@@ -16,7 +16,7 @@
   - PCF8574 (8 I/O pins): Uses 7 of the 8 available pins
   - PCF8575 (16 I/O pins): Uses P00-P06 (7 pins)
 
-  For use with the propmaker_escaperoom library, copy the rowPins[] and
+  For use with the esp32_escaperoom library, copy the rowPins[] and
   colPins[] arrays into your sketch and use them with MatrixKeyboardManager.
 */
 
@@ -31,6 +31,8 @@
 // ============================================================================
 // HOME ASSISTANT + WIFI (added by the ESP32 port)
 // ============================================================================
+using namespace esp32_escaperoom;
+
 ConfigManager netConfig;
 WiFiClient wifiClient;
 HADevice haDevice;
@@ -160,7 +162,7 @@ void setup() {
   while (!Serial && (millis() - start < 3000)) delay(10);
 
   Serial.println(F("\n========================================"));
-  Serial.println(F("  KEYPAD TESTER - PropMaker EscapeRoom"));
+  Serial.println(F("  KEYPAD TESTER - esp32_escaperoom"));
   Serial.println(F("========================================"));
 
   // Initializes Hardware

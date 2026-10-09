@@ -118,7 +118,7 @@ void setup() {
     else
         Serial.println("[SD] Card OK");
 
-    tapScanner.begin(&sound);
+    tapScanner.begin();
     transmitter.begin();
     haClient.begin();
     bootScreen.begin();

@@ -41,25 +41,6 @@ public:
   const char* devPuzzleId()const{return d.puzzleId;}
   bool isAPMode()const{return apSrv!=nullptr;}
   void handleAP(){if(apSrv)apSrv->handleClient();}
-  // Converts a note name (e.g. "C4") to MIDI. Returns -1 if invalid.
-  static int noteNameToMidi(const String& name){
-    if(name.length()<2) return -1;
-    char letter=name.charAt(0);
-    int octave=name.substring(1).toInt();
-    int semitone;
-    switch(letter){
-      case 'C': semitone=0; break;
-      case 'D': semitone=2; break;
-      case 'E': semitone=4; break;
-      case 'F': semitone=5; break;
-      case 'G': semitone=7; break;
-      case 'A': semitone=9; break;
-      case 'B': semitone=11; break;
-      default: return -1;
-    }
-    // MIDI = (octave+1)*12 + semitone  (C4 = 60)
-    return (octave+1)*12 + semitone;
-  }
 private:
   WifiCfg w; MqttCfg m; DevCfg d;
   bool sdOk=false,spiffsOk=false;
@@ -127,60 +108,6 @@ private:
       if(!spiffsOk)SPIFFS.begin(true);
       File f=SPIFFS.open("/wifi.json",FILE_WRITE);
       if(f){serializeJson(doc,f);f.close();apSrv->send(200,"text/html","<html><body><h2>Saved!</h2></body></html>");delay(3000);ESP.restart();}
-      else apSrv->send(500,"text/plain","Error");
-    });
-    // Musical sequence editor (MUSICAL_SEQUENCE)
-    apSrv->on("/musical",HTTP_GET,[this](){
-      apSrv->send(200,"text/html",
-        "<html><head><meta charset=UTF-8></head><body>"
-        "<h2>Musical Sequence</h2>"
-        "<form action=/musical/save method=POST>"
-        "<label>Notes (C4,400,100;E4,400,100;G4,800,0): "
-        "<input name=seq></label><br>"
-        "<label>Tolerance (cents): <input name=tol value=25 type=number></label><br>"
-        "<label>Max gap (ms): <input name=gap value=1500 type=number></label><br>"
-        "<label>Max note (ms): <input name=ndur value=3000 type=number></label><br>"
-        "<label>Total timeout (ms): <input name=tout value=15000 type=number></label><br>"
-        "<label>Min amplitude: <input name=amp value=200 type=number></label><br>"
-        "<button type=submit>Save</button></form></body></html>");
-    });
-    apSrv->on("/musical/save",HTTP_POST,[this](){
-      // Parse the sequence: "C4,400,100;E4,400,100;G4,800,0"
-      String seq = apSrv->arg("seq");
-      JsonDocument doc;
-      doc["musical"]["enabled"] = true;
-      doc["musical"]["tolerance_cents"] = apSrv->arg("tol").toInt();
-      doc["musical"]["max_gap_ms"] = apSrv->arg("gap").toInt();
-      doc["musical"]["max_note_duration_ms"] = apSrv->arg("ndur").toInt();
-      doc["musical"]["total_timeout_ms"] = apSrv->arg("tout").toInt();
-      doc["musical"]["min_amplitude"] = apSrv->arg("amp").toInt();
-      JsonArray notes = doc["musical"].createNestedArray("notes");
-      int start = 0;
-      while (start < (int)seq.length()) {
-        int semi = seq.indexOf(';', start);
-        if (semi < 0) semi = seq.length();
-        String noteStr = seq.substring(start, semi);
-        noteStr.trim();
-        if (noteStr.length() > 0) {
-          int c1 = noteStr.indexOf(',');
-          int c2 = noteStr.indexOf(',', c1 + 1);
-          String name = noteStr.substring(0, c1);
-          int dur = noteStr.substring(c1 + 1, c2).toInt();
-          int gap = noteStr.substring(c2 + 1).toInt();
-          // Converts a note name (C4) to MIDI
-          int midi = noteNameToMidi(name);
-          if (midi >= 0) {
-            JsonObject n = notes.createNestedObject();
-            n["midi"] = midi;
-            n["duration_ms"] = dur;
-            n["gap_ms"] = gap;
-          }
-        }
-        start = semi + 1;
-      }
-      if(!spiffsOk)SPIFFS.begin(true);
-      File f=SPIFFS.open("/config.json",FILE_WRITE);
-      if(f){serializeJson(doc,f);f.close();apSrv->send(200,"text/html","<html><body><h2>Sequence saved!</h2></body></html>");}
       else apSrv->send(500,"text/plain","Error");
     });
     apSrv->begin();

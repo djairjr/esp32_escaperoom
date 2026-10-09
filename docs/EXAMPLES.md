@@ -39,7 +39,7 @@ Each of these is a self-contained puzzle with its own JSON configuration and sou
 | `Mastermind` | Guess a hidden colour sequence; keypad entry + display feedback. | keypad, display, NeoPixel |
 | `RadioClock` | Tune a dial to the right frequency; static vs. clear signal. | display, audio, button |
 | `ReactorControl` | Analog balancing: potentiometers keep gauges in range. | ADS1115 pots, PCA9685 gauges, display |
-| `BallMaze` | Tilt the box to steer a virtual ball through a maze. | LIS3DH accelerometer, NeoPixel, relay |
+| `BallMaze` | Tilt the box to guide a virtual ball through the maze. | LIS3DH accelerometer, NeoPixel, relay |
 | `VintageRadio` | Shortwave radio with a rotary encoder and RFID. | encoder, PN532, NeoPixel, relay |
 | `EscapeRoomPhone` | Dial a number on a phone rotary dial (or keypad) to hear a message. | rotary dial, SD audio, relay |
 
@@ -61,7 +61,7 @@ the puzzle is data.
 
 | Sketch | What it shows |
 |--------|---------------|
-| `UniversalController` | One configurable puzzle: `CUSTOM_SEQUENCE`, `LINEAR_SEQUENCE`, `ALL_CONNECTED`, `RANDOM`, `MUSICAL_SEQUENCE`. Several ready-made configs in `data/`. |
+| `UniversalController` | One configurable puzzle: `CUSTOM_SEQUENCE`, `LINEAR_SEQUENCE`, `ALL_CONNECTED`, `RANDOM`. Several ready-made configs in `data/`. |
 | `UniversalControllerMulti` | Two `UniversalController` instances on one board, each with its own config and expander. |
 | `UniversalUniqueRFID` | The same engine driven by an RFID reader (one reader, configurable tags). |
 

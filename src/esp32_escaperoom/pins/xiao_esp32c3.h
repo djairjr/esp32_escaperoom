@@ -44,9 +44,9 @@ constexpr int PIN_I2C_SCL = 7;   // D5 (GPIO7)
 
 // ── I2S ──────────────────────────────────────────────────────
 #define HAS_ONBOARD_I2S_AMP     0
-constexpr int PIN_I2S_BCLK = 4;   // D2 (GPIO4) — INMP441 SCK (NeoPixel/SD_CS not used)
-constexpr int PIN_I2S_WS   = 5;   // D3 (GPIO5) — INMP441 WS (Buzzer not used)
-constexpr int PIN_I2S_DATA = 6;   // D4 (GPIO6) — INMP441 SD (I2C SDA not used)
+constexpr int PIN_I2S_BCLK = 4;   // D2 (GPIO4) — I2S BCLK (NeoPixel/SD_CS not used)
+constexpr int PIN_I2S_WS   = 5;   // D3 (GPIO5) — I2S WS (Buzzer not used)
+constexpr int PIN_I2S_DATA = 6;   // D4 (GPIO6) — I2S DATA (I2C SDA not used)
 constexpr bool HAS_I2S     = true;  // I2S via GPIO matrix (Espressif doc)
 
 // ── NeoPixel ─────────────────────────────────────────────────

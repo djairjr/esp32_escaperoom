@@ -51,7 +51,7 @@ This is a **vintage shortwave radio** that players must "repair" to receive a se
 - With the 3rd tube inserted, the knob works
 - Turning the knob, the player hears different radio stations
 - Each station has a different interference/static sound
-- The volume rises and falls as the knob turns (simulating tuning)
+- The volume increases and decreases as the knob is turned (simulating tuning).
 
 **4. The Solution**
 - The player needs to insert the **4th tube (Final Tube)**
@@ -76,7 +76,7 @@ You can change the message that will be transmitted in Morse code.
 
 **How to do it:**
 1. Remove the SD card from the system
-2. Open the file `mensagem.txt` on the computer
+2. Open the file `mensagem.txt` on your computer.
 3. Write your message (you can use accents and punctuation)
 4. Save the file
 5. Put the SD card back in the system
@@ -192,7 +192,7 @@ The radio has **9 stations** that the player can explore. Each one plays a diffe
 
 **Possible causes:**
 1. Missing MP3 files or wrong format
-2. Volume too low
+2. Volume is too low.
 3. Problem on the SD card
 4. Problem in the speaker
 
@@ -205,12 +205,12 @@ The radio has **9 stations** that the player can explore. Each one plays a diffe
 ### Problem: The Morse message does not play
 
 **Possible causes:**
-1. File `mensagem.txt` missing
-2. File `mensagem.txt` is blank
+1. The file `mensagem.txt` is missing.
+2. The file `mensagem.txt` is empty.
 3. SD card is not being read
 
 **Solutions:**
-- Check that `mensagem.txt` exists at the root of the SD
+- Make sure that `mensagem.txt` exists at the root of the SD card.
 - Open the file and confirm that it has text inside
 - If the file is missing, the system uses "SOS" as default
 - Try another SD card
@@ -258,7 +258,7 @@ The radio has **9 stations** that the player can explore. Each one plays a diffe
 - Protect the SD card from dust and humidity
 
 ### File Backup
-- Keep a copy of the files `station*.mp3` and `mensagem.txt` on the computer
+- Keep a copy of the files `station*.mp3` and `mensagem.txt` on your computer.
 - If the SD card gets corrupted, you can recreate them easily
 - Test the system weekly to ensure it works
 
@@ -315,9 +315,9 @@ Use this list before each group of players:
 - [ ] Test: tube 3 → blue LED + radio noise?
 - [ ] Test: turn the knob → changes station?
 - [ ] Test: tube 4 → Morse message plays?
-- [ ] Message configured in the file `mensagem.txt` is correct?
+- [ ] Is the message configured in the `mensagem.txt` file correct?
 - [ ] Audio files available (station1-9.mp3)
-- [ ] Volume suitable for the room
+- [ ] A volume that’s suitable for the room
 
 ---
 
@@ -355,7 +355,7 @@ If you encounter problems that you cannot solve:
 1. Check that all cables are connected correctly
 2. Test with a different SD card
 3. Check the logs on the serial monitor (if you have technical access)
-4. Consult the file `ALGORITMO.MD` for complete technical details
+4. Refer to the file `ALGORITMO.MD` for complete technical details.
 5. Contact the manufacturer
 
 ### Contact
@@ -378,7 +378,7 @@ For technical support or questions about the puzzle:
 | Tube 4 | Receives Morse message | Last - activates the solution |
 
 **Important files on the SD:**
-- `mensagem.txt` - The message in Morse code
+- `mensagem.txt` – The message in Morse code
 - `station1.mp3` through `station9.mp3` - Station sounds
 
 **File priority:** SD Card > Internal memory

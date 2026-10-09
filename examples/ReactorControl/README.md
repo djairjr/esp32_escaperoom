@@ -4,9 +4,9 @@ Analog adjustment puzzle for an Escape Room using the **PropMaker EscapeRoom** l
 
 ## Narrative
 
-The nuclear reactor has entered a critical state. Three technicians must cooperate to adjust the parameters on a control panel with 3 faces. Each face has a **valve** (potentiometer) and a **gauge** (analog voltmeter), but the valve of one face **never** controls the gauge of the same face — the mapping is random and can change at any moment.
+The nuclear reactor has entered a critical state. Three technicians must cooperate to adjust the parameters on a control panel with 3 faces. Each face contains a **valve** (potentiometer) and a **gauge** (analog voltmeter). However, the valve on one face **never** controls the gauge on the same face. The mapping between these components is random and can change at any moment.
 
-Furthermore, each gauge can respond in the **normal** or **reversed** direction, adding to the confusion. When all the gauges reach the green zone, the players must press **3 buttons simultaneously** (within 2 seconds) to confirm. If they fail, the panel reconfigures itself.
+Moreover, each gauge can respond in either the **normal** or **reverse** direction, which adds to the confusion. When all the gauges reach the green zone, players must press **3 buttons simultaneously** (within 2 seconds) to confirm. If they fail, the panel will reconfigure itself.
 
 ## Hardware
 
@@ -38,10 +38,10 @@ Furthermore, each gauge can respond in the **normal** or **reversed** direction,
 ## Mechanics
 
 1. **Start**: Press button 1 to start.
-2. **Adjust**: Turn the valves to move the gauges. Note that valve N does **not** affect gauge N — it affects a gauge on another face.
-3. **Green Zone**: Each gauge must indicate the target value within tolerance.
+2. **Adjust**: Turn the valves to move the gauges. Note that Valve N **does not** affect Gauge N – it affects a gauge on another side.
+3. **Green Zone**: Each gauge must indicate the target value within the tolerance range.
 4. **Confirmation**: When all 3 gauges are in the green zone, a 2-second window opens. All 3 buttons must be pressed within this interval.
-5. **Reconfiguration**: If the confirmation fails, the valve→gauge mapping and the orientation (normal/reversed) of each gauge are reshuffled. The players must rediscover the relationships.
+5. **Reconfiguration**: If the confirmation fails, the mapping between the valves and the gauges, as well as the orientation of each gauge (normal or reversed), are rearranged. Players must re-discover these relationships.
 6. **Victory**: A successful confirmation opens the lock and plays the victory sound.
 
 ## Required Sounds
@@ -51,8 +51,8 @@ Place the following MP3 files (128Kbps, 44KHz, no ID3 tags) in LittleFS or SD:
 | File | Event |
 |---------|--------|
 | `ready.mp3` | Puzzle started |
-| `alarm.mp3` | Gauge out of the green zone |
-| `stabilizing.mp3` | Gauge entered the green zone |
+| `alarm.mp3` | Get out of the green zone. |
+| `stabilizing.mp3` | Gauge has entered the green zone. |
 | `warning.mp3` | All gauges in the zone (tension) |
 | `button_press.mp3` | Confirmation button pressed |
 | `fail.mp3` | Confirmation failed |
@@ -83,7 +83,7 @@ arduino-cli compile --fqbn rp2040:rp2040:adafruit_feather_prop_maker examples/Re
 ## Configuration
 
 Edit the constants at the top of the sketch to adjust:
-- `TARGETS[]` — target values of each gauge
+- TARGETS[] – Target values for each gauge
 - `TOLERANCE` — acceptable margin of error
 - `CONFIRM_WINDOW_MS` — time to press the 3 buttons (ms)
 - `RESHUFFLE_DURATION_MS` — duration of the reconfiguration animation

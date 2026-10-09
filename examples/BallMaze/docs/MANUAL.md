@@ -8,12 +8,12 @@ Guide for room owners, game masters and players.
 
 ### What is this device?
 
-The **BallMaze** is a physical virtual maze puzzle. The box contains a PropMaker board with a LIS3DH accelerometer that detects the box's tilt. A virtual "ball" moves on the LED screen in the direction of the tilt. The player must guide the ball to all target zones to solve the puzzle.
+**BallMaze** is a physical virtual maze puzzle. The box contains a PropMaker board with an LIS3DH accelerometer that detects the tilt of the box. A virtual “ball” moves on the LED screen in the direction of the tilt. The player must guide the ball to all target areas to solve the puzzle.
 
 ### How does it work in the game?
 
 - Players find a box with LED lights
-- When tilting the box, a virtual ball moves in the direction of the tilt
+- When the box is tilted, a virtual ball moves in the direction of the tilt.
 - The goal is to visit all target zones (marked in yellow on the LEDs)
 - When the ball passes over a target zone, it turns green and a sound plays
 - On visiting all zones, the puzzle is solved
@@ -116,7 +116,7 @@ The JSON file contains a `targets` array with X, Y positions and radius:
 ]
 ```
 
-The virtual maze is 200x200 units. X=0 and Y=0 is the top-left corner.
+The virtual maze has a size of 200x200 units. X=0 and Y=0 represents the top-left corner.
 
 ---
 

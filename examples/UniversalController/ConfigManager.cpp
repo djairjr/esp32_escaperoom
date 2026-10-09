@@ -84,15 +84,6 @@ bool ConfigManager::loadDefaults() {
     output_.lockPin = 10;
     output_.activeHigh = false;
 
-    // Musical (MUSICAL_SEQUENCE)
-    musical_.enabled = false;
-    musical_.noteCount = 0;
-    musical_.toleranceCents = 25;
-    musical_.maxGapMs = 1500;
-    musical_.maxNoteDurationMs = 3000;
-    musical_.totalTimeoutMs = 15000;
-    musical_.minAmplitude = 200;
-
     return true;
 }
 
@@ -136,9 +127,6 @@ bool ConfigManager::loadConfig() {
     }
     if (doc.containsKey("output")) {
         success &= parseOutputConfig(doc["output"]);
-    }
-    if (doc.containsKey("musical")) {
-        success &= parseMusicalConfig(doc["musical"]);
     }
 
     if (success) {
@@ -227,22 +215,6 @@ bool ConfigManager::saveConfig() {
     JsonObject output = doc.createNestedObject("output");
     output["lockPin"] = output_.lockPin;
     output["activeHigh"] = output_.activeHigh;
-
-    // Musical
-    JsonObject musical = doc.createNestedObject("musical");
-    musical["enabled"] = musical_.enabled;
-    musical["tolerance_cents"] = musical_.toleranceCents;
-    musical["max_gap_ms"] = musical_.maxGapMs;
-    musical["max_note_duration_ms"] = musical_.maxNoteDurationMs;
-    musical["total_timeout_ms"] = musical_.totalTimeoutMs;
-    musical["min_amplitude"] = musical_.minAmplitude;
-    JsonArray notes = musical.createNestedArray("notes");
-    for (uint8_t i = 0; i < musical_.noteCount; i++) {
-        JsonObject n = notes.createNestedObject();
-        n["midi"] = musical_.notes[i].midi;
-        n["duration_ms"] = musical_.notes[i].durationMs;
-        n["gap_ms"] = musical_.notes[i].gapMs;
-    }
 
     serializeJson(doc, file);
     file.close();
@@ -402,38 +374,6 @@ bool ConfigManager::parseOutputConfig(const JsonObject& obj) {
     return true;
 }
 
-bool ConfigManager::parseMusicalConfig(const JsonObject& obj) {
-    if (obj.containsKey("enabled")) {
-        musical_.enabled = obj["enabled"];
-    }
-    if (obj.containsKey("tolerance_cents")) {
-        musical_.toleranceCents = obj["tolerance_cents"];
-    }
-    if (obj.containsKey("max_gap_ms")) {
-        musical_.maxGapMs = obj["max_gap_ms"];
-    }
-    if (obj.containsKey("max_note_duration_ms")) {
-        musical_.maxNoteDurationMs = obj["max_note_duration_ms"];
-    }
-    if (obj.containsKey("total_timeout_ms")) {
-        musical_.totalTimeoutMs = obj["total_timeout_ms"];
-    }
-    if (obj.containsKey("min_amplitude")) {
-        musical_.minAmplitude = obj["min_amplitude"];
-    }
-    if (obj.containsKey("notes")) {
-        JsonArray arr = obj["notes"];
-        musical_.noteCount = min((size_t)16, arr.size());
-        for (uint8_t i = 0; i < musical_.noteCount; i++) {
-            JsonObject n = arr[i];
-            musical_.notes[i].midi = n["midi"] | 0;
-            musical_.notes[i].durationMs = n["duration_ms"] | 0;
-            musical_.notes[i].gapMs = n["gap_ms"] | 0;
-        }
-    }
-    return true;
-}
-
 PuzzleMode ConfigManager::parseMode(const char* modeStr) {
     if (strcmp(modeStr, "CUSTOM_SEQUENCE") == 0) {
         return PuzzleMode::CUSTOM_SEQUENCE;
@@ -443,8 +383,6 @@ PuzzleMode ConfigManager::parseMode(const char* modeStr) {
         return PuzzleMode::ALL_CONNECTED;
     } else if (strcmp(modeStr, "RANDOM") == 0) {
         return PuzzleMode::RANDOM;
-    } else if (strcmp(modeStr, "MUSICAL_SEQUENCE") == 0) {
-        return PuzzleMode::MUSICAL_SEQUENCE;
     }
     return PuzzleMode::LINEAR_SEQUENCE;  // Default
 }
@@ -459,8 +397,6 @@ const char* ConfigManager::modeToString(PuzzleMode mode) {
             return "ALL_CONNECTED";
         case PuzzleMode::RANDOM:
             return "RANDOM";
-        case PuzzleMode::MUSICAL_SEQUENCE:
-            return "MUSICAL_SEQUENCE";
         default:
             return "LINEAR_SEQUENCE";
     }

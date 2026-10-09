@@ -36,12 +36,8 @@ public:
     bool isSolved() const { return state_ == EngineState::SOLVED; }
     bool hasError() const { return state_ == EngineState::ERROR; }
 
-    // Injects the MicInput (MUSICAL_SEQUENCE mode). Constructor does NOT change.
-    void setMicInput(esp32_escaperoom::MicInput* mic) { mic_ = mic; }
-
 private:
     ConfigManager& config_;
-    esp32_escaperoom::MicInput* mic_ = nullptr;
     EngineState state_ = EngineState::IDLE;
 
     // Sequence
@@ -65,13 +61,11 @@ private:
     void processLinearSequence();
     void processAllConnected();
     void processRandomSequence();
-    void processMusicalSequence();
 
     // Helpers
     void checkInputs();
     void onInputCorrect(uint8_t inputIndex);
     void onInputWrong(uint8_t inputIndex);
-    void onNoteCorrect(uint8_t midi);
     void onSequenceComplete();
     void onTimeout();
     void updateProgress();

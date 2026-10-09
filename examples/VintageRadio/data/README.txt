@@ -9,12 +9,12 @@ VintageShortwaveMorseRadio puzzle.
 REQUIRED FILES
 --------------------------------------------------------------------------------
 
-1. mensagem.txt
+1. message.txt
    - Text file with the message to be transmitted in Morse code
    - Maximum 128 characters
    - Only characters: A-Z, 0-9 and spaces
    - No special characters (#, @, <, >, etc.)
-   - Example: "PARABENS VOCE RESOLVEU O PUZZLE"
+   - Example: “PARABENS, YOU HAVE SOLVED THE PUZZLE”
 
 --------------------------------------------------------------------------------
 OPTIONAL FILES (Advanced Tuning System)
@@ -50,7 +50,7 @@ SD CARD STRUCTURE
 --------------------------------------------------------------------------------
 
 /
-├── mensagem.txt          (required)
+├── mensagem.txt          (Required)
 ├── station1.mp3          (optional)
 ├── station2.mp3          (optional)
 ├── station3.mp3          (optional)

@@ -12,7 +12,7 @@ the *library* provides for this integration is:
   `device.room`, `device.puzzle_id`), read from `/wifi.json`;
 - `PuzzleBase::setStateChangeCallback()` — the hook that mirrors FSM transitions onto MQTT
   without polling;
-- the `hw` API to expose whatever the entities act on (relay, volume, brightness,
+- The `hw` API is used to expose the settings that control various entities, such as relay, volume, brightness,
   countdown).
 
 ---

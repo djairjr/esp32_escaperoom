@@ -7,7 +7,7 @@
 
 ## 1. Overview
 
-The BombTimer is a puzzle where players need to **defuse a virtual bomb** before time runs out. The defusal can be done in 3 different ways, configurable by the game master:
+BombTimer is a puzzle where players need to **defuse a virtual bomb** before time runs out. There are 3 different ways to do this, which can be configured by the game master.
 
 - **CODE** — type a 4-digit numeric code on the keypad
 - **WIRE** — cut the correct wire (DEFUSE) among 4 colored wires

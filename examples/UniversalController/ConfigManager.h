@@ -12,8 +12,7 @@ enum class PuzzleMode {
     CUSTOM_SEQUENCE,   // Custom sequence defined in JSON
     LINEAR_SEQUENCE,   // Linear order (0,1,2,3...)
     ALL_CONNECTED,     // All inputs activated, order does not matter
-    RANDOM,            // Random sequence generated at boot
-    MUSICAL_SEQUENCE   // Musical note sequence via MicInput (INMP441)
+    RANDOM             // Random sequence generated at boot
 };
 
 // Controller configuration
@@ -85,24 +84,6 @@ struct OutputConfig {
     bool activeHigh;
 };
 
-// ── Musical configuration (MUSICAL_SEQUENCE) ─────────────────
-struct MusicalNote {
-    uint8_t midi;          // MIDI note (e.g.: 60 = C4)
-    uint16_t durationMs;   // expected note duration (reference)
-    uint16_t gapMs;        // expected gap after the note (reference)
-};
-
-struct MusicalSequenceConfig {
-    bool enabled;                 // musical mode active
-    MusicalNote notes[16];        // up to 16 notes
-    uint8_t noteCount;            // number of notes in the sequence
-    uint8_t toleranceCents;       // tuning tolerance (± cents)
-    uint16_t maxGapMs;            // maximum gap between notes (if exceeded → TIMEOUT)
-    uint16_t maxNoteDurationMs;   // maximum duration of a note
-    uint16_t totalTimeoutMs;      // total sequence timeout
-    uint16_t minAmplitude;        // amplitude threshold (silence)
-};
-
 class ConfigManager {
 public:
     ConfigManager();                          // path = "/config.json"
@@ -124,7 +105,6 @@ public:
     const NeoPixelConfig& getNeoPixelConfig() const { return neopixel_; }
     const Rs485Config& getRs485Config() const { return rs485_; }
     const OutputConfig& getOutputConfig() const { return output_; }
-    const MusicalSequenceConfig& getMusicalConfig() const { return musical_; }
 
     // Helpers
     static PuzzleMode parseMode(const char* modeStr);
@@ -140,7 +120,6 @@ private:
     NeoPixelConfig neopixel_;
     Rs485Config rs485_;
     OutputConfig output_;
-    MusicalSequenceConfig musical_;
 
     char configPath_[32];
 
@@ -152,7 +131,6 @@ private:
     bool parseNeoPixelConfig(const JsonObject& obj);
     bool parseRs485Config(const JsonObject& obj);
     bool parseOutputConfig(const JsonObject& obj);
-    bool parseMusicalConfig(const JsonObject& obj);
 };
 
 } // namespace universal_controller

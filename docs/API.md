@@ -122,13 +122,13 @@ Factories return `nullptr` on failure, so always check.
 
 ## `PuzzleBase` — the puzzle
 
-Abstract base. Subclass it, implement `setupHardware()` and `update()`.
+Abstract base class. Subclass it, and implement `setupHardware()` and `update()`.
 
 | Member | Description |
 |--------|-------------|
 | `PuzzleBase(uint8_t id)` | Constructor; state starts at `Initialising`. |
-| `virtual void setupHardware()` | **Pure virtual.** Declare peripherals here. |
-| `virtual void update()` | **Pure virtual.** One tick; return fast, never block. |
+| `virtual void setupHardware()` | **Pure virtual.** Declare the peripherals here. |
+| `virtual void update()` | **Pure virtual.** One tick; returns quickly, never blocks. |
 | `void begin()` | `setupHardware()` then `setState(Idle)`. |
 | `void run()` | `setState(Running)` — start the puzzle. |
 | `void setState(PuzzleState)` | Idempotent transition; logs + fires the callback. |
@@ -229,7 +229,7 @@ struct GameLevelConfig { const uint8_t* puzzleIds; uint8_t puzzleCount; GameLeve
 | `bool play(const char* path, bool useSD = false, bool blocking = false)` | Generic. |
 | `void stop()` / `bool isPlaying()` | Control / status. |
 | `void setVolume(uint8_t)` / `uint8_t getVolume()` | 0–255. |
-| `void tone(uint16_t hz, uint8_t volume = 128)` / `void noTone()` | Sine generator (Morse, beeps). |
+| void tone(uint16_t hz, uint8_t volume = 128) / void noTone() | Sine generator (Morse, beeps). |
 | `bool isPlayingTone()` / `uint16_t getToneFrequency()` | Tone status. |
 | `bool mounted()` / `StorageBackend backend()` | Storage state (`SDCard` / `LittleFS`). |
 
@@ -296,23 +296,6 @@ Call `update()` every iteration.
 
 ---
 
-## `MicInput` — INMP441 + YIN pitch detection
-
-| Method | Description |
-|--------|-------------|
-| `bool begin()` | Start I²S RX (48 kHz, 32-bit stereo) + IIR filters. |
-| `bool readSample()` | Read a buffer, pick the active slot, filter, compute RMS. |
-| `float detectFrequency()` | Frequency in Hz (`0` below the silence gate). |
-| `int detectNote()` | MIDI note (60 = C4) or `-1`. |
-| `float getLastFrequency()`, `float getRms()`, `float getDbLevel()`, `float getConfidence()` | Diagnostics. |
-| `bool isLineStuck()` | Buffer had no variation (dead SD line). |
-| `uint8_t getActiveSlot()` | Which I²S slot carries audio. |
-| `void setMinAmplitude(float)` / `float getMinAmplitude()` | Silence gate. |
-| `void setYieldPump(void(*)())` | Pump cooperative work during analysis. |
-| `void end()` | Shut I²S down (deep sleep). |
-
----
-
 ## `ConfigManager` — SD → LittleFS → AP
 
 | Member | Description |
@@ -321,7 +304,6 @@ Call `update()` every iteration.
 | `bool loadPuzzleConfig(const char* path, JsonDocument&)` / `savePuzzleConfig(...)` | Read/write a puzzle JSON. |
 | `const char* wifiSSID()`, `mqttBroker()`, `mqttUser()`, `mqttPass()`, `devName()`, `devRoom()`, `devPuzzleId()` | Accessors. |
 | `bool isAPMode()`, `void handleAP()` | Captive-portal state and servicing. |
-| `static int noteNameToMidi(const String&)` | `"C4"` → MIDI, `-1` if invalid. |
 
 ---
 

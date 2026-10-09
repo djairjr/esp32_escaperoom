@@ -57,7 +57,6 @@ Without it the library will not compile (the audio header includes
 | Library | Manager name | Needed by |
 |---------|--------------|-----------|
 | ArduinoHA | `ArduinoHA` | every example that talks to Home Assistant (most of them) — it also pulls `PubSubClient` |
-| arduinoFFT | `arduinoFFT` | musical-analysis examples |
 | lvgl | `lvgl` | `Cardputer_H4CK-OS` (LVGL UI) |
 | M5Unified / M5Cardputer / M5StamPLC | `M5Unified` / `M5Cardputer` / `M5StamPLC` | the M5Stack examples and the M5Stack pin files |
 
@@ -65,15 +64,7 @@ Install these only for the sketches you build; the library core does not need th
 
 ---
 
-## 4. Microphone note
-
-`MicInput` uses the ESP-IDF I²S driver shipped with the **ESP32 Arduino core**
-(`driver/i2s_std.h`); no extra library is required, but the Arduino ESP32 core must be ≥ 3.x
-(the legacy `driver/i2s.h` API is not used).
-
----
-
-## 5. Verifying the install
+## 4. Verifying the install
 
 Compile and flash the smoke test:
 

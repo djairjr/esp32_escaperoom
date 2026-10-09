@@ -64,7 +64,7 @@ These are the elements the players interact with during the game:
 - Values from 0 (off) to 15 (maximum)
 - Recommended: 12-15 for well-lit rooms
 
-#### VOL (Sound volume)
+#### VOL (Sound Volume)
 - Adjusts the volume of the sound effects
 - Values from 0 (mute) to 15 (maximum)
 - Recommended: 10-12 for medium-sized rooms
@@ -299,7 +299,7 @@ The 4 wires can have different effects when cut:
 
 ### There is no sound
 
-1. Check if the volume is not at ZERO (VOL menu)
+1. Check that the volume is not at zero (VOL menu).
 2. Check if the sound files are loaded on the device
 3. Check if the speaker is connected correctly
 4. Try restarting the device

@@ -18,7 +18,7 @@ CONFIGURATION (bomb.json - also in this folder):
 - dffW   : Defuse wire (same mapping)
 - spdW   : Double-speed wire (0=none, 1=random, 2-5)
 - psW    : Temporary pause wire
-- vol    : Volume (0-30)
+- Volume: Volume level (0-30)
 - bri    : Display brightness (0-15)
 - tdEt   : Detonation relay pulse duration in seconds
 - tdEF   : Defuse relay pulse duration in seconds

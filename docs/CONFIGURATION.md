@@ -98,8 +98,8 @@ whole puzzle:
 }
 ```
 
-`logic.mode` is one of `CUSTOM_SEQUENCE`, `LINEAR_SEQUENCE`, `ALL_CONNECTED`, `RANDOM`,
-`MUSICAL_SEQUENCE` (interpreted by the example-local `PuzzleEngine` — see
+`logic.mode` is one of `CUSTOM_SEQUENCE`, `LINEAR_SEQUENCE`, `ALL_CONNECTED`, `RANDOM`
+(interpreted by the example-local `PuzzleEngine` — see
 [`ARCHITECTURE.md`](ARCHITECTURE.md)).
 
 ---
@@ -115,11 +115,6 @@ When no configuration is found, `startAP()`:
 
 While in AP mode, call `config.handleAP()` every iteration so the web server is serviced —
 it is a plain `WebServer` that only advances when `handleClient()` is pumped.
-
-There is also a `/musical` page in the same server: a form that parses a note sequence in
-the form `C4,400,100;E4,400,100;G4,800,0` (name, duration ms, gap ms) and writes a
-`MUSICAL_SEQUENCE` block into `/config.json`, converting note names to MIDI with
-`ConfigManager::noteNameToMidi()`.
 
 ---
 

@@ -49,7 +49,7 @@ using namespace universal_controller;
 // ============================================================================
 // HOME ASSISTANT + WIFI
 // ============================================================================
-ConfigManager netConfig;
+esp32_escaperoom::ConfigManager netConfig;
 WiFiClient wifiClient;
 HADevice haDevice;
 HAMqtt haMqtt(wifiClient, haDevice);
@@ -69,62 +69,9 @@ HAButton haResetB("reset_b");
 bool haOK = false;
 
 // Forward declarations
-class MultiControllerPuzzle;
-extern MultiControllerPuzzle puzzleA;
-extern MultiControllerPuzzle puzzleB;
-
-void initHA() {
-  if (haOK || !WiFi.isConnected() || !strlen(netConfig.mqttBroker())) return;
-  byte mac[6]; WiFi.macAddress(mac);
-  haDevice.setUniqueId(mac, sizeof(mac));
-  haDevice.setName(netConfig.devName());
-  haDevice.setSoftwareVersion("1.0.0");
-
-  haStateA.setName("Puzzle A State");
-  haStateA.setIcon("mdi:puzzle");
-  haProgressA.setName("Puzzle A Progress");
-  haProgressA.setUnitOfMeasurement("%");
-  haProgressA.setIcon("mdi:progress-check");
-
-  haStartA.setName("Start Puzzle A");
-  haStartA.setIcon("mdi:play");
-  haStartA.onCommand([](HAButton*){ puzzleA.run(); if(puzzleA.engine()) puzzleA.engine()->start(); });
-
-  haResetA.setName("Reset Puzzle A");
-  haResetA.setIcon("mdi:restart");
-  haResetA.onCommand([](HAButton*){ puzzleA.setState(PuzzleState::Idle); if(puzzleA.engine()) puzzleA.engine()->reset(); });
-
-  haStateB.setName("Puzzle B State");
-  haStateB.setIcon("mdi:puzzle");
-  haProgressB.setName("Puzzle B Progress");
-  haProgressB.setUnitOfMeasurement("%");
-  haProgressB.setIcon("mdi:progress-check");
-
-  haStartB.setName("Start Puzzle B");
-  haStartB.setIcon("mdi:play");
-  haStartB.onCommand([](HAButton*){ puzzleB.run(); if(puzzleB.engine()) puzzleB.engine()->start(); });
-
-  haResetB.setName("Reset Puzzle B");
-  haResetB.setIcon("mdi:restart");
-  haResetB.onCommand([](HAButton*){ puzzleB.setState(PuzzleState::Idle); if(puzzleB.engine()) puzzleB.engine()->reset(); });
-
-  haMqtt.begin(netConfig.mqttBroker(), netConfig.mqttUser(), netConfig.mqttPass());
-  haOK = true;
-  Serial.println("[HA] Connected to Home Assistant");
-}
-
-void loopHA() {
-  haMqtt.loop();
-  netConfig.handleAP();
-}
-
-void publishHA() {
-  if (!haOK) return;
-  haStateA.setValue(PuzzleBase::stateName(puzzleA.getState()));
-  if (puzzleA.engine()) haProgressA.setValue(String(puzzleA.engine()->getProgress()).c_str());
-  haStateB.setValue(PuzzleBase::stateName(puzzleB.getState()));
-  if (puzzleB.engine()) haProgressB.setValue(String(puzzleB.engine()->getProgress()).c_str());
-}
+void initHA();
+void loopHA();
+void publishHA();
 
 // ============================================================================
 // PUZZLE CLASS (reuses ConfigManager + PuzzleEngine)
@@ -140,7 +87,7 @@ public:
     void setupHardware() override;
     void update() override;
 
-    ConfigManager configManager_;
+    universal_controller::ConfigManager configManager_;
     PuzzleEngine* engine() { return engine_; }
 
 private:
@@ -233,6 +180,59 @@ MultiControllerPuzzle puzzleA(1, "/config_puzzleA.json", 0x20, 0, 8);
 MultiControllerPuzzle puzzleB(2, "/config_puzzleB.json", 0x21, 8, 8);
 
 LogicManager master(0, false);
+
+void initHA() {
+  if (haOK || !WiFi.isConnected() || !strlen(netConfig.mqttBroker())) return;
+  byte mac[6]; WiFi.macAddress(mac);
+  haDevice.setUniqueId(mac, sizeof(mac));
+  haDevice.setName(netConfig.devName());
+  haDevice.setSoftwareVersion("1.0.0");
+
+  haStateA.setName("Puzzle A State");
+  haStateA.setIcon("mdi:puzzle");
+  haProgressA.setName("Puzzle A Progress");
+  haProgressA.setUnitOfMeasurement("%");
+  haProgressA.setIcon("mdi:progress-check");
+
+  haStartA.setName("Start Puzzle A");
+  haStartA.setIcon("mdi:play");
+  haStartA.onCommand([](HAButton*){ puzzleA.run(); if(puzzleA.engine()) puzzleA.engine()->start(); });
+
+  haResetA.setName("Reset Puzzle A");
+  haResetA.setIcon("mdi:restart");
+  haResetA.onCommand([](HAButton*){ puzzleA.setState(PuzzleState::Idle); if(puzzleA.engine()) puzzleA.engine()->reset(); });
+
+  haStateB.setName("Puzzle B State");
+  haStateB.setIcon("mdi:puzzle");
+  haProgressB.setName("Puzzle B Progress");
+  haProgressB.setUnitOfMeasurement("%");
+  haProgressB.setIcon("mdi:progress-check");
+
+  haStartB.setName("Start Puzzle B");
+  haStartB.setIcon("mdi:play");
+  haStartB.onCommand([](HAButton*){ puzzleB.run(); if(puzzleB.engine()) puzzleB.engine()->start(); });
+
+  haResetB.setName("Reset Puzzle B");
+  haResetB.setIcon("mdi:restart");
+  haResetB.onCommand([](HAButton*){ puzzleB.setState(PuzzleState::Idle); if(puzzleB.engine()) puzzleB.engine()->reset(); });
+
+  haMqtt.begin(netConfig.mqttBroker(), netConfig.mqttUser(), netConfig.mqttPass());
+  haOK = true;
+  Serial.println("[HA] Connected to Home Assistant");
+}
+
+void loopHA() {
+  haMqtt.loop();
+  netConfig.handleAP();
+}
+
+void publishHA() {
+  if (!haOK) return;
+  haStateA.setValue(PuzzleBase::stateName(puzzleA.getState()));
+  if (puzzleA.engine()) haProgressA.setValue(String(puzzleA.engine()->getProgress()).c_str());
+  haStateB.setValue(PuzzleBase::stateName(puzzleB.getState()));
+  if (puzzleB.engine()) haProgressB.setValue(String(puzzleB.engine()->getProgress()).c_str());
+}
 
 void setup() {
     Serial.begin(115200);

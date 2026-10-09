@@ -17,7 +17,7 @@ The game loads a JSON file (`bomb.json`) with the following parameters:
 - **speedupWire**: accelerator wire (doubles countdown speed)
 - **pauseWire**: pause wire (pauses the countdown for 2 seconds)
 - **brightness**: display brightness (0-15)
-- **volume**: audio volume (0-255)
+- **Volume**: Audio volume (0-255)
 - **tickEnabled**: tick sound every second
 - **accelMode**: accelerometer mode (OFF=0, START=1, SPEED2X=2, PAUSE=3, DETONATE=4)
 - **rfidEnabled**: reading of RFID tags for defuse/detonation

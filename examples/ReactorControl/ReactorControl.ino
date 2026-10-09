@@ -201,31 +201,6 @@ public:
         }
     }
 
-    void onNetworkPacket(const Rs485Payload& p) override {
-        switch (p.pCommand) {
-            case NetCommand::ForceSolve:
-                if (getState() == PuzzleState::Running) {
-                    Serial.println(F("[REACTOR] Remote command: ForceSolve"));
-                    handleSolve();
-                }
-                break;
-
-            case NetCommand::GlobalEvent:
-                Serial.println(F("[REACTOR] Remote command: GlobalEvent (reset)"));
-                resetPuzzle();
-                break;
-
-            case NetCommand::StatusReport:
-                Serial.printf("[REACTOR] Status: %s, SubState: %d, Zones: %d/%d\n",
-                              stateName(getState()), (int)subState_,
-                              zonesActive_, NUM_VALVES);
-                break;
-
-            default:
-                break;
-        }
-    }
-
 private:
     enum class SubState { Adjusting, Confirming, Reshuffling };
     SubState subState_ = SubState::Adjusting;
@@ -659,7 +634,7 @@ void setup() {
 
     master.addPuzzle(&puzzle);
     master.begin();
-    master.setNetworkEnabled(true);  // Enables RS485 communication
+    // RS485 is not available on the ESP32 port; remote control is via MQTT/Home Assistant.
 
     Serial.println(F("[Main] System ready"));
     Serial.println(F("[Main] Waiting for start command (network or button 1)"));

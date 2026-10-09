@@ -239,12 +239,11 @@ expose `reset()` and `restartProgress()` — see below.)
 
 ## 2. Example-level FSM: `PuzzleEngine`
 
-`PuzzleEngine` is a **second state machine shipped in the library**: it lives at
-`src/esp32_escaperoom/PuzzleEngine.h` / `.cpp` (it is *not* included by the umbrella
-`ESP32EscapeRoom.h`, so include it explicitly). The `UniversalController`,
-`UniversalControllerMulti` and `UniversalUniqueRFID` examples use it to implement a
-**data-driven** puzzle: the whole puzzle is described by a JSON file, and `PuzzleEngine`
-interprets it.
+`PuzzleEngine` is a **second state machine shipped with the examples**: each of the
+`UniversalController`, `UniversalControllerMulti` and `UniversalUniqueRFID` example folders
+carries its own copy of `PuzzleEngine.h` / `.cpp`. It is *not* part of the library `src/`. The
+examples use it to implement a **data-driven** puzzle: the whole puzzle is described by a
+JSON file, and `PuzzleEngine` interprets it.
 
 ### 2.1 States
 
@@ -271,10 +270,7 @@ enum class EngineState {
 | `restartProgress()` | clear progress, **stay armed**, no cue, no log |
 | `getState()` / `getProgress()` / `getCurrentStep()` / `getTotalSteps()` | introspection |
 | `getRemainingTime()` | ms left |
-| `getExpectedNote()` | MIDI note expected at the current step, or `-1` when there is none |
-| `getLastPlayed()` | last note consumed (diagnostics / HA) |
 | `isSolved()` / `hasError()` | convenience predicates |
-| `setMicInput(MicInput*)` | inject the microphone for `MUSICAL_SEQUENCE` |
 
 ### 2.3 Modes and their process functions
 
@@ -284,20 +280,6 @@ enum class EngineState {
 | `LINEAR_SEQUENCE` | `processLinearSequence()` | inputs must fire 0 → 1 → 2 → … |
 | `ALL_CONNECTED` | `processAllConnected()` | all inputs active, order irrelevant |
 | `RANDOM` | `processRandomSequence()` | a fresh no-repeat sequence each boot |
-| `MUSICAL_SEQUENCE` | `processMusicalSequence()` | match notes captured by `MicInput` |
-
-### 2.4 The musical mode, in detail
-
-`MUSICAL_SEQUENCE` is the non-obvious one. A note's **attack** produces transient readings
-that do not match the expected note; deciding on the first frame would count that as an
-error. The engine therefore requires `NOTE_CONFIRM_FRAMES` (3) **consecutive** matching
-readings before accepting a step, and `awaitingNoteEnd_` latches so the *same* note cannot
-advance two steps. Errors are latched per distinct wrong note (`wrongNoteLatched_`,
-`lastWrongMidi_`) so a single wrong note is reported once instead of once per frame.
-
-`getExpectedNote()` returns `-1` — not `0` — when there is no valid step (empty sequence,
-solved, or index out of range), because MIDI note `0` is `C-1`, a *real* 8 Hz note that would
-otherwise be shown as "the expected note".
 
 ---
 

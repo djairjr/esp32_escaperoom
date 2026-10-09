@@ -20,7 +20,6 @@ Pcf857x	KEYWORD1
 RfidBus	KEYWORD1
 RotaryDialReader	KEYWORD1
 EscapeRoomRotaryEncoder	KEYWORD1
-MicInput	KEYWORD1
 ConfigManager	KEYWORD1
 SerialDebug	KEYWORD1
 StateChangeCallback	KEYWORD1
@@ -159,7 +158,6 @@ devRoom	KEYWORD2
 mqttBroker	KEYWORD2
 addCommand	KEYWORD2
 printHelp	KEYWORD2
-noteNameToMidi	KEYWORD2
 
 #######################################
 # Constants (LITERAL1)

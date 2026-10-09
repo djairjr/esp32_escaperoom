@@ -211,7 +211,7 @@ public:
     }
 
     void publishAllHA() {
-        haSensorState_.setValue(stateName());
+        haSensorState_.setValue(PuzzleBase::stateName(getState()));
         const char* modes[] = {"KEYPAD_ONLY","RFID_ONLY","KEYPAD_OR_RFID","KEYPAD_AND_RFID"};
         haSensorMode_.setValue(modes[(int)config.mode]);
         haSensorLock_.setValue(lockOpen ? "open" : "locked");

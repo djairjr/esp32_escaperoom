@@ -37,14 +37,6 @@ void PuzzleEngine::begin() {
         case PuzzleMode::RANDOM:
             generateRandomSequence();
             break;
-
-        case PuzzleMode::MUSICAL_SEQUENCE:
-            // Sequence comes from the musical config (MIDI notes)
-            sequenceLength_ = config_.getMusicalConfig().noteCount;
-            for (uint8_t i = 0; i < sequenceLength_; i++) {
-                sequence_[i] = config_.getMusicalConfig().notes[i].midi;
-            }
-            break;
     }
 
     totalSteps_ = sequenceLength_;
@@ -58,9 +50,9 @@ void PuzzleEngine::begin() {
     }
     Serial.printf("| Total steps: %d\n", totalSteps_);
 
-    // Configures NeoPixel if enabled (NOT in musical mode — no local feedback)
+    // Configures NeoPixel if enabled
     const auto& np = config_.getNeoPixelConfig();
-    if (logic.mode != PuzzleMode::MUSICAL_SEQUENCE && np.enabled && np.count > 0) {
+    if (np.enabled && np.count > 0) {
         hw.pixelsExternal().updateLength(np.count);
         hw.pixelsExternal().begin();
         hw.pixelsExternal().setBrightness(128);
@@ -102,9 +94,6 @@ void PuzzleEngine::update() {
                     break;
                 case PuzzleMode::RANDOM:
                     processRandomSequence();
-                    break;
-                case PuzzleMode::MUSICAL_SEQUENCE:
-                    processMusicalSequence();
                     break;
             }
             break;
@@ -218,49 +207,6 @@ void PuzzleEngine::processAllConnected() {
 void PuzzleEngine::processRandomSequence() {
     // Same logic as custom sequence
     processCustomSequence();
-}
-
-void PuzzleEngine::processMusicalSequence() {
-    if (!mic_) return;
-
-    const auto& musical = config_.getMusicalConfig();
-    if (!musical.enabled || musical.noteCount == 0) return;
-
-    // Reads the note detected by MicInput (MIDI or -1 if silence)
-    int detected = mic_->detectNote();
-    if (detected < 0) {
-        // Silence — checks for exceeded gap
-        if (lastInputTime_ > 0 && (millis() - lastInputTime_ > musical.maxGapMs)) {
-            onTimeout();
-        }
-        return;
-    }
-
-    // Note detected — checks whether it is the expected one (within tolerance)
-    uint8_t expected = sequence_[currentStep_];
-    int diff = detected - expected;
-    // Tolerance in cents: 1 semitone = 100 cents. Converts semitone diff to cents.
-    int diffCents = diff * 100;
-    if (abs(diffCents) <= musical.toleranceCents) {
-        onNoteCorrect((uint8_t)detected);
-    } else {
-        onInputWrong(0);
-    }
-    lastInputTime_ = millis();
-}
-
-void PuzzleEngine::onNoteCorrect(uint8_t midi) {
-    stateStartTime_ = millis();
-    state_ = EngineState::INPUT_CORRECT;
-    currentStep_++;
-    updateProgress();
-
-    Serial.printf("[PuzzleEngine] Note %d CORRECT | Progress: %d/%d\n",
-                  midi, currentStep_, totalSteps_);
-
-    if (currentStep_ >= totalSteps_) {
-        onSequenceComplete();
-    }
 }
 
 // ===== HELPERS =====

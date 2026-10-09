@@ -2,7 +2,7 @@
 
 ## Overview
 
-Physical maze where the player tilts a box with a LIS3DH accelerometer to move a virtual ball across a 2D plane. The ball must visit N target zones distributed across the maze. It is solved when all targets are reached.
+It’s a physical maze where the player uses an LIS3DH accelerometer to tilt boxes, thereby moving a virtual ball across a 2D plane. The ball must reach N target areas scattered throughout the maze. The game is won when all targets are reached.
 
 ## Configuration (JSON: ballmaze.json)
 

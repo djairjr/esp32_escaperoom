@@ -24,7 +24,7 @@ Press and HOLD the key '1'...
 ========================================
 
 [HARDWARE] =========================================
-[HARDWARE]    By   Nicolau dos Brinquedos - 2026
+[HARDWARE] By Nicolau dos Brinquedos – 2026
 [HARDWARE] PropMaker Escape Room Engine Initializing
 [HARDWARE] =========================================
 

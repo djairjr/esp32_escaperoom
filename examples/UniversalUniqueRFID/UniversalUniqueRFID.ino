@@ -45,7 +45,7 @@ using namespace universal_unique_rfid;
 // ============================================================================
 // HOME ASSISTANT + WIFI
 // ============================================================================
-ConfigManager netConfig;
+esp32_escaperoom::ConfigManager netConfig;
 WiFiClient wifiClient;
 HADevice haDevice;
 HAMqtt haMqtt(wifiClient, haDevice);
@@ -58,60 +58,10 @@ HAButton haReset("reset");
 HAButton haForceSolve("force_solve");
 bool haOK = false;
 
-// Forward
-class UniversalUniqueRFIDPuzzle;
-extern UniversalUniqueRFIDPuzzle puzzle;
-
-void initHA() {
-  if (haOK || !WiFi.isConnected() || !strlen(netConfig.mqttBroker())) return;
-  byte mac[6]; WiFi.macAddress(mac);
-  haDevice.setUniqueId(mac, sizeof(mac));
-  haDevice.setName(netConfig.devName());
-  haDevice.setSoftwareVersion("1.0.0");
-
-  haState.setName("State");
-  haState.setIcon("mdi:puzzle");
-
-  haProgress.setName("Progress");
-  haProgress.setUnitOfMeasurement("%");
-  haProgress.setIcon("mdi:progress-check");
-
-  haMode.setName("Mode");
-  haMode.setIcon("mdi:cog");
-
-  haLastTag.setName("Last Tag");
-  haLastTag.setIcon("mdi:nfc");
-
-  haStart.setName("Start");
-  haStart.setIcon("mdi:play");
-  haStart.onCommand([](HAButton*){ puzzle.run(); if(puzzle.engine_) puzzle.engine_->start(); });
-
-  haReset.setName("Reset");
-  haReset.setIcon("mdi:restart");
-  haReset.onCommand([](HAButton*){ if(puzzle.engine_) puzzle.engine_->reset(); puzzle.setState(PuzzleState::Idle); });
-
-  haForceSolve.setName("Force Solve");
-  haForceSolve.setIcon("mdi:check-bold");
-  haForceSolve.onCommand([](HAButton*){ puzzle.setState(PuzzleState::Solved); });
-
-  haMqtt.begin(netConfig.mqttBroker(), netConfig.mqttUser(), netConfig.mqttPass());
-  haOK = true;
-  Serial.println("[HA] Connected to Home Assistant");
-}
-
-void loopHA() {
-  haMqtt.loop();
-  netConfig.handleAP();
-}
-
-void publishHA() {
-  if (!haOK) return;
-  haState.setValue(PuzzleBase::stateName(puzzle.getState()));
-  if (puzzle.engine_) haProgress.setValue(String(puzzle.engine_->getProgress()).c_str());
-  const auto& rfid = puzzle.configManager_.getRfidConfig();
-  haMode.setValue(ConfigManager::modeToString(rfid.mode));
-  // lastTag would be updated by the engine when a tag is read
-}
+// Forward declarations (definitions moved below, after `puzzle` is declared)
+void initHA();
+void loopHA();
+void publishHA();
 
 // ============================================================================
 // SETTINGS
@@ -136,7 +86,7 @@ public:
     void setupHardware() override;
     void update() override;
 
-    ConfigManager configManager_;
+    universal_unique_rfid::ConfigManager configManager_;
     PuzzleEngine* engine_ = nullptr;
     SerialDebug dbg_;
 
@@ -172,7 +122,7 @@ void UniversalUniqueRFIDPuzzle::setupHardware() {
 
     const auto& rfid = configManager_.getRfidConfig();
     Serial.printf("[Setup] Mode: %s | Tags: %d | Timeout: %ds\n",
-                  ConfigManager::modeToString(rfid.mode), rfid.tagCount, rfid.timeoutSeconds);
+                  universal_unique_rfid::ConfigManager::modeToString(rfid.mode), rfid.tagCount, rfid.timeoutSeconds);
 
     engine_ = new PuzzleEngine(configManager_);
     engine_->begin();
@@ -246,6 +196,61 @@ void UniversalUniqueRFIDPuzzle::printStatus() {
 UniversalUniqueRFIDPuzzle puzzle;
 
 // ============================================================================
+// HOME ASSISTANT HELPERS
+// ============================================================================
+
+void initHA() {
+  if (haOK || !WiFi.isConnected() || !strlen(netConfig.mqttBroker())) return;
+  byte mac[6]; WiFi.macAddress(mac);
+  haDevice.setUniqueId(mac, sizeof(mac));
+  haDevice.setName(netConfig.devName());
+  haDevice.setSoftwareVersion("1.0.0");
+
+  haState.setName("State");
+  haState.setIcon("mdi:puzzle");
+
+  haProgress.setName("Progress");
+  haProgress.setUnitOfMeasurement("%");
+  haProgress.setIcon("mdi:progress-check");
+
+  haMode.setName("Mode");
+  haMode.setIcon("mdi:cog");
+
+  haLastTag.setName("Last Tag");
+  haLastTag.setIcon("mdi:nfc");
+
+  haStart.setName("Start");
+  haStart.setIcon("mdi:play");
+  haStart.onCommand([](HAButton*){ puzzle.run(); if(puzzle.engine_) puzzle.engine_->start(); });
+
+  haReset.setName("Reset");
+  haReset.setIcon("mdi:restart");
+  haReset.onCommand([](HAButton*){ if(puzzle.engine_) puzzle.engine_->reset(); puzzle.setState(PuzzleState::Idle); });
+
+  haForceSolve.setName("Force Solve");
+  haForceSolve.setIcon("mdi:check-bold");
+  haForceSolve.onCommand([](HAButton*){ puzzle.setState(PuzzleState::Solved); });
+
+  haMqtt.begin(netConfig.mqttBroker(), netConfig.mqttUser(), netConfig.mqttPass());
+  haOK = true;
+  Serial.println("[HA] Connected to Home Assistant");
+}
+
+void loopHA() {
+  haMqtt.loop();
+  netConfig.handleAP();
+}
+
+void publishHA() {
+  if (!haOK) return;
+  haState.setValue(PuzzleBase::stateName(puzzle.getState()));
+  if (puzzle.engine_) haProgress.setValue(String(puzzle.engine_->getProgress()).c_str());
+  const auto& rfid = puzzle.configManager_.getRfidConfig();
+  haMode.setValue(universal_unique_rfid::ConfigManager::modeToString(rfid.mode));
+  // lastTag would be updated by the engine when a tag is read
+}
+
+// ============================================================================
 // SERIAL COMMANDS
 // ============================================================================
 static bool cmdStart(const char*) {
@@ -280,7 +285,7 @@ static bool cmdConfig(const char*) {
     const auto& rfid = puzzle.configManager_.getRfidConfig();
     Serial.println("\n----- CONFIGURATION -----");
     Serial.printf("Name: %s\n", ctrl.name);
-    Serial.printf("Mode: %s\n", ConfigManager::modeToString(rfid.mode));
+    Serial.printf("Mode: %s\n", universal_unique_rfid::ConfigManager::modeToString(rfid.mode));
     Serial.printf("Tags: %d\n", rfid.tagCount);
     for (uint8_t i = 0; i < rfid.tagCount; i++)
         Serial.printf("  [%d] %s -> %s\n", i, rfid.tags[i].name, rfid.tags[i].uid);
