@@ -1,0 +1,31 @@
+{
+  "phys": {
+    "accel": 600,
+    "damp": 3.5,
+    "bounce": 0.3,
+    "maxSpd": 250,
+    "deadZ": 0.25
+  },
+  "maze": {
+    "w": 200,
+    "h": 200
+  },
+  "startX": 100,
+  "startY": 100,
+  "targets": [
+    {"x": 30, "y": 30, "r": 12},
+    {"x": 170, "y": 30, "r": 12},
+    {"x": 100, "y": 170, "r": 12}
+  ],
+  "targetCount": 3,
+  "targetRadius": 12,
+  "requireOrder": false,
+  "lockPin": 10,
+  "neoCount": 30,
+  "volume": 128,
+  "audio": {
+    "target": "/sfx/target.mp3",
+    "solved": "/sfx/solved.mp3",
+    "start": "/sfx/start.mp3"
+  }
+}

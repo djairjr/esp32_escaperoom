@@ -1,0 +1,27 @@
+# Build and IDE artifacts
+build/
+.pio/
+.vscode/
+*.o
+*.d
+*.elf
+*.map
+
+# Local backups and agent scratch
+*.bak
+*.bak_*
+_backup_*/
+.hermes/
+.code-review-graph/
+
+# Binary media (sounds, SPIFFS/LittleFS images, animations, schematics).
+# Examples ship the JSON configuration in data/ but not the audio or images;
+# see each example's data/README.txt for the files to add locally.
+*.mp3
+*.wav
+*.bin
+spiffs_image.bin
+
+# OS noise
+.DS_Store
+Thumbs.db

@@ -1,0 +1,16 @@
+{
+  "codes": ["1234", "5678", "0000"],
+  "lockPin": 20,
+  "audio": {
+    "keypress": "/sfx/beep.mp3",
+    "unlock": "/sfx/magic.mp3",
+    "denied": "/sfx/error.mp3",
+    "cancel": "/sfx/cancel.mp3"
+  },
+  "neopixel": {
+    "count": 8,
+    "colorIdle": [5, 5, 20],
+    "colorUnlock": [0, 50, 0],
+    "colorDenied": [50, 0, 0]
+  }
+}

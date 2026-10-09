@@ -1,0 +1,14 @@
+{
+  "lockPin": 10,
+  "neoCount": 24,
+  "frequencyCount": 12,
+  "targetFrequencies": [3, 8, 5],
+  "roundsToWin": 3,
+  "volume": 128,
+  "audio": {
+    "static": "/sfx/static.mp3",
+    "signal": "/sfx/signal.mp3",
+    "solved": "/sfx/solved.mp3",
+    "select": "/sfx/select.mp3"
+  }
+}

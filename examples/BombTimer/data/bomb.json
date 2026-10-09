@@ -1,0 +1,18 @@
+{
+  "ctdn": 30,
+  "mode": 0,
+  "code": 1234,
+  "ordr": 1234,
+  "detW": 0,
+  "dffW": 0,
+  "spdW": 0,
+  "psW": 0,
+  "vol": 180,
+  "bri": 10,
+  "tdEt": 5,
+  "tdEF": 5,
+  "rs485": 0,
+  "netC": 4,
+  "shak": 1,
+  "tic": 1
+}

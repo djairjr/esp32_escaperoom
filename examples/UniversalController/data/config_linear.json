@@ -1,0 +1,74 @@
+{
+  "_comment": "Exemplo: LINEAR_SEQUENCE - Ordem linear das entradas (0,1,2,3,4...)",
+
+  "controller": {
+    "name": "Puzzle Linear",
+    "id": 2,
+    "enabled": true
+  },
+
+  "inputs": {
+    "count": 8,
+    "pcfAddress": "0x20",
+    "pinMapping": [0, 1, 2, 3, 4, 5, 6, 7],
+    "debounceMs": 50
+  },
+
+  "logic": {
+    "mode": "LINEAR_SEQUENCE",
+    "sequence": [],
+    "timeoutSeconds": 600,
+    "resetOnError": true,
+    "allowRepeat": false
+  },
+
+  "pwm": {
+    "enabled": true,
+    "channel": 0,
+    "minValue": 0,
+    "maxValue": 100,
+    "steps": 8
+  },
+
+  "audio": {
+    "enabled": true,
+    "source": "sdcard",
+    "inputSounds": [
+      "/step1.mp3",
+      "/step2.mp3",
+      "/step3.mp3",
+      "/step4.mp3",
+      "/step5.mp3",
+      "/step6.mp3",
+      "/step7.mp3",
+      "/step8.mp3"
+    ],
+    "unlockSound": "/success.mp3",
+    "errorSound": "/error.mp3",
+    "resetSound": "/reset.mp3"
+  },
+
+  "neopixel": {
+    "enabled": true,
+    "count": 8,
+    "mode": "PROGRESS_BAR",
+    "colors": {
+      "idle": [0, 50, 100],
+      "active": [255, 200, 0],
+      "solved": [0, 255, 50],
+      "error": [255, 50, 0],
+      "progress": [0, 200, 255]
+    }
+  },
+
+  "rs485": {
+    "enabled": false,
+    "address": 2,
+    "baudRate": 115200
+  },
+
+  "output": {
+    "lockPin": 10,
+    "activeHigh": false
+  }
+}

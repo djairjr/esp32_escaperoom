@@ -1,0 +1,20 @@
+{
+  "mode": "KEYPAD_OR_RFID",
+  "lockPin": 10,
+  "unlockDurationMs": 3000,
+  "codes": ["1234", "5678"],
+  "rfidTags": ["04:2A:6B:01", "DE:AD:BE:EF"],
+  "audio": {
+    "keypress": "/sfx/beep.mp3",
+    "unlock": "/sfx/magic.mp3",
+    "denied": "/sfx/error.mp3",
+    "reset": "/sfx/cancel.mp3"
+  },
+  "neopixel": {
+    "count": 8,
+    "colorIdle": [5, 5, 20],
+    "colorUnlock": [0, 50, 0],
+    "colorDenied": [50, 0, 0],
+    "colorRfidScan": [0, 0, 50]
+  }
+}

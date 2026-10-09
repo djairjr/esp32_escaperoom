@@ -1,0 +1,177 @@
+#######################################
+# Syntax Coloring Map for esp32_escaperoom
+#######################################
+
+#######################################
+# Datatypes (KEYWORD1)
+#######################################
+
+PuzzleBase	KEYWORD1
+LogicManager	KEYWORD1
+PuzzleState	KEYWORD1
+GameLevelConfig	KEYWORD1
+GameLevelMode	KEYWORD1
+PuzzlePixelView	KEYWORD1
+Hardware	KEYWORD1
+AudioPlayer	KEYWORD1
+Display14Seg	KEYWORD1
+NfcReader	KEYWORD1
+Pcf857x	KEYWORD1
+RfidBus	KEYWORD1
+RotaryDialReader	KEYWORD1
+EscapeRoomRotaryEncoder	KEYWORD1
+MicInput	KEYWORD1
+ConfigManager	KEYWORD1
+SerialDebug	KEYWORD1
+StateChangeCallback	KEYWORD1
+
+#######################################
+# Methods and Functions (KEYWORD2)
+#######################################
+
+begin	KEYWORD2
+run	KEYWORD2
+update	KEYWORD2
+setupHardware	KEYWORD2
+setState	KEYWORD2
+getState	KEYWORD2
+getId	KEYWORD2
+getProperty	KEYWORD2
+stateName	KEYWORD2
+setStateChangeCallback	KEYWORD2
+addPuzzle	KEYWORD2
+setGameLevel	KEYWORD2
+startGame	KEYWORD2
+getGameLevel	KEYWORD2
+isGameComplete	KEYWORD2
+onGameLevelEnter	KEYWORD2
+onGameLevelExit	KEYWORD2
+onGameComplete	KEYWORD2
+onPuzzleSolved	KEYWORD2
+startTimer	KEYWORD2
+stopTimer	KEYWORD2
+getRemainingTime	KEYWORD2
+loop	KEYWORD2
+playOnce	KEYWORD2
+playOnceBlocking	KEYWORD2
+playLoop	KEYWORD2
+stop	KEYWORD2
+setVolume	KEYWORD2
+getVolume	KEYWORD2
+tone	KEYWORD2
+noTone	KEYWORD2
+isPlaying	KEYWORD2
+setPixelRange	KEYWORD2
+pixels	KEYWORD2
+pixelOffset	KEYWORD2
+pixelCount	KEYWORD2
+hasPixels	KEYWORD2
+setPixel	KEYWORD2
+setAll	KEYWORD2
+setPixelAndShow	KEYWORD2
+setAllAndShow	KEYWORD2
+count	KEYWORD2
+offset	KEYWORD2
+addPcf8574	KEYWORD2
+addPcf8575	KEYWORD2
+addExpander	KEYWORD2
+portExpander	KEYWORD2
+io	KEYWORD2
+inputOutput	KEYWORD2
+expanderCount	KEYWORD2
+getExpanderByAddress	KEYWORD2
+hasPortExpander	KEYWORD2
+hasExpander	KEYWORD2
+hasAccelerometer	KEYWORD2
+hasPwmDriver	KEYWORD2
+hasDisplay	KEYWORD2
+hasRtc	KEYWORD2
+hasOled	KEYWORD2
+hasAdc	KEYWORD2
+hasNfc	KEYWORD2
+createEncoder	KEYWORD2
+createRotaryDial	KEYWORD2
+createRotaryDialOptical	KEYWORD2
+createNfcReader	KEYWORD2
+setActuator	KEYWORD2
+readVoltage	KEYWORD2
+readAnalogRaw	KEYWORD2
+setAnalogOutput	KEYWORD2
+setLight	KEYWORD2
+setLightAll	KEYWORD2
+setLightBrightness	KEYWORD2
+setPower5V	KEYWORD2
+isShaking	KEYWORD2
+isSingleTapped	KEYWORD2
+isDoubleTapped	KEYWORD2
+readTap	KEYWORD2
+beginBatteryMonitor	KEYWORD2
+readBatteryVoltage	KEYWORD2
+readBatteryPercent	KEYWORD2
+isBatteryConnected	KEYWORD2
+setLowPowerMode	KEYWORD2
+updatePowerSave	KEYWORD2
+setPowerSaveThresholds	KEYWORD2
+sineWave	KEYWORD2
+applyGamma	KEYWORD2
+generateRandomSequence	KEYWORD2
+generateRandomSequenceNoRepeat	KEYWORD2
+generateRandomPairs	KEYWORD2
+areInputsActive	KEYWORD2
+areNInputsActive	KEYWORD2
+checkSequence	KEYWORD2
+resetSequence	KEYWORD2
+getSequenceIndex	KEYWORD2
+setSequenceIndex	KEYWORD2
+advanceSequence	KEYWORD2
+isSequenceComplete	KEYWORD2
+readInputDebounce	KEYWORD2
+detectRisingEdge	KEYWORD2
+detectFallingEdge	KEYWORD2
+waitForInput	KEYWORD2
+waitForAnyInput	KEYWORD2
+calculateProgressPercent	KEYWORD2
+calculateProgressFloat	KEYWORD2
+mapProgressToRange	KEYWORD2
+printNum	KEYWORD2
+printString	KEYWORD2
+printTime	KEYWORD2
+clear	KEYWORD2
+setBrightness	KEYWORD2
+setBlinkRate	KEYWORD2
+setColon	KEYWORD2
+readCard	KEYWORD2
+getFirmwareVersion	KEYWORD2
+read	KEYWORD2
+available	KEYWORD2
+beginOptical	KEYWORD2
+detectFrequency	KEYWORD2
+detectNote	KEYWORD2
+getRms	KEYWORD2
+isLineStuck	KEYWORD2
+setMinAmplitude	KEYWORD2
+loadPuzzleConfig	KEYWORD2
+savePuzzleConfig	KEYWORD2
+isAPMode	KEYWORD2
+handleAP	KEYWORD2
+devName	KEYWORD2
+devRoom	KEYWORD2
+mqttBroker	KEYWORD2
+addCommand	KEYWORD2
+printHelp	KEYWORD2
+noteNameToMidi	KEYWORD2
+
+#######################################
+# Constants (LITERAL1)
+#######################################
+
+Inactive	LITERAL1
+Initialising	LITERAL1
+Idle	LITERAL1
+Running	LITERAL1
+Solved	LITERAL1
+Error	LITERAL1
+Disabled	LITERAL1
+PARALLEL	LITERAL1
+SEQUENCE	LITERAL1
+hw	LITERAL1

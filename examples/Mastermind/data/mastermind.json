@@ -1,0 +1,18 @@
+{
+  "codeLength": 4,
+  "maxColors": 6,
+  "maxAttempts": 10,
+  "lockPin": 20,
+  "neoCount": 8,
+  "neopixel": {
+    "colorIdle": [5, 5, 20],
+    "colorUnlock": [0, 50, 0],
+    "colorDenied": [50, 0, 0]
+  },
+  "audio": {
+    "keypress": "/sfx/beep.mp3",
+    "unlock": "/sfx/magic.mp3",
+    "denied": "/sfx/error.mp3",
+    "cancel": "/sfx/cancel.mp3"
+  }
+}

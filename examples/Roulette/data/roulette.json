@@ -1,0 +1,15 @@
+{
+  "lockPin": 10,
+  "neoCount": 24,
+  "winSectorCount": 1,
+  "spinSpeed": 8.0,
+  "friction": 0.97,
+  "minSpeed": 0.1,
+  "volume": 128,
+  "audio": {
+    "spin": "/sfx/spin.mp3",
+    "win": "/sfx/win.mp3",
+    "lose": "/sfx/lose.mp3",
+    "solved": "/sfx/solved.mp3"
+  }
+}

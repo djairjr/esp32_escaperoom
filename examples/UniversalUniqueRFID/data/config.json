@@ -1,0 +1,61 @@
+{
+  "_comment": "Configuracao do UniversalUniqueRFID - Puzzle RFID Configuravel para Escape Room",
+
+  "controller": {
+    "name": "Leitor RFID Universal",
+    "id": 2,
+    "enabled": true
+  },
+
+  "rfid": {
+    "mode": "UNIQUE",
+    "tags": [
+      { "uid": "A1B2C3D4", "name": "Tag Vermelha" },
+      { "uid": "E5F6A7B8", "name": "Tag Azul" },
+      { "uid": "9A0B1C2D", "name": "Tag Verde" }
+    ],
+    "validTags": [
+      { "uid": "A1B2C3D4", "name": "Tag Vermelha" },
+      { "uid": "E5F6A7B8", "name": "Tag Azul" },
+      { "uid": "9A0B1C2D", "name": "Tag Verde" },
+      { "uid": "11223344", "name": "Tag Amarela" },
+      { "uid": "55667788", "name": "Tag Branca" }
+    ],
+    "sequence": [0, 1, 2],
+    "timeoutSeconds": 300,
+    "resetOnError": true
+  },
+
+  "audio": {
+    "enabled": true,
+    "tagSound": "/tag.mp3",
+    "correctSound": "/correct.mp3",
+    "wrongSound": "/wrong.mp3",
+    "unlockSound": "/unlock.mp3",
+    "errorSound": "/error.mp3",
+    "resetSound": "/reset.mp3"
+  },
+
+  "neopixel": {
+    "enabled": true,
+    "count": 8,
+    "colors": {
+      "idle": [0, 0, 255],
+      "tagRead": [255, 255, 0],
+      "correct": [0, 255, 0],
+      "wrong": [255, 0, 0],
+      "solved": [0, 255, 0]
+    }
+  },
+
+  "rs485": {
+    "enabled": false,
+    "address": 2,
+    "baudRate": 115200
+  },
+
+  "output": {
+    "lockPin": 10,
+    "activeHigh": false
+  }
+}

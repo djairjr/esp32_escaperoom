@@ -1,0 +1,71 @@
+{
+  "_comment": "Exemplo: RANDOM - Sequência aleatória gerada no boot (5 entradas em ordem aleatória)",
+
+  "controller": {
+    "name": "Puzzle Aleatório",
+    "id": 4,
+    "enabled": true
+  },
+
+  "inputs": {
+    "count": 5,
+    "pcfAddress": "0x20",
+    "pinMapping": [0, 1, 2, 3, 4],
+    "debounceMs": 50
+  },
+
+  "logic": {
+    "mode": "RANDOM",
+    "sequence": [],
+    "timeoutSeconds": 300,
+    "resetOnError": true,
+    "allowRepeat": false
+  },
+
+  "pwm": {
+    "enabled": true,
+    "channel": 0,
+    "minValue": 0,
+    "maxValue": 100,
+    "steps": 5
+  },
+
+  "audio": {
+    "enabled": true,
+    "source": "sdcard",
+    "inputSounds": [
+      "/beep1.mp3",
+      "/beep2.mp3",
+      "/beep3.mp3",
+      "/beep4.mp3",
+      "/beep5.mp3"
+    ],
+    "unlockSound": "/unlock.mp3",
+    "errorSound": "/wrong.mp3",
+    "resetSound": "/reset.mp3"
+  },
+
+  "neopixel": {
+    "enabled": true,
+    "count": 16,
+    "mode": "CHASE",
+    "colors": {
+      "idle": [50, 0, 100],
+      "active": [255, 255, 0],
+      "solved": [0, 255, 100],
+      "error": [255, 0, 50],
+      "progress": [0, 255, 200]
+    }
+  },
+
+  "rs485": {
+    "enabled": false,
+    "address": 4,
+    "baudRate": 115200
+  },
+
+  "output": {
+    "lockPin": 10,
+    "activeHigh": false
+  }
+}

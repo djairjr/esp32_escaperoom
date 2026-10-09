@@ -1,0 +1,35 @@
+{
+  "login": {
+    "user": "root",
+    "password": "kali"
+  },
+  "sniff": {
+    "ip": "10.0.0.5",
+    "defuse_code": 7391,
+    "channel": 1
+  },
+  "stages": {
+    "current": 0,
+    "scan_enabled": true,
+    "hydra_enabled": false,
+    "exploit_enabled": false,
+    "rf433_enabled": false
+  },
+  "ha": {
+    "wifi_ssid": "SUA_REDE_WIFI_AQUI",
+    "wifi_pass": "SUA_SENHA_WIFI_AQUI",
+    "broker": "192.168.1.10",
+    "port": 1883,
+    "user": "USUARIO_MQTT_AQUI",
+    "pass": "SENHA_MQTT_AQUI"
+  },
+  "targets": [
+    {"name": "luz_sala", "topic": "cmnd/luz_sala/POWER"},
+    {"name": "luz_corredor", "topic": "cmnd/luz_corredor/POWER"},
+    {"name": "porta_principal", "topic": "cmnd/porta_principal/POWER"},
+    {"name": "alarme", "topic": "cmnd/alarme/POWER"}
+  ],
+  "wordlist": [
+    "kali", "toor", "root", "h4ck3r", "device", "disable"
+  ]
+}

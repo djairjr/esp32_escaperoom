@@ -1,0 +1,64 @@
+{
+  "_comment": "Puzzle B: ALL_CONNECTED com 3 entradas no PCF 0x21",
+
+  "controller": {
+    "name": "Puzzle B - Porta 2",
+    "id": 2,
+    "enabled": true
+  },
+
+  "inputs": {
+    "count": 3,
+    "pcfAddress": "0x21",
+    "pinMapping": [0, 1, 2],
+    "debounceMs": 50
+  },
+
+  "logic": {
+    "mode": "ALL_CONNECTED",
+    "sequence": [],
+    "timeoutSeconds": 120,
+    "resetOnError": false,
+    "allowRepeat": false
+  },
+
+  "pwm": {
+    "enabled": false,
+    "channel": 0,
+    "minValue": 0,
+    "maxValue": 100,
+    "steps": 3
+  },
+
+  "audio": {
+    "enabled": true,
+    "inputSounds": ["/sfx/beep.mp3"],
+    "unlockSound": "/sfx/magic.mp3",
+    "errorSound": "/sfx/error.mp3",
+    "resetSound": "/sfx/cancel.mp3"
+  },
+
+  "neopixel": {
+    "enabled": true,
+    "count": 8,
+    "mode": 0,
+    "colors": {
+      "idle": [50, 0, 0],
+      "active": [255, 255, 0],
+      "solved": [0, 255, 0],
+      "error": [255, 0, 0],
+      "progress": [255, 100, 0]
+    }
+  },
+
+  "rs485": {
+    "enabled": false,
+    "address": 2,
+    "baudRate": 115200
+  },
+
+  "output": {
+    "lockPin": 11,
+    "activeHigh": false
+  }
+}

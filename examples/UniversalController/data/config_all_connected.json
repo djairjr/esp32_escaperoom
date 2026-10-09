@@ -1,0 +1,67 @@
+{
+  "_comment": "Exemplo: ALL_CONNECTED - Todas as entradas devem ser ativadas (ordem não importa)",
+
+  "controller": {
+    "name": "Puzzle Conexões",
+    "id": 3,
+    "enabled": true
+  },
+
+  "inputs": {
+    "count": 6,
+    "pcfAddress": "0x20",
+    "pinMapping": [0, 1, 2, 3, 4, 5],
+    "debounceMs": 50
+  },
+
+  "logic": {
+    "mode": "ALL_CONNECTED",
+    "sequence": [],
+    "timeoutSeconds": 0,
+    "resetOnError": false,
+    "allowRepeat": false
+  },
+
+  "pwm": {
+    "enabled": true,
+    "channel": 0,
+    "minValue": 0,
+    "maxValue": 100,
+    "steps": 6
+  },
+
+  "audio": {
+    "enabled": true,
+    "source": "sdcard",
+    "inputSounds": [
+      "/connected.mp3"
+    ],
+    "unlockSound": "/all_connected.mp3",
+    "errorSound": "/error.mp3",
+    "resetSound": "/reset.mp3"
+  },
+
+  "neopixel": {
+    "enabled": true,
+    "count": 6,
+    "mode": "PROGRESS_BAR",
+    "colors": {
+      "idle": [0, 0, 50],
+      "active": [255, 100, 0],
+      "solved": [0, 255, 0],
+      "error": [255, 0, 0],
+      "progress": [100, 255, 0]
+    }
+  },
+
+  "rs485": {
+    "enabled": false,
+    "address": 3,
+    "baudRate": 115200
+  },
+
+  "output": {
+    "lockPin": 10,
+    "activeHigh": false
+  }
+}

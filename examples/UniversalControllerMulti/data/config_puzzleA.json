@@ -1,0 +1,64 @@
+{
+  "_comment": "Puzzle A: sequencia linear de 4 entradas no PCF 0x20",
+
+  "controller": {
+    "name": "Puzzle A - Porta 1",
+    "id": 1,
+    "enabled": true
+  },
+
+  "inputs": {
+    "count": 4,
+    "pcfAddress": "0x20",
+    "pinMapping": [0, 1, 2, 3],
+    "debounceMs": 50
+  },
+
+  "logic": {
+    "mode": "LINEAR_SEQUENCE",
+    "sequence": [],
+    "timeoutSeconds": 0,
+    "resetOnError": true,
+    "allowRepeat": false
+  },
+
+  "pwm": {
+    "enabled": false,
+    "channel": 0,
+    "minValue": 0,
+    "maxValue": 100,
+    "steps": 5
+  },
+
+  "audio": {
+    "enabled": true,
+    "inputSounds": ["/sfx/beep.mp3"],
+    "unlockSound": "/sfx/magic.mp3",
+    "errorSound": "/sfx/error.mp3",
+    "resetSound": "/sfx/cancel.mp3"
+  },
+
+  "neopixel": {
+    "enabled": true,
+    "count": 8,
+    "mode": 0,
+    "colors": {
+      "idle": [0, 0, 50],
+      "active": [255, 100, 0],
+      "solved": [0, 255, 0],
+      "error": [255, 0, 0],
+      "progress": [100, 255, 0]
+    }
+  },
+
+  "rs485": {
+    "enabled": false,
+    "address": 1,
+    "baudRate": 115200
+  },
+
+  "output": {
+    "lockPin": 10,
+    "activeHigh": false
+  }
+}

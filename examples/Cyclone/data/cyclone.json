@@ -1,0 +1,16 @@
+{
+  "lockPin": 10,
+  "neoCount": 16,
+  "targetSize": 3,
+  "startSpeed": 0.05,
+  "speedIncrement": 0.02,
+  "maxSpeed": 0.4,
+  "roundsToWin": 3,
+  "volume": 128,
+  "audio": {
+    "tick": "/sfx/tick.mp3",
+    "hit": "/sfx/hit.mp3",
+    "miss": "/sfx/miss.mp3",
+    "solved": "/sfx/solved.mp3"
+  }
+}
