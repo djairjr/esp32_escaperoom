@@ -1,53 +1,53 @@
-# H4CK-OS — Manual do Usuário (Game Master)
+# H4CK-OS — User Manual (Game Master)
 
-## Comandos do Terminal
+## Terminal Commands
 
 ```
-help                      — lista de comandos
-help <comando>            — ajuda detalhada
-clear                     — limpa terminal
-logout                    — volta ao login
+help                      — command list
+help <command>            — detailed help
+clear                     — clears the terminal
+logout                    — returns to login
 ```
 
-## Comandos de Rede
+## Network Commands
 
-| Comando | Descrição |
+| Command | Description |
 |---------|-----------|
-| `scan` | Escaneia rede local (192.168.1.0/24) — lista IPs + MACs |
-| `nmap <ip>` | Port scan de um alvo específico |
-| `hydra <ip>` | Força bruta de senha em serviço |
-| `sniff <ip>` | Intercepta tráfego de rede do alvo |
+| `scan` | Scans the local network (192.168.1.0/24) — lists IPs + MACs |
+| `nmap <ip>` | Port scan of a specific target |
+| `hydra <ip>` | Password brute force on a service |
+| `sniff <ip>` | Intercepts the target's network traffic |
 
-## Scan — dispositivos conhecidos
+## Scan — known devices
 
-O scan revela dispositivos na rede pelos seus endereços MAC.
-Anote os MACs encontrados — alguns dispositivos podem estar
-escondidos na sala com etiquetas correspondentes.
+The scan reveals devices on the network by their MAC addresses.
+Note down the MACs found — some devices may be
+hidden in the room with matching labels.
 
 | IP | MAC | Hostname |
 |----|-----|----------|
 | 192.168.1.1 | 7C:9E:BD:3F:2A:00 | gateway |
-| 192.168.1.10 | D4:3C:2E:11:AB:01 | gerencia |
-| 192.168.1.11 | D4:3C:2E:11:AB:02 | desenvolvimento |
+| 192.168.1.10 | D4:3C:2E:11:AB:01 | management |
+| 192.168.1.11 | D4:3C:2E:11:AB:02 | development |
 | 192.168.1.12 | D4:3C:2E:11:AB:03 | joe-laptop |
-| 192.168.1.13 | D4:3C:2E:11:AB:04 | ralador |
-| 192.168.1.14 | D4:3C:2E:11:AB:05 | seguranca |
+| 192.168.1.13 | D4:3C:2E:11:AB:04 | shredder |
+| 192.168.1.14 | D4:3C:2E:11:AB:05 | security |
 | **192.168.1.100** | **F4:5C:89:AB:CD:EF** | **unknown** |
 
-> O dispositivo `unknown` (MAC F4:5C:89:AB:CD:EF, IP 192.168.1.100)
-> é o único host não identificado na rede. Portas customizadas
-> (8080, 9090, 7070) sugerem um dispositivo não-padrão.
+> The `unknown` device (MAC F4:5C:89:AB:CD:EF, IP 192.168.1.100)
+> is the only unidentified host on the network. Custom ports
+> (8080, 9090, 7070) suggest a non-standard device.
 
-## Comandos RF433
+## RF433 Commands
 
-| Comando | Descrição |
+| Command | Description |
 |---------|-----------|
-| `exploit -k <key>` | Gera payload RF433 a partir de uma chave |
-| `hackcomm send <hex>` | Transmite código RF433 (24 bits) |
+| `exploit -k <key>` | Generates an RF433 payload from a key |
+| `hackcomm send <hex>` | Transmits an RF433 code (24 bits) |
 
-### Códigos RF433 (pistas para o jogador)
+### RF433 Codes (clues for the player)
 
-| Função | Código Hex |
+| Function | Hex Code |
 |--------|-----------|
 | ARM | `0x456789` |
 | DESTROY | `0x56789A` |
@@ -55,43 +55,43 @@ escondidos na sala com etiquetas correspondentes.
 | BOOST | `0x789ABC` |
 | FREEZE | `0x89ABCD` |
 
-> Apenas `hackcomm send <hex>` está disponível no terminal.
-> Os códigos acima são referência para o GM colocar como pistas na sala.
+> Only `hackcomm send <hex>` is available in the terminal.
+> The codes above are a reference for the GM to place as clues in the room.
 
-## Comandos de Telefone
+## Phone Commands
 
-| Comando | Descrição |
+| Command | Description |
 |---------|-----------|
-| `tapscan` | Lista canais de telefone disponíveis |
-| `tapscan listen <n>` | Toca a gravação do canal n |
+| `tapscan` | Lists the available phone channels |
+| `tapscan listen <n>` | Plays the recording of channel n |
 
-## Comandos de Sistema
+## System Commands
 
-| Comando | Descrição |
+| Command | Description |
 |---------|-----------|
-| `invade list` | Lista payloads disponíveis |
-| `invade send <payload>` | Envia payload (publica no Home Assistant) |
-| `status` | Verifica status do dispositivo alvo |
+| `invade list` | Lists the available payloads |
+| `invade send <payload>` | Sends a payload (publishes to Home Assistant) |
+| `status` | Checks the status of the target device |
 
 ## Home Assistant (Game Master)
 
-O Cardputer expõe as seguintes entidades no Home Assistant:
+The Cardputer exposes the following entities in Home Assistant:
 
-| Tipo | ID | Descrição |
+| Type | ID | Description |
 |------|----|-----------|
-| Sensor | `h4ckos_status` | Status do terminal |
-| Sensor | `h4ckos_login_password` | Senha atual do login |
-| Sensor | `h4ckos_sniff_ip` | IP alvo do sniff |
-| Number | `h4ckos_defuse_code` | Token de acesso (0-9999) |
-| Number | `h4ckos_sniff_channel` | Canal de áudio (1-4) |
-| Select | `h4ckos_stage` | Estágio (SCAN/HYDRA/EXPLOIT/RF433) |
-| Switch | `h4ckos_rf433_enable` | Habilita transmissão RF433 |
-| Sensor | `h4ckos_last_payload` | Último PAYLOAD enviado pelo jogador |
+| Sensor | `h4ckos_status` | Terminal status |
+| Sensor | `h4ckos_login_password` | Current login password |
+| Sensor | `h4ckos_sniff_ip` | Target IP for sniff |
+| Number | `h4ckos_defuse_code` | Access token (0-9999) |
+| Number | `h4ckos_sniff_channel` | Audio channel (1-4) |
+| Select | `h4ckos_stage` | Stage (SCAN/HYDRA/EXPLOIT/RF433) |
+| Switch | `h4ckos_rf433_enable` | Enables RF433 transmission |
+| Sensor | `h4ckos_last_payload` | Last PAYLOAD sent by the player |
 
-## AP Mode (Configuração)
+## AP Mode (Configuration)
 
-Se o WiFi não estiver configurado, o Cardputer sobe uma rede:
+If WiFi is not configured, the Cardputer brings up a network:
 - **SSID:** `H4CK-OS-Config`
-- **Acesso:** http://192.168.4.1
+- **Access:** http://192.168.4.1
 
-Configure WiFi, MQTT, e reinicie.
+Configure WiFi, MQTT, and reboot.

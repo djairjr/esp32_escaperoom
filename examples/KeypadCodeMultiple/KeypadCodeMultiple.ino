@@ -1,11 +1,11 @@
 /**
- * EXEMPLO: KEYPAD CODE MULTIPLE - MULTIPLAS SENHAS VIA JSON
+ * EXAMPLE: KEYPAD CODE MULTIPLE - MULTIPLE PASSWORDS VIA JSON
  * ----------------------------------------------------------
- * Entrada de senha numerica via teclado 4x3 I2C (PCF8574/8575).
- * Aceita multiplos codigos configurados via /keypadmulti.json.
- * Qualquer codigo valido resolve o puzzle.
+ * Numeric password entry via a 4x3 I2C keypad (PCF8574/8575).
+ * Accepts multiple codes configured via /keypadmulti.json.
+ * Any valid code solves the puzzle.
  *
- * Portado para ESP32-S3 + Home Assistant (ArduinoHA).
+ * Ported to ESP32-S3 + Home Assistant (ArduinoHA).
  */
 
 #include <ESP32EscapeRoom.h>
@@ -17,7 +17,7 @@
 using namespace esp32_escaperoom;
 
 // ============================================================================
-// CONFIGURACAO JSON
+// JSON CONFIGURATION
 // ============================================================================
 #define MAX_CODES 8
 
@@ -37,7 +37,7 @@ struct KeypadMultiConfig {
 
 static void loadConfig() {
   if (!LittleFS.exists("/keypadmulti.json")) {
-    Serial.println(F("[CONFIG] /keypadmulti.json nao existe, usando padrao"));
+    Serial.println(F("[CONFIG] /keypadmulti.json does not exist, using defaults"));
     return;
   }
   File f = LittleFS.open("/keypadmulti.json", "r");
@@ -45,7 +45,7 @@ static void loadConfig() {
   DeserializationError err = deserializeJson(doc, f);
   f.close();
   if (err) {
-    Serial.printf("[CONFIG] Erro JSON: %s\n", err.c_str());
+    Serial.printf("[CONFIG] JSON error: %s\n", err.c_str());
     return;
   }
 
@@ -114,17 +114,17 @@ public:
   bool checkDisplay() { return hw.hasDisplay(); }
   void printNumber(int num) {
     if (checkDisplay()) hw.display().printNum(num);
-    else Serial.printf("[DISPLAY] Numero: %d\n", num);
+    else Serial.printf("[DISPLAY] Number: %d\n", num);
   }
   void printString(const char* str) {
     if (checkDisplay()) {
       hw.display().clear();
       hw.display().printString(str);
-    } else Serial.printf("[DISPLAY] Texto: %s\n", str);
+    } else Serial.printf("[DISPLAY] Text: %s\n", str);
   }
   void writeDigitAscii(int digit, char c) {
     if (checkDisplay()) hw.display().writeDigitAscii(digit, c);
-    else Serial.printf("[DISPLAY] Digito %d: %c\n", digit, c);
+    else Serial.printf("[DISPLAY] Digit %d: %c\n", digit, c);
   }
   void setBrightness(uint8_t b) {
     if (checkDisplay()) hw.display().setBrightness(b);
@@ -151,15 +151,15 @@ public:
     display.setBrightness(15);
     display.printString("____");
     setVisualIdle();
-    Serial.printf("[KEYPAD] Aguardando senha (%d codigos validos)...\n", config.codeCount);
+    Serial.printf("[KEYPAD] Waiting for password (%d valid codes)...\n", config.codeCount);
   }
 
   void setupHA() {
-    haSensorState_.setName("Estado");      haSensorState_.setIcon("mdi:lock");
-    haSensorAttempts_.setName("Tentativas"); haSensorAttempts_.setIcon("mdi:counter");
-    haBtnReset_.setName("Resetar");        haBtnReset_.setIcon("mdi:restart");
+    haSensorState_.setName("State");      haSensorState_.setIcon("mdi:lock");
+    haSensorAttempts_.setName("Attempts"); haSensorAttempts_.setIcon("mdi:counter");
+    haBtnReset_.setName("Reset");        haBtnReset_.setIcon("mdi:restart");
     haBtnReset_.onCommand(haResetCallback);
-    haBtnUnlock_.setName("Destravar");      haBtnUnlock_.setIcon("mdi:lock-open");
+    haBtnUnlock_.setName("Unlock");      haBtnUnlock_.setIcon("mdi:lock-open");
     haBtnUnlock_.onCommand(haUnlockCallback);
     publishAllHA();
   }
@@ -198,7 +198,7 @@ public:
 
 private:
   void handleKey(char key) {
-    Serial.printf("[KEYPAD] Tecla: %c\n", key);
+    Serial.printf("[KEYPAD] Key: %c\n", key);
     if (key == '*') {
       enteredCode = "";
       hw.sound().playOnce(config.sfxCancel);
@@ -223,7 +223,7 @@ private:
   }
 
   void handleSolve() {
-    Serial.println(F("[KEYPAD] ACERTOU!"));
+    Serial.println(F("[KEYPAD] CORRECT!"));
     hw.digitalWrite(config.lockPin, LOW);
     hw.sound().playOnce(config.sfxUnlock);
     display.printString(enteredCode.c_str());
@@ -234,7 +234,7 @@ private:
 
   void handleWrong() {
     attempts_++;
-    Serial.println(F("[KEYPAD] SENHA INCORRETA."));
+    Serial.println(F("[KEYPAD] WRONG PASSWORD."));
     hw.sound().playOnce(config.sfxDenied);
     enteredCode = "";
     display.printString("Err ");
@@ -261,7 +261,7 @@ private:
 };
 
 // ============================================================================
-// INSTANCIAS GLOBAIS
+// GLOBAL INSTANCES
 // ============================================================================
 LogicManager master(14);
 KeypadCodeMultiple puzzle;
@@ -298,7 +298,7 @@ void setup() {
   master.addPuzzle(&puzzle);
   master.begin();
   puzzle.run();
-  Serial.println(F("[KEYPAD] Pronto!"));
+  Serial.println(F("[KEYPAD] Ready!"));
 }
 
 void loop() {

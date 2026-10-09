@@ -1,75 +1,75 @@
-# Manual do Usuário - Universal Controller
+# User Manual - Universal Controller
 
-## Controladora Universal para Escape Room
+## Universal Escape Room Controller
 
-**Versão:** 1.0  
-**Data:** Abril 2026  
-**Compatibilidade:** Adafruit PropMaker Feather RP2040
-
----
-
-## Índice
-
-1. [Visão Geral](#visão-geral)
-2. [Conteúdo da Embalagem](#conteúdo-da-embalagem)
-3. [Instalação](#instalação)
-4. [Configuração](#configuração)
-5. [Modos de Operação](#modos-de-operação)
-6. [Operação Diária](#operação-diária)
-7. [Solução de Problemas](#solução-de-problemas)
-8. [Manutenção](#manutenção)
-9. [Especificações Técnicas](#especificações-técnicas)
+**Version:** 1.0  
+**Date:** April 2026  
+**Compatibility:** Adafruit PropMaker Feather RP2040
 
 ---
 
-## Visão Geral
+## Table of Contents
 
-A **Universal Controller** é uma controladora programável para puzzles de escape room. Ela permite criar puzzles sequenciais configuráveis via arquivo JSON, sem necessidade de programação.
-
-### Recursos Principais
-
-- Até **16 entradas digitais** (botões, sensores, etc.)
-- **4 modos de puzzle** configuráveis
-- **Áudio sincronizado** com eventos do puzzle
-- **Efeitos visuais** com LEDs endereçáveis
-- **Saída PWM gradativa** (voltímetro, servo, etc.)
-- **Comunicação RS485** opcional para redes
-
-### Aplicações Típicas
-
-- Caixas com botões em sequência
-- Painéis de controle
-- Sistemas de alavancas
-- Puzzles de conexão
-- Sistemas multi-etapa
+1. [Overview](#overview)
+2. [Package Contents](#package-contents)
+3. [Installation](#installation)
+4. [Configuration](#configuration)
+5. [Operating Modes](#operating-modes)
+6. [Daily Operation](#daily-operation)
+7. [Troubleshooting](#troubleshooting)
+8. [Maintenance](#maintenance)
+9. [Technical Specifications](#technical-specifications)
 
 ---
 
-## Conteúdo da Embalagem
+## Overview
 
-Verifique se todos os componentes estão presentes:
+The **Universal Controller** is a programmable controller for escape room puzzles. It lets you create sequential puzzles configurable via a JSON file, with no programming required.
 
-| Item | Quantidade | Descrição |
+### Main Features
+
+- Up to **16 digital inputs** (buttons, sensors, etc.)
+- **4 configurable puzzle modes**
+- **Audio synchronized** with puzzle events
+- **Visual effects** with addressable LEDs
+- **Gradual PWM output** (voltmeter, servo, etc.)
+- Optional **RS485 communication** for networks
+
+### Typical Applications
+
+- Boxes with buttons in sequence
+- Control panels
+- Lever systems
+- Connection puzzles
+- Multi-stage systems
+
+---
+
+## Package Contents
+
+Check that all components are present:
+
+| Item | Quantity | Description |
 |------|------------|-----------|
-| PropMaker Feather RP2040 | 1 | Placa controladora principal |
-| PCF8575 | 1 | Expansor de I/O (16 entradas) |
-| Módulo SD Card | 1 | Para armazenamento de áudio |
-| Resistores 10kΩ | 16 | Pull-up para entradas (se necessário) |
-| Cabo USB-C | 1 | Para programação e alimentação |
-| Manual do Usuário | 1 | Este documento |
+| PropMaker Feather RP2040 | 1 | Main controller board |
+| PCF8575 | 1 | I/O expander (16 inputs) |
+| SD Card Module | 1 | For audio storage |
+| 10kΩ Resistors | 16 | Pull-up for inputs (if needed) |
+| USB-C Cable | 1 | For programming and power |
+| User Manual | 1 | This document |
 
-**Acessórios recomendados (não incluídos):**
+**Recommended accessories (not included):**
 
-- Fita LED NeoPixel (WS2812B)
-- Botões ou sensores para entradas
-- Módulo RS485 (para comunicação em rede)
-- Fonte de alimentação 5V 3A
+- NeoPixel LED strip (WS2812B)
+- Buttons or sensors for inputs
+- RS485 module (for network communication)
+- 5V 3A power supply
 
 ---
 
-## Instalação
+## Installation
 
-### Diagrama de Conexões
+### Wiring Diagram
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -77,7 +77,7 @@ Verifique se todos os componentes estão presentes:
 │                                                             │
 │   ┌──────────┐     I2C       ┌──────────┐                   │
 │   │          │◄──────────────►│ PCF8575  │                   │
-│   │          │  SDA: GPIO 24 │          │──► Entradas P0-P15│
+│   │          │  SDA: GPIO 24 │          │──► Inputs P0-P15  │
 │   │          │  SCL: GPIO 25 └──────────┘                   │
 │   │          │                                               │
 │   │          │◄──────────────┐                              │
@@ -95,17 +95,17 @@ Verifique se todos os componentes estão presentes:
 │   │          │               │     └──────────┘            │
 │   │          │               │                              │
 │   │          │◄──────────────┐                              │
-│   │          │  Relê/Trava   │     ┌──────────┐            │
-│   │          │  Pino 10      │────►│ Trava    │            │
+│   │          │  Relay/Lock   │     ┌──────────┐            │
+│   │          │  Pin 10       │────►│ Lock     │            │
 │   │          │               │     └──────────┘            │
 │   └──────────┘              │                              │
 │                              │                              │
 └──────────────────────────────┴──────────────────────────────┘
 ```
 
-### Passo a Passo da Instalação
+### Step-by-Step Installation
 
-#### 1. Conexão do PCF8575
+#### 1. PCF8575 Connection
 
 | PCF8575 | PropMaker |
 |---------|-----------|
@@ -113,11 +113,11 @@ Verifique se todos os componentes estão presentes:
 | GND | GND |
 | SDA | GPIO 24 (SDA) |
 | SCL | GPIO 25 (SCL) |
-| A0, A1, A2 | Configurar endereço (veja tabela abaixo) |
+| A0, A1, A2 | Configure address (see table below) |
 
-**Configuração de Endereço I2C:**
+**I2C Address Configuration:**
 
-| A2 | A1 | A0 | Endereço |
+| A2 | A1 | A0 | Address |
 |----|----|----|----------|
 | GND | GND | GND | 0x20 |
 | GND | GND | VCC | 0x21 |
@@ -128,81 +128,81 @@ Verifique se todos os componentes estão presentes:
 | VCC | VCC | GND | 0x26 |
 | VCC | VCC | VCC | 0x27 |
 
-#### 2. Conexão das Entradas (P0-P15)
+#### 2. Input Connections (P0-P15)
 
-Cada entrada aceita:
-- Botão (contato normalmente aberto)
-- Sensor de proximidade
-- Chave magnética
-- Qualquer contato seco
+Each input accepts:
+- Button (normally open contact)
+- Proximity sensor
+- Magnetic switch
+- Any dry contact
 
-**Esquema de Ligação:**
+**Wiring Schematic:**
 
 ```
     +3.3V
       │
-     [R] 10kΩ (pull-up interno do PCF8575)
+     [R] 10kΩ (internal pull-up of the PCF8575)
       │
-      ├──► P0 (entrada do PCF8575)
+      ├──► P0 (PCF8575 input)
       │
-    [BOTÃO]
+    [BUTTON]
       │
      GND
 ```
 
-> **Nota:** O PCF8575 possui pull-up interno. Resistores externos são opcionais para maior estabilidade.
+> **Note:** The PCF8575 has an internal pull-up. External resistors are optional for greater stability.
 
-#### 3. Conexão do NeoPixel (Opcional)
+#### 3. NeoPixel Connection (Optional)
 
 | NeoPixel | PropMaker |
 |----------|-----------|
-| VCC | 5V (via pino de energia externa) |
+| VCC | 5V (via external power pin) |
 | GND | GND |
 | Data | GPIO 21 |
 
-> **Atenção:** Ligar pino 23 (POWER_EXT) em HIGH para energizar LEDs externos.
+> **Warning:** Set pin 23 (POWER_EXT) to HIGH to power the external LEDs.
 
-#### 4. Conexão da Saída de Trava (Opcional)
+#### 4. Lock Output Connection (Optional)
 
-| Dispositivo | PropMaker |
+| Device | PropMaker |
 |-------------|-----------|
-| Relê/Trava | Pino 10 |
+| Relay/Lock | Pin 10 |
 | GND | GND |
 
 ---
 
-## Configuração
+## Configuration
 
-### Preparação do Cartão SD
+### SD Card Preparation
 
-1. Formate o cartão SD em FAT32
-2. Crie a pasta `/sounds/` na raiz
-3. Copie os arquivos MP3 necessários (veja tabela abaixo)
+1. Format the SD card as FAT32
+2. Create the `/sounds/` folder in the root
+3. Copy the required MP3 files (see table below)
 
-**Arquivos de Áudio Obrigatórios:**
+**Required Audio Files:**
 
-| Arquivo | Descrição | Formato |
+| File | Description | Format |
 |---------|-----------|---------|
-| `input1.mp3` | Som para acerto do 1º input | MP3, 128kbps, 44.1kHz |
-| `input2.mp3` | Som para acerto do 2º input | MP3, 128kbps, 44.1kHz |
+| `input1.mp3` | Sound for correct 1st input | MP3, 128kbps, 44.1kHz |
+| `input2.mp3` | Sound for correct 2nd input | MP3, 128kbps, 44.1kHz |
 | ... | ... | ... |
-| `unlock.mp3` | Som de puzzle resolvido | MP3, 128kbps, 44.1kHz |
-| `error.mp3` | Som de erro | MP3, 128kbps, 44.1kHz |
-| `reset.mp3` | Som de reset | MP3, 128kbps, 44.1kHz |
+| `unlock.mp3` | Puzzle solved sound | MP3, 128kbps, 44.1kHz |
+| `error.mp3` | Error sound | MP3, 128kbps, 44.1kHz |
+| `reset.mp3` | Reset sound | MP3, 128kbps, 44.1kHz |
 
-> **Importante:** Remova tags ID3 dos arquivos MP3 usando o comando:  
+> **Important:** Remove ID3 tags from the MP3 files using the command:  
 > `ffmpeg -i input.mp3 -map_metadata -1 output.mp3`
 
-### Configuração do Arquivo JSON
+### JSON File Configuration
 
-O arquivo `config.json` deve ser gravado no **LittleFS** da placa.
+The `config.json` file must be written to the board's **LittleFS**.
 
-#### Exemplo de Configuração Básica
+#### Basic Configuration Example
 
 ```json
 {
   "controller": {
-    "name": "Puzzle da Caixa",
+    "name": "Box Puzzle",
     "id": 1,
     "enabled": true
   },
@@ -255,13 +255,13 @@ O arquivo `config.json` deve ser gravado no **LittleFS** da placa.
 
 ---
 
-## Modos de Operação
+## Operating Modes
 
-### 1. CUSTOM_SEQUENCE (Sequência Customizada)
+### 1. CUSTOM_SEQUENCE (Custom Sequence)
 
-As entradas devem ser acionadas na ordem exata especificada no JSON.
+Inputs must be triggered in the exact order specified in the JSON.
 
-**Exemplo de Configuração:**
+**Configuration Example:**
 ```json
 "logic": {
   "mode": "CUSTOM_SEQUENCE",
@@ -271,19 +271,19 @@ As entradas devem ser acionadas na ordem exata especificada no JSON.
 }
 ```
 
-**Comportamento:**
-- Input correto: avança para próximo
-- Input errado: executa som de erro e reseta (se `resetOnError: true`)
+**Behavior:**
+- Correct input: advances to the next
+- Wrong input: plays the error sound and resets (if `resetOnError: true`)
 
-**Aplicação:** Puzzles onde a ordem importa, como códigos secretos.
+**Application:** Puzzles where order matters, such as secret codes.
 
 ---
 
-### 2. LINEAR_SEQUENCE (Sequência Linear)
+### 2. LINEAR_SEQUENCE (Linear Sequence)
 
-Entradas devem ser acionadas em ordem numérica crescente.
+Inputs must be triggered in ascending numerical order.
 
-**Exemplo de Configuração:**
+**Configuration Example:**
 ```json
 "logic": {
   "mode": "LINEAR_SEQUENCE",
@@ -292,19 +292,19 @@ Entradas devem ser acionadas em ordem numérica crescente.
 }
 ```
 
-**Comportamento:**
-- Ordem obrigatória: 1 → 2 → 3 → 4 → 5...
-- Não requer array `sequence`
+**Behavior:**
+- Mandatory order: 1 → 2 → 3 → 4 → 5...
+- Does not require the `sequence` array
 
-**Aplicação:** Puzzles de progressão simples.
+**Application:** Simple progression puzzles.
 
 ---
 
-### 3. ALL_CONNECTED (Todas Conectadas)
+### 3. ALL_CONNECTED (All Connected)
 
-Todas as entradas devem estar ativas simultaneamente.
+All inputs must be active simultaneously.
 
-**Exemplo de Configuração:**
+**Configuration Example:**
 ```json
 "logic": {
   "mode": "ALL_CONNECTED",
@@ -313,20 +313,20 @@ Todas as entradas devem estar ativas simultaneamente.
 }
 ```
 
-**Comportamento:**
-- Ordem de ativação não importa
-- Barra de progresso aumenta conforme entradas são ativadas
-- Puzzle resolvido quando todas ativas
+**Behavior:**
+- Activation order does not matter
+- Progress bar increases as inputs are activated
+- Puzzle solved when all are active
 
-**Aplicação:** Puzzles de conexão onde múltiplos itens devem ser ativados.
+**Application:** Connection puzzles where multiple items must be activated.
 
 ---
 
-### 4. RANDOM (Sequência Aleatória)
+### 4. RANDOM (Random Sequence)
 
-Sequência gerada aleatoriamente no boot da placa.
+Sequence generated randomly at board boot.
 
-**Exemplo de Configuração:**
+**Configuration Example:**
 ```json
 "logic": {
   "mode": "RANDOM",
@@ -335,48 +335,48 @@ Sequência gerada aleatoriamente no boot da placa.
 }
 ```
 
-**Comportamento:**
-- Gera nova ordem a cada boot
-- Sem repetições na sequência
+**Behavior:**
+- Generates a new order on each boot
+- No repetitions in the sequence
 
-**Aplicação:** Puzzles onde a ordem deve ser descoberta.
+**Application:** Puzzles where the order must be discovered.
 
 ---
 
-## Operação Diária
+## Daily Operation
 
-### Inicialização
+### Startup
 
-1. Ligue a alimentação da placa (USB-C ou fonte externa)
-2. Aguarde o boot (LED interno pisca azul)
-3. Puzzle entra em estado **IDLE** (LEDs azuis)
+1. Turn on the board's power (USB-C or external supply)
+2. Wait for the boot (internal LED blinks blue)
+3. Puzzle enters the **IDLE** state (blue LEDs)
 
-### Iniciar o Jogo
+### Starting the Game
 
-**Método 1 - Botão físico:**
-- Pressione o botão conectado ao pino 19 da placa
-- LED muda para cor de progresso
+**Method 1 - Physical button:**
+- Press the button connected to board pin 19
+- LED changes to the progress color
 
-**Método 2 - Comando Serial:**
-- Conecte via USB ao computador
-- Abra terminal serial (115200 baud)
-- Digite: `start`
+**Method 2 - Serial command:**
+- Connect via USB to the computer
+- Open the serial terminal (115200 baud)
+- Type: `start`
 
-### Durante o Jogo
+### During the Game
 
-| Indicador | Significado |
+| Indicator | Meaning |
 |-----------|-------------|
-| LEDs azuis | Aguardando início |
-| LEDs amarelos | Input correto detectado |
-| Barra crescendo | Progresso do puzzle |
-| Flash verde | Input correto |
-| Flash vermelho | Input errado |
-| LEDs verdes piscando | Puzzle resolvido |
-| Som "inputX.mp3" | Feedback de input correto |
-| Som "error.mp3" | Feedback de input errado |
-| Som "unlock.mp3" | Puzzle completado |
+| Blue LEDs | Waiting to start |
+| Yellow LEDs | Correct input detected |
+| Growing bar | Puzzle progress |
+| Green flash | Correct input |
+| Red flash | Wrong input |
+| Blinking green LEDs | Puzzle solved |
+| "inputX.mp3" sound | Correct input feedback |
+| "error.mp3" sound | Wrong input feedback |
+| "unlock.mp3" sound | Puzzle completed |
 
-### Reiniciar o Puzzle
+### Restarting the Puzzle
 
 **Via Serial:**
 ```
@@ -384,203 +384,203 @@ reset
 ```
 
 **Via Hardware:**
-- Pressione o botão de reset da placa
+- Press the board's reset button
 
-### Verificar Status
+### Checking Status
 
 **Via Serial:**
 ```
 status
 ```
 
-Saída esperada:
+Expected output:
 ```
 ----- STATUS -----
-Estado: Running
-Progresso: 60% (3/5)
-Tempo restante: 245s
+State: Running
+Progress: 60% (3/5)
+Remaining time: 245s
 ------------------
 ```
 
 ---
 
-## Solução de Problemas
+## Troubleshooting
 
-### Problemas Comuns
+### Common Problems
 
-#### Não inicializa
+#### Does not initialize
 
-| Sintoma | Causa Provável | Solução |
+| Symptom | Probable Cause | Solution |
 |---------|----------------|---------|
-| LED não acende | Sem alimentação | Verifique cabo USB/fonte |
-| LED vermelho contínuo | Erro de hardware | Verifique conexões I2C |
-| Boot loop | Arquivo config.json corrompido | Regrave configuração |
+| LED does not light up | No power | Check USB cable/supply |
+| Solid red LED | Hardware error | Check I2C connections |
+| Boot loop | Corrupted config.json file | Rewrite configuration |
 
-#### Sem áudio
+#### No audio
 
-| Sintoma | Causa Provável | Solução |
+| Symptom | Probable Cause | Solution |
 |---------|----------------|---------|
-| Sem som algum | SD card não detectado | Verifique inserção do cartão |
-| Ruído em vez de música | MP3 com tags ID3 | Remova tags com ffmpeg |
-| Som distorcido | Bitrate incorreto | Use 128kbps, 44.1kHz |
+| No sound at all | SD card not detected | Check the card is inserted |
+| Noise instead of music | MP3 with ID3 tags | Remove tags with ffmpeg |
+| Distorted sound | Incorrect bitrate | Use 128kbps, 44.1kHz |
 
-#### Entradas não respondem
+#### Inputs do not respond
 
-| Sintoma | Causa Provável | Solução |
+| Symptom | Probable Cause | Solution |
 |---------|----------------|---------|
-| Nenhuma entrada funciona | Endereço I2C errado | Verifique jumpers A0-A2 |
-| Entrada específica não funciona | Fio solto | Verifique conexão |
-| Entrada aciona sozinha | Interferência elétrica | Adicione capacitor 100nF |
+| No input works | Wrong I2C address | Check jumpers A0-A2 |
+| Specific input does not work | Loose wire | Check connection |
+| Input triggers by itself | Electrical interference | Add a 100nF capacitor |
 
-#### LEDs não acendem
+#### LEDs do not light up
 
-| Sintoma | Causa Provável | Solução |
+| Symptom | Probable Cause | Solution |
 |---------|----------------|---------|
-| LEDs escuros | Sem energia externa | Ative pino 23 (POWER_EXT) |
-| Cor errada | Ordem RGB diferente | Ajuste configuração |
-| Apenas alguns acendem | Quebra na fita | Verifique soldagens |
+| LEDs dark | No external power | Activate pin 23 (POWER_EXT) |
+| Wrong color | Different RGB order | Adjust configuration |
+| Only some light up | Break in the strip | Check soldering |
 
-### Diagnóstico via Serial
+### Serial Diagnostics
 
-Conecte via USB e abra o monitor serial (115200 baud).
+Connect via USB and open the serial monitor (115200 baud).
 
-**Durante o boot, você verá:**
+**During boot, you will see:**
 ```
 ========================================
    UNIVERSAL CONTROLLER v1.0
    Escape Room Configurable Puzzle
 ========================================
 
-[Setup] Nome: Puzzle da Caixa | ID: 1
-[Setup] Entradas: 5 | PCF Address: 0x20
-[Setup] Modo: CUSTOM_SEQUENCE | Timeout: 300s
-[Setup] PCF8575 adicionado no endereço 0x20
-[Setup] Hardware configurado. Aguardando início...
+[Setup] Name: Box Puzzle | ID: 1
+[Setup] Inputs: 5 | PCF Address: 0x20
+[Setup] Mode: CUSTOM_SEQUENCE | Timeout: 300s
+[Setup] PCF8575 added at address 0x20
+[Setup] Hardware configured. Waiting to start...
 ```
 
-**Se houver erro:**
+**If there is an error:**
 ```
-[Setup] ERRO: Falha ao inicializar LittleFS
-[Setup] Usando configuração padrão
+[Setup] ERROR: Failed to initialize LittleFS
+[Setup] Using default configuration
 ```
 
-### Reset de Fábrica
+### Factory Reset
 
-Para restaurar configurações padrão:
+To restore default settings:
 
-1. Desligue a alimentação
-2. Conecte o pino 19 ao GND
-3. Ligue a alimentação
-4. Mantenha por 5 segundos
-5. Desconecte o pino 19
-6. Configuração padrão será carregada
+1. Turn off the power
+2. Connect pin 19 to GND
+3. Turn on the power
+4. Hold for 5 seconds
+5. Disconnect pin 19
+6. Default configuration will be loaded
 
 ---
 
-## Manutenção
+## Maintenance
 
-### Limpeza
+### Cleaning
 
-- Use pano seco ou levemente úmido
-- Não use produtos químicos agressivos
-- Desligue antes de limpar
+- Use a dry or slightly damp cloth
+- Do not use aggressive chemical products
+- Turn off before cleaning
 
-### Atualização de Firmware
+### Firmware Update
 
-1. Baixe o arquivo .uf2 mais recente
-2. Conecte a placa via USB
-3. Pressione BOOTSEL + RESET
-4. Copie o arquivo .uf2 para a unidade RPI-RP2
+1. Download the latest .uf2 file
+2. Connect the board via USB
+3. Press BOOTSEL + RESET
+4. Copy the .uf2 file to the RPI-RP2 drive
 
-### Backup da Configuração
+### Configuration Backup
 
-1. Conecte via USB
-2. Use ferramenta LittleFS para extrair `/config.json`
-3. Guarde cópia em local seguro
+1. Connect via USB
+2. Use the LittleFS tool to extract `/config.json`
+3. Keep a copy in a safe place
 
 ---
 
-## Especificações Técnicas
+## Technical Specifications
 
 ### PropMaker Feather RP2040
 
-| Parâmetro | Especificação |
+| Parameter | Specification |
 |-----------|---------------|
-| Microcontrolador | Raspberry Pi RP2040 |
+| Microcontroller | Raspberry Pi RP2040 |
 | Clock | 133 MHz dual-core |
-| Memória RAM | 264 KB |
-| Memória Flash | 8 MB (QSPI) |
-| Tensão de operação | 3.3V |
-| Alimentação | USB-C ou 5V externo |
-| Consumo | ~100mA (idle), ~500mA (com LEDs) |
+| RAM Memory | 264 KB |
+| Flash Memory | 8 MB (QSPI) |
+| Operating voltage | 3.3V |
+| Power | USB-C or external 5V |
+| Consumption | ~100mA (idle), ~500mA (with LEDs) |
 
 ### PCF8575
 
-| Parâmetro | Especificação |
+| Parameter | Specification |
 |-----------|---------------|
-| Canais I/O | 16 |
-| Tensão | 2.5V - 5.5V |
-| Corrente por pino | 25mA (sink) |
-| Endereço I2C | 0x20 - 0x27 |
-| Pull-up interno | 100μA |
+| I/O Channels | 16 |
+| Voltage | 2.5V - 5.5V |
+| Current per pin | 25mA (sink) |
+| I2C Address | 0x20 - 0x27 |
+| Internal pull-up | 100μA |
 
 ### NeoPixel
 
-| Parâmetro | Especificação |
+| Parameter | Specification |
 |-----------|---------------|
-| Tipo | WS2812B |
-| Tensão | 5V |
-| Corrente máxima | 60mA por LED (branco total) |
-| Máximo recomendado | 16 LEDs sem amplificador |
+| Type | WS2812B |
+| Voltage | 5V |
+| Maximum current | 60mA per LED (full white) |
+| Recommended maximum | 16 LEDs without amplifier |
 
-### Entradas Digitais
+### Digital Inputs
 
-| Parâmetro | Especificação |
+| Parameter | Specification |
 |-----------|---------------|
-| Tensão máxima | 5.5V |
-| Impedância | ~100kΩ (pull-up) |
-| Debounce | 50ms (configurável) |
-| Resposta | <10ms |
+| Maximum voltage | 5.5V |
+| Impedance | ~100kΩ (pull-up) |
+| Debounce | 50ms (configurable) |
+| Response | <10ms |
 
 ---
 
-## Garantia
+## Warranty
 
-A controladora possui garantia de **12 meses** contra defeitos de fabricação.
+The controller has a **12-month** warranty against manufacturing defects.
 
-**Não coberto:**
-- Danos por mau uso
-- Sobretensão ou curto-circuito
-- Modificações não autorizadas
-- Exposição a umidade ou temperatura extrema
-
----
-
-## Suporte Técnico
-
-Para suporte técnico, entre em contato com o fabricante.
-
-**Antes de contatar:**
-1. Verifique as conexões
-2. Consulte a seção "Solução de Problemas"
-3. Anote mensagens de erro do Serial
+**Not covered:**
+- Damage from misuse
+- Overvoltage or short circuit
+- Unauthorized modifications
+- Exposure to moisture or extreme temperature
 
 ---
 
-## Histórico de Versões
+## Technical Support
 
-| Versão | Data | Alterações |
+For technical support, contact the manufacturer.
+
+**Before contacting:**
+1. Check the connections
+2. Consult the "Troubleshooting" section
+3. Note the error messages from Serial
+
+---
+
+## Version History
+
+| Version | Date | Changes |
 |--------|------|------------|
-| 1.0 | Abril 2026 | Versão inicial |
+| 1.0 | April 2026 | Initial version |
 
 ---
 
-**Documentação complementar:**
-- README.md (desenvolvedor)
-- ALGORITMO.MD (especificação técnica)
-- Exemplos de configuração na pasta `/data/`
+**Complementary documentation:**
+- README.md (developer)
+- ALGORITMO.MD (technical specification)
+- Configuration examples in the `/data/` folder
 
 ---
 
-*Documento gerado em Abril de 2026.*  
-*Universal Controller - Sistema de Puzzle para Escape Room*
+*Document generated in April 2026.*  
+*Universal Controller - Escape Room Puzzle System*

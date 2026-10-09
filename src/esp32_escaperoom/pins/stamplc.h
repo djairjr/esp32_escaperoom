@@ -3,17 +3,17 @@
 /**
  * pins/stamplc.h — M5Stack StampPLC (SKU: K141)
  *
- * Suporte via M5Unified. Inicialização automática de display TFT
- * e periféricos onboard. Relés são gerenciados via expansor
- * PCF8574 no barramento I2C.
+ * Support via M5Unified. Automatic initialization of the TFT display
+ * and onboard peripherals. Relays are managed via a PCF8574
+ * expander on the I2C bus.
  *
- * Dependência: M5Unified (Arduino Library Manager)
+ * Dependency: M5Unified (Arduino Library Manager)
  *
- * PLC industrial compacto baseado no M5StampS3 (ESP32-S3).
- * 8MB Flash, sem PSRAM.
+ * Compact industrial PLC based on the M5StampS3 (ESP32-S3).
+ * 8MB Flash, no PSRAM.
  *
- * Ideal para controle central de sala de escape — relés,
- * entradas opto-isoladas e saídas PWM para motores DC.
+ * Ideal for central escape room control — relays,
+ * opto-isolated inputs and PWM outputs for DC motors.
  */
 
 #include <Arduino.h>
@@ -25,18 +25,18 @@ constexpr const char* BOARD_NAME         = "M5Stack StampPLC";
 constexpr const char* BOARD_MANUFACTURER = "M5Stack";
 constexpr const char* BOARD_CHIP         = "ESP32-S3";
 
-// ── Memória ──────────────────────────────────────────────────
+// ── Memory ──────────────────────────────────────────────────
 #define BOARD_FLASH_MB  8
 #define BOARD_PSRAM_MB  0
 #define HAS_PSRAM       0
 
-// ── Periféricos onboard (gerenciados pelo M5Unified) ─────────
+// ── Onboard peripherals (managed by M5Unified) ─────────
 
 #define HAS_M5UNIFIED           1
 #define HAS_ONBOARD_TFT         1    // TFT (M5.Display)
-#define HAS_ONBOARD_RELAY       1    // relés via PCF8574 I2C
-#define HAS_ONBOARD_OPTO_IN     1    // entradas digitais isoladas
-#define HAS_ONBOARD_PWM_OUT     1    // saídas PWM para motores DC
+#define HAS_ONBOARD_RELAY       1    // relays via PCF8574 I2C
+#define HAS_ONBOARD_OPTO_IN     1    // isolated digital inputs
+#define HAS_ONBOARD_PWM_OUT     1    // PWM outputs for DC motors
 
 // ── I2C ──────────────────────────────────────────────────────
 constexpr int PIN_I2C_SDA = 2;
@@ -65,19 +65,19 @@ constexpr int PIN_SPI_MOSI = 11;
 constexpr int PIN_SD_CS    = 10;
 #define USE_SD_LIBRARY SD
 
-// ── Relés (via PCF8574 no barramento I2C) ────────────────────
-// O expansor deve ser configurado pelo usuário:
-//   hw.addPcf8574(0x20)  — no setup()
-constexpr int PIN_RELAY_1 = 0;   // PCF8574 pino 0
+// ── Relays (via PCF8574 on the I2C bus) ────────────────────
+// The expander must be configured by the user:
+//   hw.addPcf8574(0x20)  — in setup()
+constexpr int PIN_RELAY_1 = 0;   // PCF8574 pin 0
 constexpr int PIN_RELAY_2 = 1;
 constexpr int PIN_RELAY_3 = 2;
 constexpr int PIN_RELAY_4 = 3;
-constexpr int PIN_RELAY = 21;    // relé auxiliar direto (GPIO)
+constexpr int PIN_RELAY = 21;    // direct auxiliary relay (GPIO)
 
 // ── Servo ────────────────────────────────────────────────────
 constexpr int PIN_SERVO_PWM = 14;
 
-// ── Botões ───────────────────────────────────────────────────
+// ── Buttons ───────────────────────────────────────────────────
 constexpr int PIN_BTN              = 0;   // BOOT
 constexpr int PIN_EXPANSION_BUTTON = 1;
 
@@ -97,7 +97,7 @@ constexpr uint8_t OLED_I2C_ADDRESS = 0x3C;
 constexpr uint8_t RTC_I2C_ADDRESS  = 0x51;
 constexpr int     PIN_BUZZER       = 17;
 
-// ── Constantes ───────────────────────────────────────────────
+// ── Constants ───────────────────────────────────────────────
 constexpr uint8_t I2C_DEFAULT_ADDRESS = 0x20;
 constexpr unsigned long DOOR_OPEN_MS  = 5000;
 
@@ -105,7 +105,7 @@ inline void boardInit() {
   auto cfg = M5.config();
   cfg.serial_baudrate = 115200;
   cfg.output_power    = true;
-  cfg.internal_spk    = false;  // sem speaker onboard
+  cfg.internal_spk    = false;  // no onboard speaker
   cfg.internal_mic    = false;
   cfg.external_imu    = false;
   cfg.external_rtc    = false;

@@ -1,85 +1,85 @@
-# BombTimer — Entidades Home Assistant
+# BombTimer — Home Assistant Entities
 
-## Dispositivo
-- **Nome**: BombTimer STAMPLC (configurável)
-- **Conexão**: MQTT via ArduinoHA
-- **Configuração inicial**: AP Mode (WiFi "BombTimer-STAMPLC" + portal web em 192.168.4.1)
+## Device
+- **Name**: BombTimer STAMPLC (configurable)
+- **Connection**: MQTT via ArduinoHA
+- **Initial configuration**: AP Mode (WiFi "BombTimer-STAMPLC" + web portal at 192.168.4.1)
 
-## Sensores (HASensor)
+## Sensors (HASensor)
 
-| Nome | ID | Tipo | Valores | Ícone |
+| Name | ID | Type | Values | Icon |
 |---|---|---|---|---|
-| Estado do Jogo | `state` | texto | idle, running, defused, detonated, menu, alarm | `mdi:bomb` |
-| Tempo Restante | `time` | texto (s) | 0-5999 | `mdi:timer` |
-| Fios Cortados | `wires_cut` | texto | 0-4 | `mdi:cable-data` |
-| Tentativas | `code_attempts` | texto | 0-maxCodeAttempts | `mdi:counter` |
-| I2C Devices | `i2c_status` | texto | lista de dispositivos detectados | `mdi:chip` |
+| Game State | `state` | text | idle, running, defused, detonated, menu, alarm | `mdi:bomb` |
+| Remaining Time | `time` | text (s) | 0-5999 | `mdi:timer` |
+| Wires Cut | `wires_cut` | text | 0-4 | `mdi:cable-data` |
+| Attempts | `code_attempts` | text | 0-maxCodeAttempts | `mdi:counter` |
+| I2C Devices | `i2c_status` | text | list of detected devices | `mdi:chip` |
 
-## Sensores Binários (HASensor por fio)
+## Binary Sensors (HASensor per wire)
 
-| Nome | ID | Valores | Ícone |
+| Name | ID | Values | Icon |
 |---|---|---|---|
-| Fio Amarelo | `wire_yellow` | 0=connected, 1=cut | `mdi:cable-data` |
-| Fio Vermelho | `wire_red` | 0=connected, 1=cut | `mdi:cable-data` |
-| Fio Azul | `wire_blue` | 0=connected, 1=cut | `mdi:cable-data` |
-| Fio Verde | `wire_green` | 0=connected, 1=cut | `mdi:cable-data` |
+| Yellow Wire | `wire_yellow` | 0=connected, 1=cut | `mdi:cable-data` |
+| Red Wire | `wire_red` | 0=connected, 1=cut | `mdi:cable-data` |
+| Blue Wire | `wire_blue` | 0=connected, 1=cut | `mdi:cable-data` |
+| Green Wire | `wire_green` | 0=connected, 1=cut | `mdi:cable-data` |
 
-## Botões (HAButton)
+## Buttons (HAButton)
 
-| Nome | ID | Ação | Ícone |
+| Name | ID | Action | Icon |
 |---|---|---|---|
-| Iniciar | `start` | Inicia contagem regressiva (IDLE→RUNNING) | `mdi:play` |
-| Resetar | `reset` | Reseta para IDLE (qualquer estado) | `mdi:restart` |
+| Start | `start` | Starts the countdown (IDLE→RUNNING) | `mdi:play` |
+| Reset | `reset` | Resets to IDLE (any state) | `mdi:restart` |
 
-## Números (HANumber)
+## Numbers (HANumber)
 
-| Nome | ID | Range | Step | Unidade | Ícone |
+| Name | ID | Range | Step | Unit | Icon |
 |---|---|---|---|---|---|
-| Ajuste de Tempo | `countdown` | 5-5999 | 1 | s | `mdi:timer-outline` |
-| Código Desarme | `defuse_code` | 0-9999 | 1 | — | `mdi:lock` |
-| Brilho | `brightness` | 0-15 | 1 | — | `mdi:brightness-6` |
+| Time Adjustment | `countdown` | 5-5999 | 1 | s | `mdi:timer-outline` |
+| Defuse Code | `defuse_code` | 0-9999 | 1 | — | `mdi:lock` |
+| Brightness | `brightness` | 0-15 | 1 | — | `mdi:brightness-6` |
 
-## Seletores (HASelect)
+## Selectors (HASelect)
 
-| Nome | ID | Opções | Ícone |
+| Name | ID | Options | Icon |
 |---|---|---|---|
-| Modo Desarme | `mode` | CÓDIGO, FIO, ORDEM | `mdi:tune` |
-| Fio Detonar | `det_wire` | ALEATÓRIO, Amarelo, Vermelho, Azul, Verde, NENHUM | `mdi:alert` |
-| Fio Desarme | `defuse_wire` | ALEATÓRIO, Amarelo, Vermelho, Azul, Verde, NENHUM | `mdi:shield-check` |
-| Fio Velocidade 2x | `speed_wire` | ALEATÓRIO, Amarelo, Vermelho, Azul, Verde, NENHUM | `mdi:speedometer` |
-| Fio Pausar | `pause_wire` | ALEATÓRIO, Amarelo, Vermelho, Azul, Verde, NENHUM | `mdi:pause` |
-| Ordem Amarelo | `order_yellow` | 1, 2, 3, 4 | `mdi:format-list-numbered` |
-| Ordem Vermelho | `order_red` | 1, 2, 3, 4 | `mdi:format-list-numbered` |
-| Ordem Azul | `order_blue` | 1, 2, 3, 4 | `mdi:format-list-numbered` |
-| Ordem Verde | `order_green` | 1, 2, 3, 4 | `mdi:format-list-numbered` |
+| Defuse Mode | `mode` | CODE, WIRE, ORDER | `mdi:tune` |
+| Detonate Wire | `det_wire` | RANDOM, Yellow, Red, Blue, Green, NONE | `mdi:alert` |
+| Defuse Wire | `defuse_wire` | RANDOM, Yellow, Red, Blue, Green, NONE | `mdi:shield-check` |
+| Speed 2x Wire | `speed_wire` | RANDOM, Yellow, Red, Blue, Green, NONE | `mdi:speedometer` |
+| Pause Wire | `pause_wire` | RANDOM, Yellow, Red, Blue, Green, NONE | `mdi:pause` |
+| Yellow Order | `order_yellow` | 1, 2, 3, 4 | `mdi:format-list-numbered` |
+| Red Order | `order_red` | 1, 2, 3, 4 | `mdi:format-list-numbered` |
+| Blue Order | `order_blue` | 1, 2, 3, 4 | `mdi:format-list-numbered` |
+| Green Order | `order_green` | 1, 2, 3, 4 | `mdi:format-list-numbered` |
 
 ## Switch (HASwitch)
 
-| Nome | ID | Ícone |
+| Name | ID | Icon |
 |---|---|---|
-| Som Tick | `tick_sound` | `mdi:volume-high` |
+| Tick Sound | `tick_sound` | `mdi:volume-high` |
 
-## Comportamento MQTT
+## MQTT Behavior
 
-- **Publicação inicial**: ao conectar, publica todos os estados
-- **Publicação periódica**: a cada 2 segundos durante RUNNING
-- **Publicação sob demanda**: ao mudar estado, cortar fio, inserir código
-- **Comandos recebidos**: iniciar, resetar, alterar configuração
+- **Initial publication**: on connect, publishes all states
+- **Periodic publication**: every 2 seconds during RUNNING
+- **On-demand publication**: on state change, wire cut, code entry
+- **Commands received**: start, reset, change configuration
 
-## Automações Sugeridas
+## Suggested Automations
 
-1. **Notificação de detonação**: quando `state` muda para `detonated` → notificar GameMaster
-2. **Notificação de desarme**: quando `state` muda para `defused` → notificar GameMaster
-3. **Sincronização de timer**: quando `start` é pressionado → iniciar timer global na sala
-4. **Alerta de fio cortado**: quando qualquer `wire_*` muda para 1 → log no HA
-5. **Ajuste remoto**: GameMaster altera `countdown`, `defuse_code` ou `mode` via HA
+1. **Detonation notification**: when `state` changes to `detonated` → notify GameMaster
+2. **Defusal notification**: when `state` changes to `defused` → notify GameMaster
+3. **Timer synchronization**: when `start` is pressed → start global timer in the room
+4. **Cut-wire alert**: when any `wire_*` changes to 1 → log in HA
+5. **Remote adjustment**: GameMaster changes `countdown`, `defuse_code` or `mode` via HA
 
-## Configuração de Rede (AP Mode)
+## Network Configuration (AP Mode)
 
-1. Na primeira inicialização, cria rede WiFi "BombTimer-STAMPLC" (aberta)
-2. Portal web em `http://192.168.4.1` permite configurar:
-   - WiFi (SSID + senha)
-   - MQTT (broker IP, porta, usuário, senha)
-   - Nome do dispositivo no HA
-3. Salva em `/wifi.json` no LittleFS e reinicia
-4. Se WiFi falhar após 20 tentativas, volta ao modo AP
+1. On first boot, creates WiFi network "BombTimer-STAMPLC" (open)
+2. Web portal at `http://192.168.4.1` allows configuring:
+   - WiFi (SSID + password)
+   - MQTT (broker IP, port, user, password)
+   - Device name in HA
+3. Saves to `/wifi.json` in LittleFS and reboots
+4. If WiFi fails after 20 attempts, returns to AP mode

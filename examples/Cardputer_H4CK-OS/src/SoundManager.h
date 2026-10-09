@@ -5,10 +5,10 @@
 #include <SD.h>
 
 // ============================================================================
-// SOUND MANAGER — Wrapper nativo sobre M5Cardputer.Speaker (Speaker_Class)
+// SOUND MANAGER — Native wrapper over M5Cardputer.Speaker (Speaker_Class)
 // ============================================================================
-// SFX via tone() — zero bytes no LittleFS.
-// TapScan via streaming playRaw() com WAV do LittleFS/SD.
+// SFX via tone() — zero bytes in LittleFS.
+// TapScan via playRaw() streaming with WAV from LittleFS/SD.
 // ============================================================================
 
 class SoundManager {
@@ -69,18 +69,18 @@ public:
     bool streamLoop() {
         if (!streamActive_ || !ready_) return false;
 
-        // Canal 0: aguarda enquanto fila cheia (isPlaying retorna 2)
+        // Channel 0: wait while the queue is full (isPlaying returns 2)
         size_t chState = speaker_->isPlaying(0);
         if (chState == 2) return true;
 
         if (streamPos_ >= streamDataLen_) {
-            // Último chunk já foi enviado — espera drenar
+            // Last chunk already sent — wait for it to drain
             if (chState == 0) {
                 Serial.printf("[SND] Stream done: %d chunks\n", chunkCount_);
                 streamEnd();
                 return false;
             }
-            return true;  // ainda tocando último chunk
+            return true;  // still playing the last chunk
         }
 
         size_t sampleBytes = streamBits_ / 8;
@@ -90,7 +90,7 @@ public:
         size_t read = streamFile_.read(streamBuf_, chunkBytes);
         if (read == 0) { streamEnd(); return false; }
 
-        bool stopCurrent = (chunkCount_ == 0);  // true só no 1° chunk
+        bool stopCurrent = (chunkCount_ == 0);  // true only on the 1st chunk
         bool flgStereo = (streamCh_ == 2);
         bool ok;
 
@@ -187,11 +187,11 @@ private:
         Serial.printf("[SND] parseHdr: fmt=%d bit=%d ch=%d rate=%d\n",
                       h.audioFormat, h.bitsPerSample, h.numChannels, h.sampleRate);
 
-        // Pula bytes extras do chunk fmt
+        // Skip extra bytes of the fmt chunk
         if (h.fmtSize > 16)
             streamFile_.seek(streamFile_.position() + (h.fmtSize - 16));
 
-        // Procura chunk "data"
+        // Look for the "data" chunk
         char id[4];
         uint32_t sz;
         for (int attempt = 0; attempt < 20; attempt++) {

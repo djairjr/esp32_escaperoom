@@ -1,35 +1,35 @@
-# RadioClock — Algoritmo do Jogo
+# RadioClock — Game Algorithm
 
-## Visão Geral
+## Overview
 
-Sintonizador de rádio vintage. O jogador pressiona SELECT para percorrer "frequências" exibidas no display e em um anel de NeoPixels. Áudio toca estática em frequências erradas e sinal limpo na correta. Acertar 3 frequências-alvo resolve o puzzle.
+Vintage radio tuner. The player presses SELECT to cycle through "frequencies" shown on the display and on a ring of NeoPixels. Audio plays static on the wrong frequencies and a clean signal on the correct one. Hitting 3 target frequencies solves the puzzle.
 
-## Configuração (JSON: radioClock.json)
+## Configuration (JSON: radioClock.json)
 
-- **frequencyCount**: quantas posições no dial
-- **targetFrequencies[3]**: posições-alvo para cada round
-- **roundsToWin**: rounds necessários (padrão 3)
-- **Áudio**: sfxStatic, sfxSignal, sfxSolved, sfxSelect
+- **frequencyCount**: how many positions on the dial
+- **targetFrequencies[3]**: target positions for each round
+- **roundsToWin**: rounds required (default 3)
+- **Audio**: sfxStatic, sfxSignal, sfxSolved, sfxSelect
 
-## Estados
+## States
 
 IDLE → RUNNING → SOLVED → IDLE (auto-reset 8s)
 
-## Fluxo
+## Flow
 
-1. IDLE: NeoPixel azul dim pulsante
+1. IDLE: pulsing dim blue NeoPixel
 2. RUNNING:
-   - SELECT avança para próxima frequência
-   - NeoPixel mostra posição atual (branco) com trail
-   - Display HT16K33 mostra "F--X" (X = frequência atual)
-3. Se frequência atual == targetFrequencies[round]:
-   - Toca sfxSignal
-   - NeoPixel verde pulsante
+   - SELECT advances to the next frequency
+   - NeoPixel shows the current position (white) with a trail
+   - HT16K33 display shows "F--X" (X = current frequency)
+3. If current frequency == targetFrequencies[round]:
+   - Plays sfxSignal
+   - Pulsing green NeoPixel
    - Display "GOOd"
-   - Incrementa round
-4. Se não: toca sfxStatic
-5. Todos rounds completos → SOLVED
+   - Increments the round
+4. If not: plays sfxStatic
+5. All rounds complete → SOLVED
 
 ## AP Mode + WiFi
 
-Configuração de rede via portal web em 192.168.4.1.
+Network configuration via web portal at 192.168.4.1.

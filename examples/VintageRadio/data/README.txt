@@ -1,64 +1,64 @@
 ================================================================================
-VintageShortwaveMorseRadio - Arquivos de Dados
+VintageShortwaveMorseRadio - Data Files
 ================================================================================
 
-Este arquivo contém os recursos de áudio e dados necessários para o puzzle
-VintageShortwaveMorseRadio.
+This file contains the audio resources and data needed for the
+VintageShortwaveMorseRadio puzzle.
 
 --------------------------------------------------------------------------------
-ARQUIVOS OBRIGATÓRIOS
+REQUIRED FILES
 --------------------------------------------------------------------------------
 
 1. mensagem.txt
-   - Arquivo de texto com a mensagem a ser transmitida em código Morse
-   - Máximo 128 caracteres
-   - Apenas caracteres: A-Z, 0-9 e espaços
-   - Sem caracteres especiais (#, @, <, >, etc.)
-   - Exemplo: "PARABENS VOCE RESOLVEU O PUZZLE"
+   - Text file with the message to be transmitted in Morse code
+   - Maximum 128 characters
+   - Only characters: A-Z, 0-9 and spaces
+   - No special characters (#, @, <, >, etc.)
+   - Example: "PARABENS VOCE RESOLVEU O PUZZLE"
 
 --------------------------------------------------------------------------------
-ARQUIVOS OPCIONAIS (Sistema de Sintonia Avançado)
+OPTIONAL FILES (Advanced Tuning System)
 --------------------------------------------------------------------------------
 
-Para o sistema de sintonia de rádio com múltiplas estações, copie estes arquivos
-MP3 para o cartão SD (pasta / no LittleFS):
+For the radio tuning system with multiple stations, copy these MP3 files
+to the SD card (folder / on LittleFS):
 
-  station1.mp3 - Estação 1: Estática/ruído de fundo
-  station2.mp3 - Estação 2: Música ambiente 1
-  station3.mp3 - Estação 3: Voz/news
-  station4.mp3 - Estação 4: Música ambiente 2
-  station5.mp3 - Estação 5: ★ ESTAÇÃO CORRETA (contém dica importante)
-  station6.mp3 - Estação 6: Interferência/estática
-  station7.mp3 - Estação 7: Música ambiente 3
-  station8.mp3 - Estação 8: Voz em outro idioma
-  station9.mp3 - Estação 9: Estática final
+  station1.mp3 - Station 1: Static/background noise
+  station2.mp3 - Station 2: Ambient music 1
+  station3.mp3 - Station 3: Voice/news
+  station4.mp3 - Station 4: Ambient music 2
+  station5.mp3 - Station 5: ★ CORRECT STATION (contains an important hint)
+  station6.mp3 - Station 6: Interference/static
+  station7.mp3 - Station 7: Ambient music 3
+  station8.mp3 - Station 8: Voice in another language
+  station9.mp3 - Station 9: Final static
 
 --------------------------------------------------------------------------------
-FORMATO MP3
+MP3 FORMAT
 --------------------------------------------------------------------------------
 
-- Taxa de bits: 128 kbps (recomendado) ou 192 kbps
-- Frequência: 44.1 kHz
-- Canais: Estéreo ou Mono
-- IMPORTANTE: Remover todas as tags ID3 antes de usar
+- Bit rate: 128 kbps (recommended) or 192 kbps
+- Frequency: 44.1 kHz
+- Channels: Stereo or Mono
+- IMPORTANT: Remove all ID3 tags before use
 
-Como remover ID3 tags com ffmpeg:
+How to remove ID3 tags with ffmpeg:
   ffmpeg -i input.mp3 -map_metadata -1 -c copy output.mp3
 
 --------------------------------------------------------------------------------
-ESTRUTURA DO CARTÃO SD
+SD CARD STRUCTURE
 --------------------------------------------------------------------------------
 
 /
-├── mensagem.txt          (obrigatório)
-├── station1.mp3          (opcional)
-├── station2.mp3          (opcional)
-├── station3.mp3          (opcional)
-├── station4.mp3          (opcional)
-├── station5.mp3          (opcional - estação correta)
-├── station6.mp3          (opcional)
-├── station7.mp3          (opcional)
-├── station8.mp3          (opcional)
-└── station9.mp3          (opcional)
+├── mensagem.txt          (required)
+├── station1.mp3          (optional)
+├── station2.mp3          (optional)
+├── station3.mp3          (optional)
+├── station4.mp3          (optional)
+├── station5.mp3          (optional - correct station)
+├── station6.mp3          (optional)
+├── station7.mp3          (optional)
+├── station8.mp3          (optional)
+└── station9.mp3          (optional)
 
 ================================================================================

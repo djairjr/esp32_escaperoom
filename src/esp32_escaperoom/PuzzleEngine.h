@@ -4,8 +4,8 @@
 #include "MicInput.h"
 #include "ConfigManager.h"
 
-// XIAO ESP32-C3: IoAbstraction não compila (sem DAC).
-// Este define é visível a PuzzleEngine.cpp (que inclui este header).
+// XIAO ESP32-C3: IoAbstraction does not compile (no DAC).
+// This define is visible to PuzzleEngine.cpp (which includes this header).
 #if defined(ARDUINO_XIAO_ESP32C3)
 #define ESP32_ESCAPEROOM_NO_IOABSTRACTION
 #endif
@@ -33,8 +33,8 @@ public:
     void reset();
     void start();
 
-    /// Zera o progresso da sequencia e mantem o motor armado. Sem efeito
-    /// visual e sem log — use nas pausas do jogador. NAO e' start().
+    /// Resets the sequence progress and keeps the engine armed. No visual
+    /// effect and no log — use it during player pauses. It is NOT start().
     void restartProgress();
 
     EngineState getState() const { return state_; }
@@ -42,24 +42,24 @@ public:
     uint8_t getCurrentStep() const { return currentStep_; }
     uint8_t getTotalSteps() const { return totalSteps_; }
     uint16_t getRemainingTime() const;
-    // Nota MIDI esperada no passo atual. Devolve -1 quando NAO ha passo valido
-    // (sequencia vazia, jogo resolvido, ou passo fora da faixa). Sem isto, uma
-    // sequencia vazia devolvia 0 — que e' MIDI 0 = C-1, uma nota REAL (8 Hz),
-    // e a pagina/HA exibiam "C-1" como se fosse a nota esperada.
-    // Tambem evita ler sequence_[16]: o array tem 16 posicoes e currentStep_
-    // chega a totalSteps_ apos o SOLVED.
+    // Expected MIDI note at the current step. Returns -1 when there is no valid
+    // step (empty sequence, puzzle solved, or step out of range). Without this,
+    // an empty sequence returned 0 — which is MIDI 0 = C-1, a REAL note (8 Hz),
+    // and the page/HA displayed "C-1" as if it were the expected note.
+    // It also avoids reading sequence_[16]: the array has 16 positions and
+    // currentStep_ reaches totalSteps_ after SOLVED.
     int getExpectedNote() const {
         if (totalSteps_ == 0) return -1;
         if (currentStep_ >= totalSteps_ || currentStep_ >= 16) return -1;
         return (int)sequence_[currentStep_];
     }
-    // Ultima nota efetivamente tocada (o que o motor consumiu)
+    // Last note actually played (what the engine consumed)
     int getLastPlayed() const { return lastPlayedMidi_; }
 
     bool isSolved() const { return state_ == EngineState::SOLVED; }
     bool hasError() const { return state_ == EngineState::ERROR; }
 
-    // Injeta o MicInput (modo MUSICAL_SEQUENCE). Construtor NÃO muda.
+    // Injects the MicInput (MUSICAL_SEQUENCE mode). Constructor does NOT change.
     void setMicInput(esp32_escaperoom::MicInput* mic) { mic_ = mic; }
 
 private:
@@ -67,7 +67,7 @@ private:
     esp32_escaperoom::MicInput* mic_ = nullptr;
     EngineState state_ = EngineState::IDLE;
 
-    // Sequência
+    // Sequence
     uint8_t sequence_[16];
     uint8_t sequenceLength_ = 0;
     uint8_t currentStep_ = 0;
@@ -79,32 +79,33 @@ private:
     unsigned long puzzleStartTime_ = 0;
     unsigned long lastInputTime_ = 0;
 
-    // Estados de input
+    // Input states
     uint8_t lastInputStates_[16];
     unsigned long debounceTimes_[16];
 
-    // Modo musical: confirmacao por repeticao.
-    // O ATAQUE de uma nota produz leituras transitorias que nao batem com a
-    // esperada; decidir no primeiro frame conta isso como erro. Exigir N
-    // leituras CONSECUTIVAS antes de decidir elimina o falso erro de ataque.
-    uint8_t  noteStreak_  = 0;             // leituras seguidas na nota certa
-    uint8_t  wrongStreak_ = 0;             // leituras seguidas fora do alvo
-    bool     awaitingNoteEnd_ = false;     // trava: mesma nota nao avanca 2x
-    int      lastPlayedMidi_ = -1;         // ultima nota tocada (diagnostico/HA)
+    // Musical mode: confirmation by repetition.
+    // A note's ATTACK produces transient readings that do not match the
+    // expected one; deciding on the first frame counts that as an error.
+    // Requiring N CONSECUTIVE readings before deciding eliminates the false
+    // attack error.
+    uint8_t  noteStreak_  = 0;             // consecutive readings on the right note
+    uint8_t  wrongStreak_ = 0;             // consecutive readings off target
+    bool     awaitingNoteEnd_ = false;     // latch: same note does not advance twice
+    int      lastPlayedMidi_ = -1;         // last note played (diagnostics/HA)
     static const uint8_t NOTE_CONFIRM_FRAMES = 3;
 
-    // Trava de ERRO por nota: acusa uma vez por nota errada distinta, em vez de
-    // a cada NOTE_CONFIRM_FRAMES leituras enquanto ela soar (era ~8 linhas/s).
+    // Per-note ERROR latch: reports once per distinct wrong note, instead of
+    // on every NOTE_CONFIRM_FRAMES readings while it sounds (was ~8 lines/s).
     bool wrongNoteLatched_ = false;
     int  lastWrongMidi_ = -1;
 
-    // Métodos de processamento por modo
+    // Processing methods per mode
     void processCustomSequence();
     void processLinearSequence();
     void processAllConnected();
     void processRandomSequence();
     void processMusicalSequence();
-    void playNote(int midi);              // registra a nota tocada (para o HA)
+    void playNote(int midi);              // records the note played (for HA)
 
     // Helpers
     void checkInputs();
@@ -124,11 +125,11 @@ private:
     void playErrorSound();
     void playResetSound();
 
-    // Geração de sequências
+    // Sequence generation
     void generateLinearSequence();
     void generateRandomSequence();
 
-    // Visualização
+    // Visualization
     void showIdleEffect();
     void showRunningEffect();
     void showCorrectEffect();

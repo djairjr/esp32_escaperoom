@@ -1,28 +1,28 @@
-# VintageRadio — Entidades Home Assistant
+# VintageRadio — Home Assistant Entities
 
-## Sensores
-| Nome | ID | Valores |
+## Sensors
+| Name | ID | Values |
 |---|---|---|
-| Estado | `state` | idle, tuning, authenticated, solved |
-| Frequência | `frequency` | 0-1023 (encoder) |
-| Última Tag | `last_tag` | texto (UID hex) |
+| State | `state` | idle, tuning, authenticated, solved |
+| Frequency | `frequency` | 0-1023 (encoder) |
+| Last Tag | `last_tag` | text (UID hex) |
 
-## Binários
-| Nome | ID |
+## Binary Sensors
+| Name | ID |
 |---|---|
 | Power | `power` | on, off |
 
-## Botões
-| Nome | ID |
+## Buttons
+| Name | ID |
 |---|---|
-| Ligar/Desligar | `power_toggle` |
-| Resetar | `reset` |
+| Power On/Off | `power_toggle` |
+| Reset | `reset` |
 
-## Números
-| Nome | ID | Range |
+## Numbers
+| Name | ID | Range |
 |---|---|---|
-| Frequência Alvo | `target_freq` | 0-1023 |
+| Target Frequency | `target_freq` | 0-1023 |
 | Volume | `volume` | 0-255 |
 
 ## AP Mode
-Rede WiFi "VintageRadio-XXXX" + portal em 192.168.4.1.
+WiFi network "VintageRadio-XXXX" + portal at 192.168.4.1.

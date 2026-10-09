@@ -66,7 +66,7 @@ bool begin(bool sdAvailable, bool littleFsAvailable) {
     sdMounted_ = sdAvailable;
     littleFsMounted_ = littleFsAvailable;
     
-    // Log do status
+    // Status log
     if (sdMounted_) {
         Serial.println(F("[AUDIO] SD Card: Available"));
     } else {
@@ -113,21 +113,21 @@ bool begin(bool sdAvailable, bool littleFsAvailable) {
     return playing_;
   }
 
-  // Toca um arquivo uma única vez de forma assíncrona (não bloqueia)
-  // Ideal para músicas de fundo que não precisam sincronizar com lógica
+  // Plays a file once asynchronously (non-blocking)
+  // Ideal for background music that does not need to sync with logic
   bool playOnce(const char *path, bool useSD = false) {
     looping_ = false;
     return play(path, useSD, false);
   }
 
-  // Toca um arquivo de forma síncrona (bloqueia até terminar)
-  // Ideal para efeitos sonoros curtos que precisam sincronizar (ex: tick)
+  // Plays a file synchronously (blocks until it finishes)
+  // Ideal for short sound effects that need to sync (e.g. tick)
   bool playOnceBlocking(const char *path, bool useSD = false) {
     looping_ = false;
     return play(path, useSD, true);
   }
 
-  // Toca um arquivo em loop (sempre assíncrono)
+  // Plays a file in a loop (always asynchronous)
   bool playLoop(const char *path, bool useSD = false) {
     looping_ = true;
     return play(path, useSD, false);
@@ -158,7 +158,7 @@ bool play(const char *path, bool useSD = false, bool blocking = false) {
     lastSourceWasSD_ = useSD;
 
     if (blocking) {
-        // Modo síncrono: processa arquivo inteiro de uma vez (bloqueante)
+        // Synchronous mode: processes the entire file at once (blocking)
         copier_.copyAll();
         decoder_.end();
         currentFile_.close();
@@ -171,7 +171,7 @@ bool play(const char *path, bool useSD = false, bool blocking = false) {
   bool playTrack(uint8_t folder, uint16_t track) {
     String path = trackPath(folder, track);
     if (path.isEmpty()) {
-      Serial.print(F("Faixa nao encontrada: "));
+      Serial.print(F("Track not found: "));
       Serial.print(folder);
       Serial.print(F("/"));
       Serial.println(track);
@@ -206,24 +206,24 @@ bool play(const char *path, bool useSD = false, bool blocking = false) {
     }
   }
 
-  // Gera tom senoidal de frequência específica (para código Morse, beeps, etc)
+  // Generates a sine tone of a specific frequency (for Morse code, beeps, etc.)
   void tone(uint16_t frequencyHz, uint8_t volume = 128) {
     if (!begun_) return;
 
-    // Para MP3 atual se estiver tocando
+    // Stops the current MP3 if playing
     if (playing_) {
       stop();
     }
 
-    // Para tom anterior se existir
+    // Stops the previous tone if any
     if (toneActive_) {
       noTone();
     }
 
-    // Configura volume
+    // Configures volume
     setVolume(volume);
 
-    // Configura gerador de onda senoidal
+    // Configures the sine wave generator
     AudioInfo info;
     info.channels = 2;  // Stereo
     info.sample_rate = 44100;
@@ -236,7 +236,7 @@ bool play(const char *path, bool useSD = false, bool blocking = false) {
     Serial.printf("[AUDIO] Tone: %d Hz, vol=%d\n", frequencyHz, volume);
   }
 
-  // Para o tom senoidal
+  // Stops the sine tone
   void noTone() {
     if (!toneActive_) return;
 
@@ -247,12 +247,12 @@ bool play(const char *path, bool useSD = false, bool blocking = false) {
     Serial.println(F("[AUDIO] Tone stopped"));
   }
 
-  // Verifica se está gerando tom
+  // Checks whether a tone is being generated
   bool isPlayingTone() const {
     return toneActive_;
   }
 
-  // Retorna frequência atual do tom (0 se não estiver tocando)
+  // Returns the current tone frequency (0 if not playing)
   uint16_t getToneFrequency() const {
     return toneFreq_;
   }
@@ -275,18 +275,18 @@ private:
   void copyTone() {
     if (!toneActive_) return;
 
-    // Lê amostras do gerador e escreve para o VolumeStream/I2S
+    // Reads samples from the generator and writes to the VolumeStream/I2S
     const size_t bufferSize = 256;
     int16_t buffer[bufferSize];
 
-    // Gera amostras suficientes para 2 canais (stereo)
+    // Generates enough samples for 2 channels (stereo)
     for (int i = 0; i < bufferSize; i += 2) {
       int16_t sample = sineGen_.readSample();
-      buffer[i] = sample;     // Canal esquerdo
-      buffer[i+1] = sample;   // Canal direito
+      buffer[i] = sample;     // Left channel
+      buffer[i+1] = sample;   // Right channel
     }
 
-    // Escreve para o volume_ (que conecta ao I2S)
+    // Writes to volume_ (which connects to I2S)
     volume_.write((uint8_t*)buffer, bufferSize * sizeof(int16_t));
   }
 

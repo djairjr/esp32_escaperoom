@@ -1,26 +1,26 @@
 #pragma once
 
 /**
- * PlatformPins.h — Seleção automática de pinagem por placa ESP32.
+ * PlatformPins.h — Automatic pin selection per ESP32 board.
  *
- * Detecta a placa via macros do Arduino IDE e inclui o arquivo
- * de pinos correspondente da pasta pins/.
+ * Detects the board via Arduino IDE macros and includes the
+ * corresponding pin file from the pins/ folder.
  *
- * Para placas sem detecção automática, defina BOARD_xxx manualmente
- * nas build flags do PlatformIO ou nas opções do Arduino IDE:
+ * For boards without automatic detection, define BOARD_xxx manually
+ * in the PlatformIO build flags or in the Arduino IDE options:
  *
  *   YD-ESP32-S3:      -DBOARD_YD_ESP32S3
  *   STAMPLC:           -DBOARD_STAMPLC
  *   Audio Kit:         -DBOARD_AUDIO_KIT
  *   MatrixPortal S3:   -DBOARD_MATRIXPORTAL
  *
- * Boards com detecção automática:
+ * Boards with automatic detection:
  *   XIAO ESP32-S3, XIAO ESP32-C3, M5Stack Cardputer
  */
 
 #include <Arduino.h>
 
-// ── Detecção automática de placa ─────────────────────────────
+// ── Automatic board detection ───────────────────────────────
 
 // M5Stack Cardputer
 #if defined(ARDUINO_M5STACK_CARDPUTER) || defined(ARDUINO_M5Stack_Cardputer) || defined(BOARD_CARDPUTER)
@@ -46,18 +46,18 @@
 #elif defined(ARDUINO_ESP32_A1S_AUDIO_KIT) || defined(BOARD_AUDIO_KIT)
   #include "pins/audio_kit.h"
 
-// VCC-GND Studio YD-ESP32-S3 (genérico — requer define manual)
+// VCC-GND Studio YD-ESP32-S3 (generic — requires manual define)
 #elif defined(BOARD_YD_ESP32S3)
   #include "pins/yd_esp32s3.h"
 
 // ── Fallback: XIAO ESP32-S3 (default) ────────────────────────
 #else
-  #pragma message("PlatformPins: Nenhuma placa detectada. Usando default (XIAO ESP32-S3).")
-  #pragma message("Defina BOARD_xxx nas build flags para sua placa especifica.")
+  #pragma message("PlatformPins: No board detected. Using default (XIAO ESP32-S3).")
+  #pragma message("Define BOARD_xxx in the build flags for your specific board.")
   #include "pins/xiao_esp32s3.h"
 #endif
 
-// ── Constantes RS485 (válidas para todas as placas) ──────────
+// ── RS485 constants (valid for all boards) ──────────
 
 #ifndef PUZZLE_ENABLE_RS485
 #define PUZZLE_ENABLE_RS485 0
@@ -75,7 +75,7 @@
 #define PUZZLE_RS485_NODE_ID 1
 #endif
 
-// ── Aliases globais (compatibilidade com sketches legados) ────
+// ── Global aliases (compatibility with legacy sketches) ────
 
 constexpr int PUZZLE_PIN_SPI_MISO          = esp32_escaperoom::PIN_SPI_MISO;
 constexpr int PUZZLE_PIN_SD_CS             = esp32_escaperoom::PIN_SD_CS;

@@ -41,7 +41,7 @@ public:
   const char* devPuzzleId()const{return d.puzzleId;}
   bool isAPMode()const{return apSrv!=nullptr;}
   void handleAP(){if(apSrv)apSrv->handleClient();}
-  // Converte nome de nota (ex: "C4") para MIDI. Retorna -1 se inválido.
+  // Converts a note name (e.g. "C4") to MIDI. Returns -1 if invalid.
   static int noteNameToMidi(const String& name){
     if(name.length()<2) return -1;
     char letter=name.charAt(0);
@@ -106,13 +106,13 @@ private:
       "<form action=/save method=POST>"
       "<div class=s><h3>WiFi</h3><label>SSID: <input name=ws required></label></div>"
       "<div class=s><h3>MQTT</h3><label>Broker: <input name=mb placeholder='192.168.1.10'></label>"
-      "<label>Porta: <input name=mp value=1883 type=number></label>"
+      "<label>Port: <input name=mp value=1883 type=number></label>"
       "<label>User: <input name=mu></label><label>Pass: <input name=mpw type=password></label></div>"
-      "<div class=s><h3>Dispositivo</h3>"
-      "<label>Nome: <input name=dn value='escaperoom-puzzle'></label>"
-      "<label>Sala: <input name=dr value=sala-01></label>"
+      "<div class=s><h3>Device</h3>"
+      "<label>Name: <input name=dn value='escaperoom-puzzle'></label>"
+      "<label>Room: <input name=dr value=sala-01></label>"
       "<label>Puzzle ID: <input name=dp value=puzzle></label></div>"
-      "<button type=submit>Salvar</button></form></body></html>");
+      "<button type=submit>Save</button></form></body></html>");
     });
     apSrv->on("/save",HTTP_POST,[this](){
       JsonDocument doc;
@@ -126,26 +126,26 @@ private:
       doc["device"]["puzzle_id"]=apSrv->arg("dp");
       if(!spiffsOk)SPIFFS.begin(true);
       File f=SPIFFS.open("/wifi.json",FILE_WRITE);
-      if(f){serializeJson(doc,f);f.close();apSrv->send(200,"text/html","<html><body><h2>Salvo!</h2></body></html>");delay(3000);ESP.restart();}
-      else apSrv->send(500,"text/plain","Erro");
+      if(f){serializeJson(doc,f);f.close();apSrv->send(200,"text/html","<html><body><h2>Saved!</h2></body></html>");delay(3000);ESP.restart();}
+      else apSrv->send(500,"text/plain","Error");
     });
-    // Editor de sequência musical (MUSICAL_SEQUENCE)
+    // Musical sequence editor (MUSICAL_SEQUENCE)
     apSrv->on("/musical",HTTP_GET,[this](){
       apSrv->send(200,"text/html",
         "<html><head><meta charset=UTF-8></head><body>"
-        "<h2>Sequencia Musical</h2>"
+        "<h2>Musical Sequence</h2>"
         "<form action=/musical/save method=POST>"
-        "<label>Notas (C4,400,100;E4,400,100;G4,800,0): "
+        "<label>Notes (C4,400,100;E4,400,100;G4,800,0): "
         "<input name=seq></label><br>"
-        "<label>Tolerancia (cents): <input name=tol value=25 type=number></label><br>"
+        "<label>Tolerance (cents): <input name=tol value=25 type=number></label><br>"
         "<label>Max gap (ms): <input name=gap value=1500 type=number></label><br>"
-        "<label>Max nota (ms): <input name=ndur value=3000 type=number></label><br>"
-        "<label>Timeout total (ms): <input name=tout value=15000 type=number></label><br>"
+        "<label>Max note (ms): <input name=ndur value=3000 type=number></label><br>"
+        "<label>Total timeout (ms): <input name=tout value=15000 type=number></label><br>"
         "<label>Min amplitude: <input name=amp value=200 type=number></label><br>"
-        "<button type=submit>Salvar</button></form></body></html>");
+        "<button type=submit>Save</button></form></body></html>");
     });
     apSrv->on("/musical/save",HTTP_POST,[this](){
-      // Parse da sequência: "C4,400,100;E4,400,100;G4,800,0"
+      // Parse the sequence: "C4,400,100;E4,400,100;G4,800,0"
       String seq = apSrv->arg("seq");
       JsonDocument doc;
       doc["musical"]["enabled"] = true;
@@ -167,7 +167,7 @@ private:
           String name = noteStr.substring(0, c1);
           int dur = noteStr.substring(c1 + 1, c2).toInt();
           int gap = noteStr.substring(c2 + 1).toInt();
-          // Converte nome de nota (C4) para MIDI
+          // Converts a note name (C4) to MIDI
           int midi = noteNameToMidi(name);
           if (midi >= 0) {
             JsonObject n = notes.createNestedObject();
@@ -180,8 +180,8 @@ private:
       }
       if(!spiffsOk)SPIFFS.begin(true);
       File f=SPIFFS.open("/config.json",FILE_WRITE);
-      if(f){serializeJson(doc,f);f.close();apSrv->send(200,"text/html","<html><body><h2>Sequencia salva!</h2></body></html>");}
-      else apSrv->send(500,"text/plain","Erro");
+      if(f){serializeJson(doc,f);f.close();apSrv->send(200,"text/html","<html><body><h2>Sequence saved!</h2></body></html>");}
+      else apSrv->send(500,"text/plain","Error");
     });
     apSrv->begin();
     Serial.printf("[AP] ESP32-EscapeRoom http://%s\n",WiFi.softAPIP().toString().c_str());

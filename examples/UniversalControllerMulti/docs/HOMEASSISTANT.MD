@@ -1,22 +1,22 @@
-# UniversalControllerMulti — Entidades Home Assistant
+# UniversalControllerMulti — Home Assistant Entities
 
-## Sensores
-| Nome | ID | Valores |
+## Sensors
+| Name | ID | Values |
 |---|---|---|
-| Estado | `state` | idle, running, solved |
-| Puzzles Ativos | `active_puzzles` | 0-N |
-| Puzzles Resolvidos | `solved_puzzles` | 0-N |
+| State | `state` | idle, running, solved |
+| Active Puzzles | `active_puzzles` | 0-N |
+| Solved Puzzles | `solved_puzzles` | 0-N |
 
-## Binários (por puzzle)
-| Nome | ID |
+## Binary Sensors (per puzzle)
+| Name | ID |
 |---|---|
 | Puzzle 1..N | `puzzle_1`..`puzzle_N` |
 
-## Botões
-| Nome | ID |
+## Buttons
+| Name | ID |
 |---|---|
-| Iniciar Todos | `start_all` |
-| Resetar Todos | `reset_all` |
+| Start All | `start_all` |
+| Reset All | `reset_all` |
 
 ## AP Mode
-Rede WiFi "MultiUniv-XXXX" + portal em 192.168.4.1.
+WiFi network "MultiUniv-XXXX" + portal at 192.168.4.1.

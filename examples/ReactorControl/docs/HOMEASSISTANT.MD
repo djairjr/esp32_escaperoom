@@ -1,33 +1,33 @@
-# ReactorControl — Entidades Home Assistant
+# ReactorControl — Home Assistant Entities
 
-## Sensores
-| Nome | ID | Valores |
+## Sensors
+| Name | ID | Values |
 |---|---|---|
-| Estado | `state` | idle, running, stable, warning, critical, solved, meltdown |
-| Temperatura | `temperature` | 0-100% |
-| Pressão | `pressure` | 0-100% |
-| Tempo Restante | `remaining_time` | 0-totalTime |
+| State | `state` | idle, running, stable, warning, critical, solved, meltdown |
+| Temperature | `temperature` | 0-100% |
+| Pressure | `pressure` | 0-100% |
+| Remaining Time | `remaining_time` | 0-totalTime |
 
-## Binários
-| Nome | ID |
+## Binary Sensors
+| Name | ID |
 |---|---|
-| Ventilação | `vent` | on, off |
-| Válvula | `valve` | on, off |
+| Venting | `vent` | on, off |
+| Valve | `valve` | on, off |
 | SCRAM | `scram` | active, inactive |
 
-## Botões
-| Nome | ID |
+## Buttons
+| Name | ID |
 |---|---|
-| Iniciar | `start` |
+| Start | `start` |
 | SCRAM | `emergency_scram` |
-| Resetar | `reset` |
+| Reset | `reset` |
 
-## Números
-| Nome | ID | Range |
+## Numbers
+| Name | ID | Range |
 |---|---|---|
-| Limite Temperatura | `max_temp` | 50-100 |
-| Limite Pressão | `max_pressure` | 50-100 |
-| Tempo Total | `total_time` | 30-300s |
+| Temperature Limit | `max_temp` | 50-100 |
+| Pressure Limit | `max_pressure` | 50-100 |
+| Total Time | `total_time` | 30-300s |
 
 ## AP Mode
-Rede WiFi "Reactor-XXXX" + portal em 192.168.4.1.
+WiFi network "Reactor-XXXX" + portal at 192.168.4.1.

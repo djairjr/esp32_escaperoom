@@ -1,223 +1,223 @@
-# Manual do Telefone Escape Room
+# Escape Room Phone Manual
 
-## O que é este sistema?
+## What is this system?
 
-Este é um **telefone interativo para jogos de Escape Room**. Seu objetivo principal é **fornecer pistas e informações através de mensagens de áudio** quando os jogadores digitam números específicos.
+This is an **interactive phone for Escape Room games**. Its main purpose is to **provide hints and information through audio messages** when players dial specific numbers.
 
-Existem **dois modelos** disponíveis:
-- **Modelo Teclado:** Com teclado numérico moderno (estilo calculadora)
-- **Modelo Disco Rotativo:** Com disco rotativo (estilo telefones antigos)
+There are **two models** available:
+- **Keypad Model:** With a modern numeric keypad (calculator style)
+- **Rotary Dial Model:** With a rotary dial (old-style phones)
 
-> O sistema pode ser instalado em um telefone já existente ou montado em uma caixa personalizada.
+> The system can be installed in an existing phone or mounted in a custom box.
 
 ---
 
-## Como funciona o jogo?
+## How does the game work?
 
-### 1. Levante o fone do gancho
+### 1. Lift the handset off the hook
 
-Ao levantar o telefone, os jogadores ouvem um **tom de discagem** (o familiar "tu-tu-tu" dos telefones antigos). Isso indica que o sistema está pronto.
+When they lift the phone, players hear a **dial tone** (the familiar "tu-tu-tu" of old phones). This indicates that the system is ready.
 
-### 2. Digite um número
+### 2. Dial a number
 
-Os jogadores digitam um número no teclado (ou giram o disco, na versão rotary):
+Players dial a number on the keypad (or turn the dial, on the rotary version):
 
-- O sistema aceita números de até **8 dígitos**
-- Se pararem de digitar por **3 segundos**, o número é processado automaticamente
-- Cada dígito discado ou teclado emite o som correspondente (PULSO para disco rotativo ou DTMF para teclado)
+- The system accepts numbers of up to **8 digits**
+- If they stop dialing for **3 seconds**, the number is processed automatically
+- Each dialed or keyed digit emits the corresponding sound (PULSE for the rotary dial or DTMF for the keypad)
 
-### 3. Ouça a mensagem
+### 3. Listen to the message
 
-O telefone toca uma mensagem de áudio correspondente ao número digitado:
+The phone plays an audio message corresponding to the dialed number:
 
-| Resultado | O que acontece |
+| Result | What happens |
 |-----------|----------------|
-| **Número válido** | Toca uma mensagem de áudio (pista, instrução, história) |
-| **Número não cadastrado** | Toca "esse número não existe" |
+| **Valid number** | Plays an audio message (hint, instruction, story) |
+| **Unregistered number** | Plays "this number does not exist" |
 
-> **Exemplo:** Digitar `1234` toca a mensagem associada a esse número.
+> **Example:** Dialing `1234` plays the message associated with that number.
 
-### 4. Ações especiais (opcional)
+### 4. Special actions (optional)
 
-O sistema possui uma **saída controlada por relê** que pode ser acionada para executar ações especiais, como:
-- Destravar uma fechadura
-- Acionar um mecanismo
-- Revelar um compartimento
+The system has a **relay-controlled output** that can be triggered to perform special actions, such as:
+- Unlocking a lock
+- Triggering a mechanism
+- Revealing a compartment
 
-**Para ativar a ação especial:**
-Basta salvar um arquivo com extensão `.txt` para um número que já possua o arquivo `.mp3`. Por exemplo, para abrir uma porta ao discar `123`, você precisa ter dois arquivos:
-- `123.mp3` — a mensagem de áudio
-- `123.txt` — arquivo que indica que o relê deve ser acionado (o conteúdo não importa)
+**To activate the special action:**
+Simply save a file with a `.txt` extension for a number that already has the `.mp3` file. For example, to open a door when dialing `123`, you need two files:
+- `123.mp3` — the audio message
+- `123.txt` — file that indicates the relay must be triggered (the content does not matter)
 
-### 5. Desligue o telefone
+### 5. Hang up the phone
 
-Para fazer uma nova consulta, os jogadores devem **colocar o fone de volta no gancho**. Isso reinicia o sistema automaticamente.
+To make a new query, players must **put the handset back on the hook**. This resets the system automatically.
 
 ---
 
-## Para o Organizador do Jogo
+## For the Game Organizer
 
-### Configurando as mensagens
+### Configuring the messages
 
-O sistema funciona como uma **central de áudio interativa**. Você define quais mensagens serão tocadas para cada número.
+The system works as an **interactive audio center**. You define which messages will be played for each number.
 
-**Ideias de uso:**
+**Usage ideas:**
 
-| Cenário | Como usar |
+| Scenario | How to use |
 |---------|-----------|
-| **Central de pistas** | Números espalhados na sala revelam pistas quando digitados |
-| **Telefone da gerência** | Um número "liga para o chefe" e dá a próxima instrução |
-| **Linha direta** | Apenas um número específico funciona (ex: emergência) |
-| **Narrativa** | Cada número representa um personagem diferente com informações úteis |
+| **Hint center** | Numbers scattered around the room reveal hints when dialed |
+| **Management phone** | A number "calls the boss" and gives the next instruction |
+| **Hotline** | Only one specific number works (e.g. emergency) |
+| **Narrative** | Each number represents a different character with useful information |
 
 ---
 
-## Configuração do Cartão de Memória
+## Memory Card Configuration
 
-O sistema usa um **cartão SD** para armazenar as mensagens personalizadas.
+The system uses an **SD card** to store the custom messages.
 
-### Arquivos no cartão SD
+### Files on the SD card
 
-Os sons do sistema (tom de discagem, beeps das teclas, mensagem "número não existe") já vêm configurados de fábrica e não podem ser alterados.
+The system sounds (dial tone, key beeps, "number does not exist" message) are already configured from the factory and cannot be changed.
 
-No cartão SD, você só precisa colocar as **mensagens personalizadas** que criar:
+On the SD card, you only need to put the **custom messages** you create:
 
-| Arquivo | Função |
+| File | Function |
 |---------|--------|
-| `[numero].mp3` | Mensagem para cada número (ex: `1234.mp3`) |
-| `[numero].txt` | Arquivo que ativa a saída por relê (opcional) |
+| `[number].mp3` | Message for each number (e.g. `1234.mp3`) |
+| `[number].txt` | File that activates the relay output (optional) |
 
-### Formato dos arquivos de áudio
+### Audio file format
 
-- **Formato:** MP3
-- **Taxa de bits:** 128 kbps (recomendado)
-- **Frequência:** 44 kHz
-- **Canais:** Estéreo
+- **Format:** MP3
+- **Bit rate:** 128 kbps (recommended)
+- **Frequency:** 44 kHz
+- **Channels:** Stereo
 
-> **Nota:** Arquivos com tags ID3 podem não funcionar corretamente. Recomenda-se remover as tags antes de usar.
+> **Note:** Files with ID3 tags may not work correctly. It is recommended to remove the tags before use.
 
-### Formato do cartão SD
+### SD card format
 
-- **Sistema de arquivos:** FAT32
-- **Capacidade máxima:** 32 GB
-- **Tamanho recomendado:** 2-8 GB são suficientes
+- **File system:** FAT32
+- **Maximum capacity:** 32 GB
+- **Recommended size:** 2-8 GB are enough
 
-### Compatibilidade de cartões
+### Card compatibility
 
-**Funcionam bem:**
-- Cartões SD de classe 4, 6 ou 10
-- Marcas conhecidas (SanDisk, Kingston, Samsung)
+**Work well:**
+- Class 4, 6 or 10 SD cards
+- Known brands (SanDisk, Kingston, Samsung)
 
-**Podem apresentar problemas:**
-- Cartões SDXC (acima de 32 GB)
-- Cartões de alta velocidade (UHS-I, UHS-II)
-- Cartões muito antigos (menos de 1 GB)
-- Adaptadores genéricos de microSD para SD
+**May have problems:**
+- SDXC cards (above 32 GB)
+- High-speed cards (UHS-I, UHS-II)
+- Very old cards (less than 1 GB)
+- Generic microSD to SD adapters
 
-> **Dica:** Se o sistema não reconhecer o cartão, tente outro modelo ou formate novamente em FAT32.
+> **Tip:** If the system does not recognize the card, try another model or format it again in FAT32.
 
 ---
 
-## Saída Auxiliar por Relê
+## Auxiliary Relay Output
 
-O sistema possui uma **saída por relê** para conectar dispositivos externos:
+The system has a **relay output** to connect external devices:
 
-- **Fechaduras elétricas** — destrava uma porta ao digitar o número correto
-- **Luzes** — aciona iluminação especial
-- **Motores** — ativa mecanismos ou movimentações
-- **Solenoides** — abre gavetas ou compartimentos secretos
+- **Electric locks** — unlocks a door when the correct number is dialed
+- **Lights** — triggers special lighting
+- **Motors** — activates mechanisms or movements
+- **Solenoids** — opens drawers or secret compartments
 
-### Ligação do relê
+### Relay wiring
 
-O cabo de saída possui três fios:
-| Cor | Função |
+The output cable has three wires:
+| Color | Function |
 |-----|--------|
-| **Azul** | Comum (C) |
-| **Preto** | Normalmente Aberto (NA) |
-| **Marrom** | Normalmente Fechado (NF) |
+| **Blue** | Common (C) |
+| **Black** | Normally Open (NO) |
+| **Brown** | Normally Closed (NC) |
 
-> Conecte o fio **azul** ao comum da fechadura, e o **preto** ou **marrom** conforme o tipo de acionamento desejado.
+> Connect the **blue** wire to the common of the lock, and the **black** or **brown** according to the desired triggering type.
 
-### Como ativar a saída
+### How to activate the output
 
-Para que um número acione o relê, crie dois arquivos com o mesmo nome no cartão SD:
-1. `[numero].mp3` — a mensagem de áudio
-2. `[numero].txt` — arquivo que indica que deve acionar o relê (o conteúdo não importa)
+For a number to trigger the relay, create two files with the same name on the SD card:
+1. `[number].mp3` — the audio message
+2. `[number].txt` — file that indicates the relay must be triggered (the content does not matter)
 
-### Cuidados com fechaduras
+### Lock precautions
 
-**Fonte de alimentação:** Use uma fonte de qualidade para alimentar a fechadura. Fontes ruins ou de baixa capacidade podem causar quedas de tensão que interferem no funcionamento do telefone.
+**Power supply:** Use a quality power supply to feed the lock. Poor or low-capacity supplies can cause voltage drops that interfere with the phone's operation.
 
-**Proteção do circuito:** Fechaduras e solenoides devem possuir um **diodo flyback** (também chamado de diodo de roda livre) instalado em paralelo com a bobina. Isso protege o circuito do telefone contra picos de tensão gerados quando o relê desliga.
+**Circuit protection:** Locks and solenoids must have a **flyback diode** (also called a freewheeling diode) installed in parallel with the coil. This protects the phone's circuit against voltage spikes generated when the relay turns off.
 
-> **Importante:** Sem o diodo flyback adequado, o telefone pode apresentar mal funcionamento ou até mesmo danos permanentes.
+> **Important:** Without the proper flyback diode, the phone may malfunction or even suffer permanent damage.
 
-## Resolução de problemas
+## Troubleshooting
 
-### O telefone não emite som
-1. Verifique se o telefone está ligado na energia
-2. Confirme que o fone está fora do gancho
-3. Aguarde alguns segundos após levantar o fone
-4. Verifique se o cartão SD está inserido corretamente
+### The phone does not emit sound
+1. Check that the phone is connected to power
+2. Confirm that the handset is off the hook
+3. Wait a few seconds after lifting the handset
+4. Check that the SD card is inserted correctly
 
-### O teclado/disco não responde
-1. Certifique-se de que o fone está fora do gancho
-2. Verifique se há som de discagem (indica que está pronto)
-3. Tente digitar mais lentamente
+### The keypad/dial does not respond
+1. Make sure the handset is off the hook
+2. Check whether there is a dial tone (indicates it is ready)
+3. Try dialing more slowly
 
-### A fechadura não aciona
-1. Verifique se os arquivos estão corretos — é necessário ter **ambos** os arquivos `[numero].mp3` e `[numero].txt` para o relê acionar
-2. Teste o número e aguarde a mensagem terminar — o relê só aciona ao final da reprodução
-3. Verifique a fonte de alimentação da fechadura — fontes fracas podem não fornecer corrente suficiente
-4. Ouça o relê — ao acionar, ele faz um **ruído de comutação característico** (estalo mecânico)
-5. Confira a ligação dos fios — azul no comum, preto ou marrom conforme o tipo de acionamento
+### The lock does not trigger
+1. Check that the files are correct — you need **both** files `[number].mp3` and `[number].txt` for the relay to trigger
+2. Test the number and wait for the message to finish — the relay only triggers at the end of playback
+3. Check the lock's power supply — weak supplies may not provide enough current
+4. Listen to the relay — when triggered, it makes a **characteristic switching noise** (mechanical click)
+5. Check the wire connections — blue on common, black or brown according to the triggering type
 
-### Som ruim ou distorcido
-1. Verifique se há obstáculos bloqueando o alto-falante
-2. Verifique a qualidade dos arquivos MP3 — converta novamente se necessário
-3. Em caso de chiado constante, verifique a fonte de alimentação
+### Poor or distorted sound
+1. Check for obstacles blocking the speaker
+2. Check the quality of the MP3 files — convert them again if necessary
+3. In case of constant hissing, check the power supply
 
-### Mensagens não aparecem
-1. Confirme que os arquivos MP3 estão na raiz do cartão SD
-2. Verifique se os nomes dos arquivos correspondem exatamente aos números digitados
-3. Certifique-se de que o formato é MP3 e não outro formato de áudio
-
----
-
-## Dicas para uma boa experiência
-
-### Para os jogadores:
-- **Escutem atentamente** — as mensagens não se repetem automaticamente
-- **Anotem as informações** — pistas importantes podem estar nas mensagens
-- **Explorem números** — números aparentemente aleatórios no cenário podem ser úteis
-- **Se não souberem, tentem** — números errados não penalizam, apenas dizem "não existe"
-
-### Para o organizador:
-- **Teste todos os números** antes do jogo
-- **Tenha um backup** das mensagens importantes
-- **Prepare o gancho** — certifique-se de que o sensor físico está funcionando bem
-- **Use cartões SD confiáveis** — cartões de baixa qualidade podem falhar durante o jogo
+### Messages do not appear
+1. Confirm that the MP3 files are in the root of the SD card
+2. Check that the file names exactly match the dialed numbers
+3. Make sure the format is MP3 and not another audio format
 
 ---
 
-## Especificações
+## Tips for a good experience
 
-| Recurso | Descrição |
+### For the players:
+- **Listen carefully** — the messages do not repeat automatically
+- **Write down the information** — important hints may be in the messages
+- **Explore numbers** — apparently random numbers in the scene may be useful
+- **If unsure, try** — wrong numbers are not penalized, they only say "does not exist"
+
+### For the organizer:
+- **Test all the numbers** before the game
+- **Have a backup** of the important messages
+- **Prepare the hook** — make sure the physical sensor is working well
+- **Use reliable SD cards** — low-quality cards may fail during the game
+
+---
+
+## Specifications
+
+| Feature | Description |
 |---------|-----------|
-| **Entrada** | Teclado numérico 4x3 ou disco rotativo |
-| **Capacidade** | Até 8 dígitos por número |
-| **Timeout** | 3 segundos sem digitar |
-| **Áudio** | Mensagens personalizadas em MP3 |
-| **Saída opcional** | Pode acionar fechaduras ou dispositivos |
-| **Armazenamento** | Cartão SD até 32 GB (FAT32) |
+| **Input** | 4x3 numeric keypad or rotary dial |
+| **Capacity** | Up to 8 digits per number |
+| **Timeout** | 3 seconds without dialing |
+| **Audio** | Custom messages in MP3 |
+| **Optional output** | Can trigger locks or devices |
+| **Storage** | SD card up to 32 GB (FAT32) |
 
 ---
 
-## Suporte
+## Support
 
-Para problemas técnicos ou dúvidas de configuração, consulte a documentação técnica do sistema ou o fabricante.
+For technical problems or configuration questions, consult the system's technical documentation or the manufacturer.
 
 ---
 
-**Versão:** 1.3  
-**Data:** 2026-04-23
+**Version:** 1.3  
+**Date:** 2026-04-23

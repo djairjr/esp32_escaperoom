@@ -3,7 +3,7 @@
 
 namespace universal_controller {
 
-// Helper para converter RGB para uint32_t
+// Helper to convert RGB to uint32_t
 inline uint32_t Color(uint8_t r, uint8_t g, uint8_t b) {
     return ((uint32_t)r << 16) | ((uint32_t)g << 8) | b;
 }
@@ -21,7 +21,7 @@ ConfigManager::ConfigManager(const char* path) {
 
 bool ConfigManager::begin() {
     if (!LittleFS.begin()) {
-        Serial.println("[ConfigManager] Falha ao montar LittleFS");
+        Serial.println("[ConfigManager] Failed to mount LittleFS");
         return false;
     }
     return true;
@@ -29,7 +29,7 @@ bool ConfigManager::begin() {
 
 bool ConfigManager::loadDefaults() {
     // Controller
-    strncpy(controller_.name, "Puzzle Universal", sizeof(controller_.name));
+    strncpy(controller_.name, "Universal Puzzle", sizeof(controller_.name));
     controller_.id = 1;
     controller_.enabled = true;
 
@@ -90,7 +90,7 @@ bool ConfigManager::loadDefaults() {
 bool ConfigManager::loadConfig() {
     File file = LittleFS.open(configPath_, "r");
     if (!file) {
-        Serial.printf("[ConfigManager] %s nao encontrado, usando defaults\n", configPath_);
+        Serial.printf("[ConfigManager] %s not found, using defaults\n", configPath_);
         return false;
     }
 
@@ -99,7 +99,7 @@ bool ConfigManager::loadConfig() {
     file.close();
 
     if (error) {
-        Serial.printf("[ConfigManager] Erro ao parsear JSON: %s\n", error.c_str());
+        Serial.printf("[ConfigManager] Error parsing JSON: %s\n", error.c_str());
         return false;
     }
 
@@ -130,7 +130,7 @@ bool ConfigManager::loadConfig() {
     }
 
     if (success) {
-        Serial.println("[ConfigManager] Configuração carregada com sucesso");
+        Serial.println("[ConfigManager] Configuration loaded successfully");
     }
 
     return success;
@@ -139,7 +139,7 @@ bool ConfigManager::loadConfig() {
 bool ConfigManager::saveConfig() {
     File file = LittleFS.open(configPath_, "w");
     if (!file) {
-        Serial.println("[ConfigManager] Falha ao abrir arquivo para escrita");
+        Serial.println("[ConfigManager] Failed to open file for writing");
         return false;
     }
 
@@ -203,7 +203,7 @@ bool ConfigManager::saveConfig() {
     idle.add((neopixel_.colorIdle >> 16) & 0xFF);
     idle.add((neopixel_.colorIdle >> 8) & 0xFF);
     idle.add(neopixel_.colorIdle & 0xFF);
-    // ... outros cores
+    // ... other colors
 
     // RS485
     JsonObject rs485 = doc.createNestedObject("rs485");

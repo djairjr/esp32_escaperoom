@@ -1,21 +1,21 @@
 /**
  * ESCAPE ROOM PHONE - ESP32-S3 (Seeed XIAO)
- * Port do RP2040 PropMaker → ESP32-S3 usando ESP32EscapeRoom
+ * Port from RP2040 PropMaker -> ESP32-S3 using ESP32EscapeRoom
  *
- * MODO DE ENTRADA (descomente UM):
- * - (nenhum): Keypad I2C com PCF8574/8575 (padrão)
- * - #define KEYPAD_GPIO: Keypad via GPIO direto
- * - #define USE_ROTARY_DIAL: Disco rotativo de telefone
+ * INPUT MODE (uncomment ONE):
+ * - (none): I2C Keypad with PCF8574/8575 (default)
+ * - #define KEYPAD_GPIO: Keypad via direct GPIO
+ * - #define USE_ROTARY_DIAL: Phone rotary dial
  */
 
 // ============================================================================
-// SELEÇÃO DE MODO (~linha 10)
+// MODE SELECTION (~line 10)
 // ============================================================================
 // #define KEYPAD_GPIO
 // #define USE_ROTARY_DIAL
 
 // ============================================================================
-// INCLUDES (~linha 15)
+// INCLUDES (~line 15)
 // ============================================================================
 #include <ESP32EscapeRoom.h>
 #include <esp32_escaperoom/ConfigManager.h>
@@ -25,7 +25,7 @@
 using namespace esp32_escaperoom;
 
 // ============================================================================
-// MAPEAMENTO D-PIN → GPIO (XIAO ESP32-S3) (~linha 25)
+// D-PIN -> GPIO MAPPING (XIAO ESP32-S3) (~line 25)
 // ============================================================================
 #define D0   1
 #define D1   2
@@ -42,12 +42,12 @@ using namespace esp32_escaperoom;
 #define D12  41
 
 // ============================================================================
-// PINAGEM (~linha 38)
+// PINOUT (~line 38)
 // ============================================================================
 #define PIN_HOOK            D7
 #define PIN_DOORLOCK        D0
-#define PIN_RING_A          D1   // L298 IN1 ou BUZZER
-#define PIN_RING_B          D12  // L298 IN2 (só Rotary)
+#define PIN_RING_A          D1   // L298 IN1 or BUZZER
+#define PIN_RING_B          D12  // L298 IN2 (Rotary only)
 #define PIN_ROTARY_PULSE    D4
 
 #define HOOK_ON_HOOK        HIGH
@@ -59,7 +59,7 @@ using namespace esp32_escaperoom;
 #define MAX_PHONE_DIGITS    8
 
 // ============================================================================
-// ARQUIVOS DE ÁUDIO (~linha 52)
+// AUDIO FILES (~line 52)
 // ============================================================================
 const char* FILE_DIALTONE = "/dialtone.mp3";
 const char* FILE_BUSY     = "/busy.mp3";
@@ -83,11 +83,11 @@ const char* CALL_MESSAGE_FILES[] = {
     "/call_msg_4.mp3","/call_msg_5.mp3"
 };
 const char* CALL_MESSAGE_NAMES[] = {
-    "Mensagem 1","Mensagem 2","Mensagem 3","Mensagem 4","Mensagem 5"
+    "Message 1","Message 2","Message 3","Message 4","Message 5"
 };
 
 // ============================================================================
-// ESTADOS DO TELEFONE (~linha 76)
+// PHONE STATES (~line 76)
 // ============================================================================
 enum PhoneState : uint8_t {
     PHONE_IDLE      = 0,
@@ -100,7 +100,7 @@ enum PhoneState : uint8_t {
 };
 
 // ============================================================================
-// ISR DO GANCHO (~linha 88)
+// HOOK ISR (~line 88)
 // ============================================================================
 volatile bool isHookedGlobal = true;
 
@@ -114,7 +114,7 @@ void IRAM_ATTR handleHookISR() {
 }
 
 // ============================================================================
-// CONFIGURAÇÃO DE ENTRADA (~linha 102)
+// INPUT CONFIGURATION (~line 102)
 // ============================================================================
 
 #ifdef USE_ROTARY_DIAL
@@ -169,13 +169,13 @@ MatrixKeyboardManager keypadManager;
 #endif
 
 // ============================================================================
-// FORWARD DECLARATIONS (~linha 140)
+// FORWARD DECLARATIONS (~line 140)
 // ============================================================================
 class PhonePuzzle;
 extern PhonePuzzle phone;
 
 // ============================================================================
-// ENTIDADES HA — GLOBAIS (auto-registradas pelo construtor) (~linha 146)
+// HA ENTITIES — GLOBALS (auto-registered by the constructor) (~line 146)
 // ============================================================================
 HASensor haSensorHook("hook");
 HASensor haSensorDialed("dialed");
@@ -187,7 +187,7 @@ HAButton haBtnEndCall("end_call");
 HASelect haSelectMsg("call_message");
 
 // ============================================================================
-// CLASSE PHONE PUZZLE (~linha 168)
+// PHONE PUZZLE CLASS (~line 168)
 // ============================================================================
 class PhonePuzzle : public PuzzleBase {
 public:
@@ -205,7 +205,7 @@ public:
         attachInterrupt(digitalPinToInterrupt(PIN_HOOK), handleHookISR, CHANGE);
         hw.sound().setVolume(89);
 
-        Serial.printf("[PHONE] HW Ready. Gancho: %s\n", isHookedGlobal ? "ON HOOK" : "OFF HOOK");
+        Serial.printf("[PHONE] HW Ready. Hook: %s\n", isHookedGlobal ? "ON HOOK" : "OFF HOOK");
     }
 
     void update() override {
@@ -214,7 +214,7 @@ public:
 
         if(currentHook != isHookedGlobal) {
             isHookedGlobal = currentHook;
-            Serial.printf("[PHONE] Gancho: %s\n", isHookedGlobal ? "ON HOOK" : "OFF HOOK");
+            Serial.printf("[PHONE] Hook: %s\n", isHookedGlobal ? "ON HOOK" : "OFF HOOK");
             if(isHookedGlobal) {
                 hw.sound().stop(); phoneState = PHONE_IDLE; resetPhone();
                 haSensorHook.setValue("on_hook");
@@ -285,7 +285,7 @@ public:
     }
 
     // ========================================================================
-    // API PÚBLICA
+    // PUBLIC API
     // ========================================================================
 
     void startCall() {
@@ -294,7 +294,7 @@ public:
         phoneState = PHONE_CALLING;
         startRing();
         haSensorState.setValue("calling");
-        Serial.printf("[PHONE] Chamada iniciada. Msg: %d\n", callMessageIndex);
+        Serial.printf("[PHONE] Call started. Msg: %d\n", callMessageIndex);
     }
 
     void endCall() {
@@ -303,7 +303,7 @@ public:
             phoneState = PHONE_IDLE; hw.sound().stop(); resetPhone();
             haSensorState.setValue("onhook");
         }
-        Serial.println("[PHONE] Chamada encerrada.");
+        Serial.println("[PHONE] Call ended.");
     }
 
     void ringBell(uint16_t durationMs = 3000) {
@@ -319,30 +319,30 @@ public:
     void selectMessage(int8_t index) {
         if(index >= 0 && index < CALL_MESSAGE_COUNT) {
             callMessageIndex = index;
-            Serial.printf("[PHONE] Msg selecionada: %d\n", index);
+            Serial.printf("[PHONE] Msg selected: %d\n", index);
         }
     }
 
     void setupHA() {
-        haSensorHook.setName("Estado do Gancho");    haSensorHook.setIcon("mdi:phone");
-        haSensorDialed.setName("Número Discado");    haSensorDialed.setIcon("mdi:phone-dial");
-        haSensorState.setName("Estado do Telefone"); haSensorState.setIcon("mdi:phone-classic");
+        haSensorHook.setName("Hook State");      haSensorHook.setIcon("mdi:phone");
+        haSensorDialed.setName("Dialed Number"); haSensorDialed.setIcon("mdi:phone-dial");
+        haSensorState.setName("Phone State");    haSensorState.setIcon("mdi:phone-classic");
 
-        haLock.setName("Fechadura");  haLock.setIcon("mdi:lock");
+        haLock.setName("Lock");  haLock.setIcon("mdi:lock");
         haLock.onCommand(haLockCallback);
 
-        haBtnRing.setName("Tocar Campainha");         haBtnRing.setIcon("mdi:bell-ring");
+        haBtnRing.setName("Ring Bell");               haBtnRing.setIcon("mdi:bell-ring");
         haBtnRing.onCommand(haRingCallback);
-        haBtnStartCall.setName("Iniciar Chamada");    haBtnStartCall.setIcon("mdi:phone-incoming");
+        haBtnStartCall.setName("Start Call");         haBtnStartCall.setIcon("mdi:phone-incoming");
         haBtnStartCall.onCommand(haStartCallCallback);
-        haBtnEndCall.setName("Encerrar Chamada");     haBtnEndCall.setIcon("mdi:phone-hangup");
+        haBtnEndCall.setName("End Call");             haBtnEndCall.setIcon("mdi:phone-hangup");
         haBtnEndCall.onCommand(haEndCallCallback);
 
-        haSelectMsg.setName("Mensagem da Chamada");   haSelectMsg.setIcon("mdi:message-text");
-        haSelectMsg.setOptions("Mensagem 1;Mensagem 2;Mensagem 3;Mensagem 4;Mensagem 5");
+        haSelectMsg.setName("Call Message");          haSelectMsg.setIcon("mdi:message-text");
+        haSelectMsg.setOptions("Message 1;Message 2;Message 3;Message 4;Message 5");
         haSelectMsg.onCommand(haSelectCallback);
 
-        // Estado inicial
+        // Initial state
         haSensorHook.setValue(isHookedGlobal ? "on_hook" : "off_hook");
         haSensorDialed.setValue("---");
         haSensorState.setValue("onhook");
@@ -366,7 +366,7 @@ private:
     void resetPhone() {
         dialed = ""; audioPlayed = false; dialtoneSent = false;
         isBusyState = false; waitingForStart = false; newline = true; stopRing();
-        // Zera buffer do RotaryDial para evitar digito fantasma da ISR durante reproducao
+        // Clears the RotaryDial buffer to avoid a ghost digit from the ISR during playback
         #ifdef USE_ROTARY_DIAL
         if (rotaryDial) rotaryDial->reset();
         #endif
@@ -391,7 +391,7 @@ private:
             if(SD.exists(txtPath.c_str())) {
                 hw.digitalWrite(PIN_DOORLOCK, LOCK_ACTIVE);
                 haLock.setState(HALock::StateLocked);
-                Serial.println("[PHONE] Fechadura acionada!");
+                Serial.println("[PHONE] Lock triggered!");
             }
         } else {
             hw.sound().playOnceBlocking(FILE_INVALID);
@@ -404,7 +404,7 @@ private:
         bool m = (dialed.length() == MAX_PHONE_DIGITS);
         bool t = (!newline && millis() - lastDigitAt > DIAL_TIMEOUT_MS);
         if((m||t) && dialed.length()>0){
-            Serial.printf("\n[PHONE] %s\n",m?"Limite!":"Timeout.");
+            Serial.printf("\n[PHONE] %s\n",m?"Limit!":"Timeout.");
             if(m) delay(300); processCall();
         }
     }
@@ -480,7 +480,7 @@ private:
 };
 
 // ============================================================================
-// CALLBACKS HA (funções globais, chamam a instância phone)
+// HA CALLBACKS (global functions, call the phone instance)
 // ============================================================================
 void haLockCallback(HALock::LockCommand cmd, HALock*) {
     phone.setLock(cmd == HALock::CommandLock);
@@ -491,7 +491,7 @@ void haEndCallCallback(HAButton*) { phone.endCall(); }
 void haSelectCallback(int8_t idx, HASelect*) { phone.selectMessage(idx); }
 
 // ============================================================================
-// INSTÂNCIAS GLOBAIS (~linha 350)
+// GLOBAL INSTANCES (~line 350)
 // ============================================================================
 PhonePuzzle phone;
 LogicManager master(1);
@@ -501,7 +501,7 @@ HADevice haDevice;
 HAMqtt haMqtt(wifiClient, haDevice);
 
 // ============================================================================
-// SETUP (~linha 360)
+// SETUP (~line 360)
 // ============================================================================
 void setup() {
     Serial.begin(115200);
@@ -529,7 +529,7 @@ void setup() {
     #if defined(USE_ROTARY_DIAL)
     rotaryDial = hw.createRotaryDial(PIN_ROTARY_PULSE);
     if(rotaryDial) Serial.println(F("[SETUP] Rotary OK"));
-    else Serial.println(F("[SETUP] ERRO Rotary"));
+    else Serial.println(F("[SETUP] Rotary ERROR"));
     #elif defined(KEYPAD_GPIO)
     keypadGpio.begin(); Serial.println(F("[SETUP] Keypad GPIO OK"));
     #else
@@ -542,11 +542,11 @@ void setup() {
     master.addPuzzle(&phone);
     master.begin();
     phone.run();
-    Serial.println(F("[PHONE] Pronto!"));
+    Serial.println(F("[PHONE] Ready!"));
 }
 
 // ============================================================================
-// LOOP (~linha 398)
+// LOOP (~line 398)
 // ============================================================================
 void loop() {
     haMqtt.loop();

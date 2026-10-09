@@ -1,30 +1,30 @@
-# BallMaze — Entidades Home Assistant
+# BallMaze — Home Assistant Entities
 
-## Sensores
-| Nome | ID | Valores |
+## Sensors
+| Name | ID | Values |
 |---|---|---|
-| Estado | `state` | idle, running, solved |
-| Alvos Atingidos | `targets_hit` | 0-N |
-| Posição Bola X | `ball_x` | 0-mazeW |
-| Posição Bola Y | `ball_y` | 0-mazeH |
+| State | `state` | idle, running, solved |
+| Targets Hit | `targets_hit` | 0-N |
+| Ball Position X | `ball_x` | 0-mazeW |
+| Ball Position Y | `ball_y` | 0-mazeH |
 
-## Binários (por alvo)
-| Nome | ID |
+## Binary sensors (per target)
+| Name | ID |
 |---|---|
-| Alvo 1..8 | `target_1`..`target_8` |
+| Target 1..8 | `target_1`..`target_8` |
 
-## Botões
-| Nome | ID |
+## Buttons
+| Name | ID |
 |---|---|
-| Iniciar | `start` |
-| Resetar | `reset` |
+| Start | `start` |
+| Reset | `reset` |
 
-## Números
-| Nome | ID | Range |
+## Numbers
+| Name | ID | Range |
 |---|---|---|
-| Sensibilidade | `accel_scale` | 100-1000 |
-| Amortecimento | `damping` | 1-10 |
-| Nº Alvos | `target_count` | 2-8 |
+| Sensitivity | `accel_scale` | 100-1000 |
+| Damping | `damping` | 1-10 |
+| No. Targets | `target_count` | 2-8 |
 
 ## AP Mode
-Rede WiFi "BallMaze-XXXX" + portal em 192.168.4.1.
+WiFi network "BallMaze-XXXX" + portal at 192.168.4.1.

@@ -1,43 +1,43 @@
 # UniversalController
 
-Controladora Universal Configurável para Escape Room usando a biblioteca PropMaker EscapeRoom.
+Universal Configurable Escape Room Controller using the PropMaker EscapeRoom library.
 
-## Visão Geral
+## Overview
 
-A UniversalController é um puzzle configurável via arquivo JSON que suporta múltiplos modos de operação, feedback audiovisual integrado e comunicação RS485 opcional.
+The UniversalController is a JSON-configurable puzzle that supports multiple operating modes, integrated audiovisual feedback, and optional RS485 communication.
 
-## Modos de Puzzle
+## Puzzle Modes
 
 ### 1. CUSTOM_SEQUENCE
-Sequência customizada definida no arquivo JSON.
-- **Exemplo**: `sequence: [1, 5, 3, 8, 2]`
-- As entradas devem ser acionadas na ordem expecificada
+Custom sequence defined in the JSON file.
+- **Example**: `sequence: [1, 5, 3, 8, 2]`
+- Inputs must be triggered in the specified order
 
 ### 2. LINEAR_SEQUENCE
-Ordem linear das entradas.
-- **Comportamento**: 0 → 1 → 2 → 3 → ...
-- Útil para puzzles de progressão simples
+Linear order of inputs.
+- **Behavior**: 0 → 1 → 2 → 3 → ...
+- Useful for simple progression puzzles
 
 ### 3. ALL_CONNECTED
-Todas as entradas devem ser ativadas, ordem não importa.
-- **Comportamento**: AND lógico das entradas
-- Progresso aumenta conforme cada entrada é ativada
+All inputs must be activated, order does not matter.
+- **Behavior**: logical AND of the inputs
+- Progress increases as each input is activated
 
 ### 4. RANDOM
-Sequência aleatória gerada automaticamente no boot.
-- Cada vez que inicia, gera uma nova ordem
-- Não há repetições na sequência
+Random sequence generated automatically at boot.
+- Each time it starts, a new order is generated
+- There are no repetitions in the sequence
 
 ## Hardware
 
-### Requisitos
+### Requirements
 - Adafruit PropMaker Feather RP2040
-- PCF8575 (expansor I2C para entradas)
-- NeoPixel (LEDs endereçáveis)
-- SD Card (para sons MP3)
-- PCA9685 (opcional, para saída PWM)
+- PCF8575 (I2C expander for inputs)
+- NeoPixel (addressable LEDs)
+- SD Card (for MP3 sounds)
+- PCA9685 (optional, for PWM output)
 
-### Conexões
+### Connections
 ```
 PCF8575:
 - SDA -> GPIO 24 (I2C)
@@ -45,30 +45,30 @@ PCF8575:
 - VCC -> 3.3V
 - GND -> GND
 
-Entradas digitais (PCF8575):
-- P0-P15: Conectar botões (INPUT_PULLUP, ativo em LOW)
+Digital inputs (PCF8575):
+- P0-P15: Connect buttons (INPUT_PULLUP, active on LOW)
 
 NeoPixel:
 - Data -> GPIO 21 (EXTERNAL_NEOPIXEL)
 - VCC -> 5V (via POWER_EXT)
 - GND -> GND
 
-Saída Relê/Trava:
-- Pino 10 (RELAY)
+Relay/Lock Output:
+- Pin 10 (RELAY)
 ```
 
-## Configuração
+## Configuration
 
-### Arquivo config.json
+### config.json File
 
-O arquivo `data/config.json` deve ser gravado no LittleFS da placa.
+The `data/config.json` file must be written to the board's LittleFS.
 
-#### Estrutura
+#### Structure
 
 ```json
 {
   "controller": {
-    "name": "Nome do Puzzle",
+    "name": "Puzzle Name",
     "id": 1,
     "enabled": true
   },
@@ -128,46 +128,46 @@ O arquivo `data/config.json` deve ser gravado no LittleFS da placa.
 }
 ```
 
-### Exemplos de Configuração
+### Configuration Examples
 
-Vários exemplos estão disponíveis na pasta `data/`:
+Several examples are available in the `data/` folder:
 
-- **config.json**: Sequência customizada (padrão)
-- **config_linear.json**: Sequência linear
-- **config_all_connected.json**: Todas conectadas
-- **config_random.json**: Sequência aleatória
+- **config.json**: Custom sequence (default)
+- **config_linear.json**: Linear sequence
+- **config_all_connected.json**: All connected
+- **config_random.json**: Random sequence
 
-## Áudio
+## Audio
 
-### Arquivos Necessários (pasta raiz do SD Card)
+### Required Files (SD Card root folder)
 
-| Arquivo | Descrição |
+| File | Description |
 |---------|-----------|
-| `input1.mp3` - `inputN.mp3` | Sons para cada input correto |
-| `unlock.mp3` | Som quando puzzle resolvido |
-| `error.mp3` | Som quando input errado |
-| `reset.mp3` | Som quando puzzle resetado |
+| `input1.mp3` - `inputN.mp3` | Sounds for each correct input |
+| `unlock.mp3` | Sound when puzzle solved |
+| `error.mp3` | Sound when input wrong |
+| `reset.mp3` | Sound when puzzle reset |
 
-### Formato MP3
+### MP3 Format
 - Bitrate: 128 Kbps
 - Sample rate: 44.1 kHz
 - Stereo
-- Sem tags ID3 (remover com: `ffmpeg -map_metadata -1`)
+- No ID3 tags (remove with: `ffmpeg -map_metadata -1`)
 
-## Comandos Serial
+## Serial Commands
 
-Durante a execução, comandos podem ser enviados via Serial:
+During execution, commands can be sent via Serial:
 
-| Comando | Descrição |
+| Command | Description |
 |---------|-----------|
-| `start` / `run` | Inicia o puzzle |
-| `reset` | Reseta o puzzle para estado inicial |
-| `status` | Mostra status atual |
-| `solve` / `force` | Força puzzle como resolvido (debug) |
-| `config` | Mostra configuração carregada |
-| `help` | Mostra ajuda |
+| `start` / `run` | Starts the puzzle |
+| `reset` | Resets the puzzle to its initial state |
+| `status` | Shows current status |
+| `solve` / `force` | Forces puzzle as solved (debug) |
+| `config` | Shows loaded configuration |
+| `help` | Shows help |
 
-## Estados do Puzzle
+## Puzzle States
 
 ```
 IDLE → RUNNING → SOLVED
@@ -175,57 +175,57 @@ IDLE → RUNNING → SOLVED
       ERROR → (resetOnError ?) → RUNNING/IDLE
 ```
 
-- **IDLE**: Aguardando início
-- **RUNNING**: Processando inputs
-- **INPUT_CORRECT**: Feedback de input certo
-- **INPUT_WRONG**: Feedback de input errado
-- **SOLVED**: Puzzle completo
-- **ERROR**: Erro na sequência
-- **TIMEOUT**: Tempo esgotado
+- **IDLE**: Waiting to start
+- **RUNNING**: Processing inputs
+- **INPUT_CORRECT**: Correct input feedback
+- **INPUT_WRONG**: Wrong input feedback
+- **SOLVED**: Puzzle complete
+- **ERROR**: Error in the sequence
+- **TIMEOUT**: Time elapsed
 
-## Feedback Visual (NeoPixel)
+## Visual Feedback (NeoPixel)
 
-### Modos
+### Modes
 
-1. **PROGRESS_BAR** (modo 0)
-   - LEDs acendem conforme progresso
-   - Cor de fundo: `idle`
-   - Cor de progresso: `progress`
+1. **PROGRESS_BAR** (mode 0)
+   - LEDs light up as progress advances
+   - Background color: `idle`
+   - Progress color: `progress`
 
-2. **CHASE** (modo 1)
-   - Efeito de perseguição
-   - Útil para modo RANDOM
+2. **CHASE** (mode 1)
+   - Chase effect
+   - Useful for RANDOM mode
 
-3. **INDIVIDUAL** (modo 2)
-   - Cada LED representa uma entrada
+3. **INDIVIDUAL** (mode 2)
+   - Each LED represents one input
 
-### Cores
+### Colors
 
-- **idle**: Cor quando não há atividade
-- **active**: Cor quando input ativado
-- **solved**: Cor quando puzzle resolvido
-- **error**: Cor quando erro na sequência
-- **progress**: Cor da barra de progresso
+- **idle**: Color when there is no activity
+- **active**: Color when input is activated
+- **solved**: Color when puzzle solved
+- **error**: Color when error in the sequence
+- **progress**: Progress bar color
 
-## Saída PWM
+## PWM Output
 
-A saída PWM pode ser usada para:
-- Controlar voltagem de um voltímetro
-- Mover um servo conforme progresso
-- Controlar intensidade de LEDs
+The PWM output can be used to:
+- Control the voltage of a voltmeter
+- Move a servo according to progress
+- Control LED intensity
 
-O valor do PWM é calculado automaticamente:
+The PWM value is calculated automatically:
 ```
-PWM = minValue + ((maxValue - minValue) * progresso) / 100
+PWM = minValue + ((maxValue - minValue) * progress) / 100
 ```
 
-## RFID Alternativo com CH552G
+## Alternative RFID with CH552G
 
-Alternativa de baixo custo para leitores RFID. Cada CH552G executa o driver MFRC522 de forma independente e se comporta como um sensor digital convencional (LOW = tag valida, HIGH = negado).
+A low-cost alternative for RFID readers. Each CH552G runs the MFRC522 driver independently and behaves like a conventional digital sensor (LOW = valid tag, HIGH = denied).
 
-### Arquitetura
+### Architecture
 
-Diferente do MultiRFID classico (que usa um unico controlador + expansor I2C + multiplos MFRC522 no mesmo SPI), esta abordagem usa **um CH552G por leitor**:
+Unlike the classic MultiRFID (which uses a single controller + I2C expander + multiple MFRC522 on the same SPI), this approach uses **one CH552G per reader**:
 
 ```
 PropMaker RP2040 (Universal Controller)
@@ -236,28 +236,28 @@ PropMaker RP2040 (Universal Controller)
   └── ...     ←── CH552G #N (P1.1)  ── MFRC522 #N
 ```
 
-Cada CH552G:
-- Armazena ate 7 tags na EEPROM interna (DataFlash)
-- Tem seu proprio botao SW1 para cadastrar/limpar tags
-- Envia LOW no P1.1 quando uma tag cadastrada e detectada
-- Envia HIGH caso contrario
-- Custa uma fracao de um leitor RFID dedicado
+Each CH552G:
+- Stores up to 7 tags in internal EEPROM (DataFlash)
+- Has its own SW1 button to register/clear tags
+- Sends LOW on P1.1 when a registered tag is detected
+- Sends HIGH otherwise
+- Costs a fraction of a dedicated RFID reader
 
-### Conexao
+### Connection
 
 ```
-CH552G (P1.1)  ──  PropMaker GPIO (qualquer pino livre)
+CH552G (P1.1)  ──  PropMaker GPIO (any free pin)
 CH552G (GND)   ──  PropMaker GND
 ```
 
-Nao precisa de I2C, SPI, ou nivelador de tensao. O CH552G opera em 3.3V.
+No I2C, SPI, or level shifter needed. The CH552G operates at 3.3V.
 
-### Leitura no Sketch
+### Reading in the Sketch
 
 ```cpp
-// Cada CH552G entra como um pino digital comum
-#define RFID_TAG1_PIN  12   // Pino conectado ao CH552G #1
-#define RFID_TAG2_PIN  13  // Pino conectado ao CH552G #2
+// Each CH552G is treated as an ordinary digital pin
+#define RFID_TAG1_PIN  12   // Pin connected to CH552G #1
+#define RFID_TAG2_PIN  13  // Pin connected to CH552G #2
 
 void setup() {
   pinMode(RFID_TAG1_PIN, INPUT_PULLUP);
@@ -266,17 +266,17 @@ void setup() {
 
 void loop() {
   if (digitalRead(RFID_TAG1_PIN) == LOW) {
-    // Puzzle 1 resolvido - tag conhecida detectada
+    // Puzzle 1 solved - known tag detected
   }
   if (digitalRead(RFID_TAG2_PIN) == LOW) {
-    // Puzzle 2 resolvido
+    // Puzzle 2 solved
   }
 }
 ```
 
-### Configuracao no config.json
+### Configuration in config.json
 
-Cada CH552G ocupa 1 entrada digital do PCF8575 (assim como um botao ou chave):
+Each CH552G occupies 1 digital input of the PCF8575 (just like a button or switch):
 
 ```json
 {
@@ -285,7 +285,7 @@ Cada CH552G ocupa 1 entrada digital do PCF8575 (assim como um botao ou chave):
     "pcfAddress": "0x20",
     "pinMapping": [0, 1, 2, 3],
     "debounceMs": 50,
-    "labels": ["Botao", "Chave", "RFID_Porta1", "RFID_Porta2"]
+    "labels": ["Button", "Switch", "RFID_Door1", "RFID_Door2"]
   },
 
   "logic": {
@@ -295,30 +295,30 @@ Cada CH552G ocupa 1 entrada digital do PCF8575 (assim como um botao ou chave):
 }
 ```
 
-O pino do CH552G se conecta ao PCF8575 exatamente como um botao:
+The CH552G pin connects to the PCF8575 exactly like a button:
 ```
-CH552G (P1.1)  ──  PCF8575 P0  ──  GND via resistor 10k (pull-up externo)
+CH552G (P1.1)  ──  PCF8575 P0  ──  GND via 10k resistor (external pull-up)
 ```
 
-O PCF8575 ja tem pull-up interno, entao:
-- LOW = tag valida (CH552G puxou para GND)
-- HIGH = sem tag ou desconhecida (pull-up mantem HIGH)
+The PCF8575 already has an internal pull-up, so:
+- LOW = valid tag (CH552G pulled to GND)
+- HIGH = no tag or unknown tag (pull-up keeps it HIGH)
 
-### Vantagens
+### Advantages
 
-| Caracteristica | MultiRFID classico | CH552G alternativo |
+| Feature | Classic MultiRFID | CH552G alternative |
 |---------------|-------------------|-------------------|
-| Custo por leitor | Alto (expansor I2C + leitor) | Baixo (CH552G + MFRC522) |
-| Complexidade | Protocolo I2C + biblioteca | Sensor digital simples |
-| Leitores por placa | Limitado a 8 (PCF) | Ilimitado (1 pino cada) |
-| Autonomia | Depende da central | Independente (EEPROM propria) |
-| Cadastro de tags | Via config.json | Via botao SW1 local |
+| Cost per reader | High (I2C expander + reader) | Low (CH552G + MFRC522) |
+| Complexity | I2C protocol + library | Simple digital sensor |
+| Readers per board | Limited to 8 (PCF) | Unlimited (1 pin each) |
+| Autonomy | Depends on the hub | Independent (own EEPROM) |
+| Tag registration | Via config.json | Via local SW1 button |
 
-## RS485 (Opcional)
+## RS485 (Optional)
 
-Para integração em rede de puzzles:
+For integration into a puzzle network:
 
-1. Habilitar em `config.json`:
+1. Enable it in `config.json`:
    ```json
    "rs485": {
      "enabled": true,
@@ -327,43 +327,43 @@ Para integração em rede de puzzles:
    }
    ```
 
-2. Conectar módulo RS485:
+2. Connect the RS485 module:
    - TX -> GPIO 0
    - RX -> GPIO 1
 
-## Compilação
+## Compilation
 
-Usando Arduino CLI:
+Using Arduino CLI:
 
 ```bash
 arduino-cli compile --fqbn rp2040:rp2040:adafruit_feather_prop_maker UniversalController.ino
 ```
 
-## Upload do Sketch
+## Sketch Upload
 
 ```bash
 arduino-cli upload --fqbn rp2040:rp2040:adafruit_feather_prop_maker --port COM3 UniversalController.ino
 ```
 
-## Upload da Configuração (LittleFS)
+## Configuration Upload (LittleFS)
 
-Usando plugin LittleFS para Arduino:
+Using the LittleFS plugin for Arduino:
 
 ```bash
-# Empacota pasta data/
-# Faz upload para a placa
+# Packages the data/ folder
+# Uploads to the board
 ```
 
-Ou via código no setup (primeira vez):
+Or via code in setup (first time):
 
 ```cpp
-// Copiar config.json do SD para LittleFS
+// Copy config.json from SD to LittleFS
 File src = SD.open("/config.json");
 File dst = LittleFS.open("/config.json", "w");
-// ... copiar conteúdo
+// ... copy content
 ```
 
-## Dependências
+## Dependencies
 
 - PropMakerEscapeRoom
 - ArduinoJson
@@ -373,6 +373,6 @@ File dst = LittleFS.open("/config.json", "w");
 - TaskManager
 - SwitchInput
 
-## Licença
+## License
 
-MIT License - Mesma da biblioteca PropMakerEscapeRoom.
+MIT License - Same as the PropMakerEscapeRoom library.

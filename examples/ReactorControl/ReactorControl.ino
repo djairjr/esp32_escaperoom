@@ -1,34 +1,34 @@
 /**
- * EXEMPLO: REACTOR CONTROL - PAINEL DE CONTROLE NUCLEAR
+ * EXAMPLE: REACTOR CONTROL - NUCLEAR CONTROL PANEL
  * ----------------------------------------------------------
- * Puzzle de ajuste analógico com potenciômetros, gauges PWM e botões.
+ * Analog adjustment puzzle with potentiometers, PWM gauges and buttons.
  *
- * NARRATIVA:
- * Reator nuclear em estado crítico. Três técnicos operam um painel de controle
- * com 3 faces. Em cada face há uma válvula (potenciômetro) e um gauge (voltímetro).
- * A válvula de uma face NUNCA controla o gauge da mesma face — o mapeamento é
- * aleatório (derangement). Além disso, cada gauge pode responder no sentido
- * normal ou reverso.
+ * NARRATIVE:
+ * Nuclear reactor in a critical state. Three technicians operate a control panel
+ * with 3 faces. On each face there is a valve (potentiometer) and a gauge (voltmeter).
+ * The valve of one face NEVER controls the gauge of the same face — the mapping is
+ * random (derangement). Furthermore, each gauge can respond in the normal or
+ * reversed direction.
  *
- * Se os jogadores falharem na confirmação (botões simultâneos), o painel
- * reconfigura o mapeamento e as orientações, forçando-os a redescobrir tudo.
+ * If the players fail the confirmation (simultaneous buttons), the panel
+ * reconfigures the mapping and the orientations, forcing them to rediscover everything.
  *
  * HARDWARE: Adafruit PropMaker Feather RP2040
- * - ADS1115 (I2C 0x48) — 3 canais para potenciômetros
- * - PCA9685 (I2C 0x40) — 3 canais PWM para voltímetros
- * - PCF8575 (I2C 0x20) — 3 botões de confirmação
- * - NeoPixel externo — 3 LEDs para feedback dos botões + barra de status
- * - Trava magnética — pino digital via hw.digitalWrite()
+ * - ADS1115 (I2C 0x48) — 3 channels for potentiometers
+ * - PCA9685 (I2C 0x40) — 3 PWM channels for voltmeters
+ * - PCF8575 (I2C 0x20) — 3 confirmation buttons
+ * - External NeoPixel — 3 LEDs for button feedback + status bar
+ * - Magnetic lock — digital pin via hw.digitalWrite()
  *
- * ÁUDIOS NECESSÁRIOS (LittleFS ou SD):
- * - ready.mp3       : Puzzle iniciado
- * - alarm.mp3       : Gauge fora da zona verde
- * - stabilizing.mp3 : Gauge entrou na zona verde
- * - warning.mp3     : Todos os gauges na zona (tensão)
- * - button_press.mp3: Botão pressionado
- * - fail.mp3        : Confirmação falhou (tempo esgotado)
- * - reshuffle.mp3   : Reconfiguração após falha
- * - victory.mp3     : Puzzle resolvido
+ * REQUIRED AUDIO (LittleFS or SD):
+ * - ready.mp3       : Puzzle started
+ * - alarm.mp3       : Gauge out of the green zone
+ * - stabilizing.mp3 : Gauge entered the green zone
+ * - warning.mp3     : All gauges in the zone (tension)
+ * - button_press.mp3: Button pressed
+ * - fail.mp3        : Confirmation failed (time out)
+ * - reshuffle.mp3   : Reconfiguration after failure
+ * - victory.mp3     : Puzzle solved
  */
 
 #include <ESP32EscapeRoom.h>
@@ -42,7 +42,7 @@
 using namespace esp32_escaperoom;
 
 // ============================================================================
-// HOME ASSISTANT + WIFI (adicionado pelo port ESP32)
+// HOME ASSISTANT + WIFI (added by the ESP32 port)
 // ============================================================================
 ConfigManager netConfig;
 WiFiClient wifiClient;
@@ -57,7 +57,7 @@ void initHA() {
   haDevice.setUniqueId(mac, sizeof(mac));
   haDevice.setName(netConfig.devName());
   haDevice.setSoftwareVersion("1.0.0");
-  haSensorState.setName("Estado");
+  haSensorState.setName("State");
   haSensorState.setIcon("mdi:puzzle");
   haMqtt.begin(netConfig.mqttBroker(), netConfig.mqttUser(), netConfig.mqttPass());
 }
@@ -69,97 +69,97 @@ void loopHA() {
 
 
 // ============================================================================
-// CONSTANTES
+// CONSTANTS
 // ============================================================================
 #define PCF_ADDRESS         0x20
 
-// Botões de confirmação (P0-P2 no PCF8575)
+// Confirmation buttons (P0-P2 on the PCF8575)
 #define BUTTON_1_PIN        0
 #define BUTTON_2_PIN        1
 #define BUTTON_3_PIN        2
 
-// NeoPixel para cada botão (índices no strip externo)
+// NeoPixel for each button (indices in the external strip)
 #define BUTTON_1_PIXEL      0
 #define BUTTON_2_PIXEL      1
 #define BUTTON_3_PIXEL      2
 
-// Pino da trava magnética
+// Magnetic lock pin
 #define LOCK_PIN            20
 
-// Configuração do jogo
+// Game configuration
 static constexpr uint8_t NUM_VALVES = 3;
 static constexpr uint8_t ADS_CHANNELS[NUM_VALVES] = {0, 1, 2};
 static constexpr uint8_t PCA_CHANNELS[NUM_VALVES] = {0, 1, 2};
 static constexpr uint8_t BUTTON_PINS[NUM_VALVES] = {BUTTON_1_PIN, BUTTON_2_PIN, BUTTON_3_PIN};
 static constexpr uint8_t BUTTON_PIXELS[NUM_VALVES] = {BUTTON_1_PIXEL, BUTTON_2_PIXEL, BUTTON_3_PIXEL};
 
-// Zona verde: targets em escala 0-10, com tolerância
+// Green zone: targets on a 0-10 scale, with tolerance
 static constexpr float TARGETS[NUM_VALVES] = {7.0f, 5.0f, 3.0f};
 static constexpr float TOLERANCE = 0.5f;
 
-// Tempos (ms)
+// Times (ms)
 static constexpr unsigned long CONFIRM_WINDOW_MS = 2000UL;
 static constexpr unsigned long RESHUFFLE_DURATION_MS = 1500UL;
 static constexpr unsigned long EFFECT_INTERVAL_MS = 200UL;
 
 // ============================================================================
-// VARIÁVEIS GLOBAIS
+// GLOBAL VARIABLES
 // ============================================================================
 extern volatile bool btnPressed[NUM_VALVES];
 
-// Declarações forward
+// Forward declarations
 void onButtonPressed(pinid_t pin, bool held);
 
 // ============================================================================
-// CLASSE PUZZLE
+// PUZZLE CLASS
 // ============================================================================
 class ReactorControlPuzzle : public PuzzleBase {
 public:
-    ReactorControlPuzzle() : PuzzleBase(31) {}  // ID 31 na rede RS485
+    ReactorControlPuzzle() : PuzzleBase(31) {}  // ID 31 on the RS485 network
 
     void setupHardware() override {
-        Serial.println(F("[REACTOR] Setup iniciado"));
+        Serial.println(F("[REACTOR] Setup started"));
 
-        // Inicializa botões via SwitchInput no PCF8575
+        // Initializes buttons via SwitchInput on the PCF8575
         if (hw.hasExpander()) {
-            Serial.println(F("[REACTOR] Inicializando SwitchInput no PCF8575..."));
+            Serial.println(F("[REACTOR] Initializing SwitchInput on the PCF8575..."));
             switches.init(hw.io(), SWITCHES_POLL_KEYS_ONLY, true);
 
             for (uint8_t i = 0; i < NUM_VALVES; i++) {
                 switches.addSwitch(BUTTON_PINS[i], onButtonPressed, NO_REPEAT, false);
             }
-            Serial.println(F("[REACTOR] SwitchInput OK: 3 botoes"));
+            Serial.println(F("[REACTOR] SwitchInput OK: 3 buttons"));
         } else {
-            Serial.println(F("[REACTOR] ERRO: PCF8575 nao detectado!"));
+            Serial.println(F("[REACTOR] ERROR: PCF8575 not detected!"));
         }
 
-        // Inicializa trava
+        // Initializes lock
         hw.pinMode(LOCK_PIN, OUTPUT);
-        hw.digitalWrite(LOCK_PIN, HIGH);  // Trava ativa em HIGH
+        hw.digitalWrite(LOCK_PIN, HIGH);  // Lock active on HIGH
 
-        // Zera gauges PCA9685
+        // Zeroes PCA9685 gauges
         for (uint8_t i = 0; i < NUM_VALVES; i++) {
             hw.setAnalogOutput(PCA_CHANNELS[i], 0.0f);
         }
 
-        // Gera mapeamento inicial
+        // Generates initial mapping
         randomizeMapping();
 
-        // Estado inicial
+        // Initial state
         setState(PuzzleState::Idle);
 
-        Serial.println(F("[REACTOR] Painel de Controle Nuclear Pronto."));
+        Serial.println(F("[REACTOR] Nuclear Control Panel Ready."));
     }
 
     void update() override {
-        // Processa switch input (botoes)
+        // Processes switch input (buttons)
         switches.runLoop();
         taskManager.runLoop();
 
-        // Atualiza efeitos visuais/sonoros (nao-bloqueante)
+        // Updates visual/audio effects (non-blocking)
         updateEffects();
 
-        // Máquina de estados
+        // State machine
         switch (getState()) {
             case PuzzleState::Idle:
                 if (buttonPressed(BUTTON_1_PIN)) {
@@ -190,7 +190,7 @@ public:
                 break;
 
             case PuzzleState::Solved:
-                // Aguarda reset manual
+                // Waits for manual reset
                 if (buttonPressed(BUTTON_1_PIN)) {
                     resetPuzzle();
                 }
@@ -205,18 +205,18 @@ public:
         switch (p.pCommand) {
             case NetCommand::ForceSolve:
                 if (getState() == PuzzleState::Running) {
-                    Serial.println(F("[REACTOR] Comando remoto: ForceSolve"));
+                    Serial.println(F("[REACTOR] Remote command: ForceSolve"));
                     handleSolve();
                 }
                 break;
 
             case NetCommand::GlobalEvent:
-                Serial.println(F("[REACTOR] Comando remoto: GlobalEvent (reset)"));
+                Serial.println(F("[REACTOR] Remote command: GlobalEvent (reset)"));
                 resetPuzzle();
                 break;
 
             case NetCommand::StatusReport:
-                Serial.printf("[REACTOR] Status: %s, SubState: %d, Zonas: %d/%d\n",
+                Serial.printf("[REACTOR] Status: %s, SubState: %d, Zones: %d/%d\n",
                               stateName(getState()), (int)subState_,
                               zonesActive_, NUM_VALVES);
                 break;
@@ -230,31 +230,31 @@ private:
     enum class SubState { Adjusting, Confirming, Reshuffling };
     SubState subState_ = SubState::Adjusting;
 
-    // Mapeamento aleatório
+    // Random mapping
     uint8_t valveToGauge_[NUM_VALVES];
     bool gaugeReversed_[NUM_VALVES];
 
-    // Estado dos gauges
+    // Gauge state
     bool inZone_[NUM_VALVES] = {false};
     uint8_t zonesActive_ = 0;
 
-    // Confirmação
+    // Confirmation
     unsigned long confirmWindowStart_ = 0;
     bool buttonPressedInWindow_[NUM_VALVES] = {false};
     uint8_t buttonsConfirmed_ = 0;
 
-    // Efeitos
+    // Effects
     enum class EffectPhase { None, Alarm, Stabilizing, AllGreen, Victory, Reshuffle };
     EffectPhase effectPhase_ = EffectPhase::None;
     unsigned long effectTimer_ = 0;
     uint8_t effectStep_ = 0;
 
     // =======================================================================
-    // MAPEAMENTO
+    // MAPPING
     // =======================================================================
     void randomizeMapping() {
-        // Derangement de 3 elementos: apenas 2 possibilidades
-        // [1,2,0] ou [2,0,1]
+        // Derangement of 3 elements: only 2 possibilities
+        // [1,2,0] or [2,0,1]
         uint8_t derangements[2][NUM_VALVES] = {
             {1, 2, 0},
             {2, 0, 1}
@@ -264,51 +264,51 @@ private:
             valveToGauge_[i] = derangements[choice][i];
         }
 
-        // Orientação normal/reversa para cada gauge
+        // Normal/reversed orientation for each gauge
         for (uint8_t i = 0; i < NUM_VALVES; i++) {
             gaugeReversed_[i] = random(0, 2) == 1;
         }
 
-        Serial.println(F("[REACTOR] Mapeamento reconfigurado:"));
+        Serial.println(F("[REACTOR] Mapping reconfigured:"));
         for (uint8_t i = 0; i < NUM_VALVES; i++) {
-            Serial.printf("  Valvula %d -> Gauge %d (%s)\n",
+            Serial.printf("  Valve %d -> Gauge %d (%s)\n",
                           i, valveToGauge_[i],
-                          gaugeReversed_[valveToGauge_[i]] ? "REVERSO" : "NORMAL");
+                          gaugeReversed_[valveToGauge_[i]] ? "REVERSED" : "NORMAL");
         }
     }
 
     // =======================================================================
-    // LEITURA E ESCRITA ANALÓGICA
+    // ANALOG READ AND WRITE
     // =======================================================================
     void readValvesAndWriteGauges() {
         for (uint8_t valveIdx = 0; valveIdx < NUM_VALVES; valveIdx++) {
             uint8_t gaugeIdx = valveToGauge_[valveIdx];
 
-            // Lê potenciômetro via ADS1115 (0-65535 raw)
+            // Reads potentiometer via ADS1115 (0-65535 raw)
             uint16_t raw = hw.readAnalogRaw(ADS_CHANNELS[valveIdx]);
 
-            // Converte para percentual 0.0 - 100.0
+            // Converts to percentage 0.0 - 100.0
             float percent = map((long)raw, 0L, 65535L, 0L, 1000L) / 10.0f;
             percent = constrain(percent, 0.0f, 100.0f);
 
-            // Aplica inversão se necessário
+            // Applies inversion if necessary
             if (gaugeReversed_[gaugeIdx]) {
                 percent = 100.0f - percent;
             }
 
-            // Escreve no gauge via PCA9685
+            // Writes to the gauge via PCA9685
             hw.setAnalogOutput(PCA_CHANNELS[gaugeIdx], percent);
         }
     }
 
     // =======================================================================
-    // VERIFICAÇÃO DE ZONA
+    // ZONE CHECK
     // =======================================================================
     void checkZones() {
         zonesActive_ = 0;
         for (uint8_t i = 0; i < NUM_VALVES; i++) {
             float percent = getCurrentGaugePercent(i);
-            float value = percent / 10.0f;  // Escala 0-10
+            float value = percent / 10.0f;  // 0-10 scale
             bool wasInZone = inZone_[i];
             inZone_[i] = (fabs(value - TARGETS[i]) <= TOLERANCE);
 
@@ -316,7 +316,7 @@ private:
                 zonesActive_++;
             }
 
-            // Som de transição (somente quando entra na zona)
+            // Transition sound (only when it enters the zone)
             if (!wasInZone && inZone_[i] && effectPhase_ != EffectPhase::Victory) {
                 hw.sound().playOnce("/stabilizing.mp3");
             }
@@ -324,7 +324,7 @@ private:
     }
 
     float getCurrentGaugePercent(uint8_t gaugeIdx) {
-        // Reconstrói o percentual do gauge a partir do potenciômetro que o controla
+        // Reconstructs the gauge percentage from the potentiometer that controls it
         uint8_t valveIdx = 255;
         for (uint8_t v = 0; v < NUM_VALVES; v++) {
             if (valveToGauge_[v] == gaugeIdx) {
@@ -350,42 +350,42 @@ private:
     }
 
     // =======================================================================
-    // BOTÕES
+    // BUTTONS
     // =======================================================================
     void processButtonsAdjusting() {
-        // Quando todos os gauges estão na zona, inicia janela de confirmação
+        // When all gauges are in the zone, starts the confirmation window
         if (zonesActive_ == NUM_VALVES && subState_ == SubState::Adjusting) {
             startConfirmationWindow();
         }
     }
 
     void processButtonsConfirming() {
-        // Verifica se janela de confirmação expirou
+        // Checks whether the confirmation window expired
         unsigned long elapsed = millis() - confirmWindowStart_;
         if (elapsed >= CONFIRM_WINDOW_MS) {
-            // Tempo esgotado
+            // Time out
             if (buttonsConfirmed_ < NUM_VALVES) {
                 handleConfirmationFail();
             }
             return;
         }
 
-        // Processa botões pressionados na janela
+        // Processes buttons pressed in the window
         for (uint8_t i = 0; i < NUM_VALVES; i++) {
             if (!buttonPressedInWindow_[i] && buttonPressed(BUTTON_PINS[i])) {
                 buttonPressedInWindow_[i] = true;
                 buttonsConfirmed_++;
                 hw.sound().playOnce("/button_press.mp3");
 
-                // Acende NeoPixel do botão
+                // Turns on the button's NeoPixel
                 hw.setLight(BUTTON_PIXELS[i], Adafruit_NeoPixel::Color(0, 255, 0));
 
-                Serial.printf("[REACTOR] Botao %d pressionado (%d/%d)\n",
+                Serial.printf("[REACTOR] Button %d pressed (%d/%d)\n",
                               i + 1, buttonsConfirmed_, NUM_VALVES);
             }
         }
 
-        // Verifica vitória
+        // Checks victory
         if (buttonsConfirmed_ >= NUM_VALVES) {
             handleSolve();
         }
@@ -396,17 +396,17 @@ private:
         if (idx < 0 || idx >= (int)NUM_VALVES) return false;
 
         if (btnPressed[idx]) {
-            btnPressed[idx] = false;  // Limpa flag
+            btnPressed[idx] = false;  // Clears flag
             return true;
         }
         return false;
     }
 
     // =======================================================================
-    // EFEITOS VISUAIS
+    // VISUAL EFFECTS
     // =======================================================================
     void updateGaugeColors() {
-        // Cores por gauge: vermelho=fora, amarelo=na zona, verde=todos na zona
+        // Colors per gauge: red=out, yellow=in the zone, green=all in the zone
         if (subState_ == SubState::Confirming || subState_ == SubState::Reshuffling) {
             return;
         }
@@ -414,13 +414,13 @@ private:
         uint32_t colors[NUM_VALVES];
         for (uint8_t i = 0; i < NUM_VALVES; i++) {
             if (inZone_[i]) {
-                colors[i] = Adafruit_NeoPixel::Color(0, 255, 0);  // Verde
+                colors[i] = Adafruit_NeoPixel::Color(0, 255, 0);  // Green
             } else {
-                colors[i] = Adafruit_NeoPixel::Color(255, 0, 0);  // Vermelho
+                colors[i] = Adafruit_NeoPixel::Color(255, 0, 0);  // Red
             }
         }
 
-        // Se todos na zona, pisca verde
+        // If all in the zone, blink green
         if (zonesActive_ == NUM_VALVES) {
             unsigned long t = millis() % 1000;
             if (t < 500) {
@@ -433,7 +433,7 @@ private:
             return;
         }
 
-        // Alarme se nenhum na zona
+        // Alarm if none in the zone
         if (zonesActive_ == 0) {
             unsigned long t = millis() % 600;
             if (t < 300) {
@@ -446,14 +446,14 @@ private:
             return;
         }
 
-        // Estado parcial: acende cada botão com a cor do seu gauge
+        // Partial state: turns on each button with the color of its gauge
         for (uint8_t i = 0; i < NUM_VALVES; i++) {
             hw.setLight(BUTTON_PIXELS[i], colors[i]);
         }
     }
 
     void updateConfirmationEffect() {
-        // Pisca branco nos botões não pressionados durante confirmação
+        // Blinks white on the buttons not pressed during confirmation
         unsigned long t = millis() % 400;
         uint32_t color = (t < 200) ? Adafruit_NeoPixel::Color(255, 255, 255) : 0;
 
@@ -467,15 +467,15 @@ private:
     void updateReshuffleEffect() {
         unsigned long elapsed = millis() - effectTimer_;
         if (elapsed >= RESHUFFLE_DURATION_MS) {
-            // Fim do re-embaralhamento
+            // End of the reshuffle
             subState_ = SubState::Adjusting;
             effectPhase_ = EffectPhase::None;
             hw.setLightAll(0);
-            Serial.println(F("[REACTOR] Reconfiguracao completa. Continue ajustando."));
+            Serial.println(F("[REACTOR] Reconfiguration complete. Keep adjusting."));
             return;
         }
 
-        // Pisca branco em todos os LEDs durante reconfiguração
+        // Blinks white on all the LEDs during reconfiguration
         unsigned long t = millis() % 150;
         if (t < 75) {
             hw.setLightAll(Adafruit_NeoPixel::Color(255, 255, 255));
@@ -497,7 +497,7 @@ private:
                 break;
 
             case EffectPhase::Reshuffle:
-                // Controlado por updateReshuffleEffect()
+                // Controlled by updateReshuffleEffect()
                 break;
 
             default:
@@ -532,10 +532,10 @@ private:
     }
 
     // =======================================================================
-    // ESTADOS DO PUZZLE
+    // PUZZLE STATES
     // =======================================================================
     void startPuzzle() {
-        Serial.println(F("[REACTOR] Iniciando sequencia..."));
+        Serial.println(F("[REACTOR] Starting sequence..."));
         hw.sound().playOnce("/ready.mp3");
         subState_ = SubState::Adjusting;
         setState(PuzzleState::Running);
@@ -550,18 +550,18 @@ private:
         }
 
         hw.sound().playOnce("/warning.mp3");
-        Serial.println(F("[REACTOR] Todos os gauges na zona! Janela de confirmacao aberta (2s)"));
+        Serial.println(F("[REACTOR] All gauges in the zone! Confirmation window open (2s)"));
     }
 
     void handleSolve() {
-        Serial.println(F("[REACTOR] Puzzle resolvido! Reator estabilizado."));
+        Serial.println(F("[REACTOR] Puzzle solved! Reactor stabilized."));
 
         hw.sound().playOnce("/victory.mp3");
 
-        // Abre trava
+        // Opens lock
         hw.digitalWrite(LOCK_PIN, LOW);
 
-        // Efeito visual de vitória
+        // Victory visual effect
         effectPhase_ = EffectPhase::Victory;
         effectTimer_ = millis();
         effectStep_ = 0;
@@ -570,14 +570,14 @@ private:
     }
 
     void handleConfirmationFail() {
-        Serial.println(F("[REACTOR] Confirmacao falhou! Reconfigurando painel..."));
+        Serial.println(F("[REACTOR] Confirmation failed! Reconfiguring panel..."));
 
         hw.sound().playOnce("/fail.mp3");
 
-        // Re-embaralha mapeamento e orientações
+        // Reshuffles mapping and orientations
         randomizeMapping();
 
-        // Reseta estado de confirmação
+        // Resets confirmation state
         subState_ = SubState::Reshuffling;
         effectPhase_ = EffectPhase::Reshuffle;
         effectTimer_ = millis();
@@ -586,26 +586,26 @@ private:
             buttonPressedInWindow_[i] = false;
         }
 
-        // Som de reconfiguração após um breve delay não-bloqueante
-        // (será tocado na próxima iteração de updateEffects)
+        // Reconfiguration sound after a brief non-blocking delay
+        // (it will be played on the next updateEffects iteration)
         hw.sound().playOnce("/reshuffle.mp3");
     }
 
     void resetPuzzle() {
-        Serial.println(F("[REACTOR] Resetando puzzle..."));
+        Serial.println(F("[REACTOR] Resetting puzzle..."));
 
-        // Travar
+        // Lock
         hw.digitalWrite(LOCK_PIN, HIGH);
 
-        // Zerar gauges
+        // Zero gauges
         for (uint8_t i = 0; i < NUM_VALVES; i++) {
             hw.setAnalogOutput(PCA_CHANNELS[i], 0.0f);
         }
 
-        // Limpar LEDs
+        // Clear LEDs
         hw.setLightAll(0);
 
-        // Resetar estado
+        // Reset state
         subState_ = SubState::Adjusting;
         zonesActive_ = 0;
         buttonsConfirmed_ = 0;
@@ -615,7 +615,7 @@ private:
             buttonPressedInWindow_[i] = false;
         }
 
-        // Re-embaralhar para nova rodada
+        // Reshuffle for a new round
         randomizeMapping();
 
         setState(PuzzleState::Idle);
@@ -623,7 +623,7 @@ private:
 };
 
 // ============================================================================
-// CALLBACKS SwitchInput (fora da classe)
+// SwitchInput CALLBACKS (outside the class)
 // ============================================================================
 volatile bool btnPressed[NUM_VALVES] = {false, false, false};
 
@@ -633,14 +633,14 @@ void onButtonPressed(pinid_t pin, bool held) {
     int idx = pin - BUTTON_1_PIN;
     if (idx >= 0 && idx < NUM_VALVES) {
         btnPressed[idx] = true;
-        Serial.printf("[BTN] Botao %d (P%d) PRESSIONADO\n", idx + 1, pin);
+        Serial.printf("[BTN] Button %d (P%d) PRESSED\n", idx + 1, pin);
     }
 }
 
 // ============================================================================
 // MAIN
 // ============================================================================
-LogicManager master(31, true);  // ID 31, com rede RS485 habilitada
+LogicManager master(31, true);  // ID 31, with RS485 network enabled
 ReactorControlPuzzle puzzle;
 
 void setup() {
@@ -650,19 +650,19 @@ void setup() {
 
     Serial.println(F("============================================"));
     Serial.println(F("  ReactorControl - PropMaker EscapeRoom"));
-    Serial.println(F("  Painel de Controle Nuclear"));
-    Serial.println(F("  Abril 2026 - Nicolau dos Brinquedos"));
+    Serial.println(F("  Nuclear Control Panel"));
+    Serial.println(F("  April 2026 - Nicolau dos Brinquedos"));
     Serial.println(F("============================================"));
 
     hw.begin();
-    hw.addPcf8575(PCF_ADDRESS);  // Adiciona expander PCF
+    hw.addPcf8575(PCF_ADDRESS);  // Adds PCF expander
 
     master.addPuzzle(&puzzle);
     master.begin();
-    master.setNetworkEnabled(true);  // Habilita comunicação RS485
+    master.setNetworkEnabled(true);  // Enables RS485 communication
 
-    Serial.println(F("[Main] Sistema pronto"));
-    Serial.println(F("[Main] Aguardando comando de inicio (rede ou botao 1)"));
+    Serial.println(F("[Main] System ready"));
+    Serial.println(F("[Main] Waiting for start command (network or button 1)"));
 }
 
 void loop() {

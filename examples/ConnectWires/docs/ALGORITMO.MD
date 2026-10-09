@@ -1,41 +1,41 @@
-# ConnectWires — Algoritmo do Jogo
+# ConnectWires — Game Algorithm
 
-## Visão Geral
+## Overview
 
-Puzzle de conexão de fios. O jogador deve conectar pares de soquetes com fios banana. Um voltímetro (ADS1115) lê a tensão em cada par para verificar conexão correta. Resolve quando todos os pares estiverem conectados corretamente.
+Wire connection puzzle. The player must connect pairs of sockets with banana cables. A voltmeter (ADS1115) reads the voltage on each pair to verify the correct connection. It is solved when all pairs are correctly connected.
 
-## Configuração (JSON: connectwires.json)
+## Configuration (JSON: connectwires.json)
 
-- **Soquetes**: numSockets (quantidade total), connectionPairs (pares de soquetes que formam conexões corretas)
+- **Sockets**: numSockets (total quantity), connectionPairs (pairs of sockets that form correct connections)
 - **Hardware**: lockPin, neoCount, volume
-- **Áudio**: sfxConnect, sfxDisconnect, sfxSolved, sfxError
+- **Audio**: sfxConnect, sfxDisconnect, sfxSolved, sfxError
 
-## Estados
+## States
 
-IDLE → RUNNING → SOLVED → IDLE (reset por botão)
+IDLE → RUNNING → SOLVED → IDLE (reset by button)
 
-## Lógica de Conexão
+## Connection Logic
 
-1. Cada soquete é ligado a um pino digital no PCF8575
-2. Para testar um par (A, B):
-   - Coloca pino A como OUTPUT LOW
-   - Lê pino B como INPUT_PULLUP
-   - Se B lê LOW: A e B estão conectados (circuito fechado)
-3. Verifica todos os pares configurados
-4. Se todos os pares corretos estão conectados E nenhum par incorreto: SOLVED
+1. Each socket is wired to a digital pin on the PCF8575
+2. To test a pair (A, B):
+   - Sets pin A as OUTPUT LOW
+   - Reads pin B as INPUT_PULLUP
+   - If B reads LOW: A and B are connected (closed circuit)
+3. Checks all configured pairs
+4. If all correct pairs are connected AND no incorrect pair: SOLVED
 
-## Modos de Validação
+## Validation Modes
 
-- **ALL_CONNECTED**: todos os pares corretos devem estar conectados
-- **ONLY_CORRECT**: apenas pares corretos podem estar conectados (conexão extra = erro)
-- **EXACT_MATCH**: conexões ativas devem corresponder exatamente aos pares configurados
+- **ALL_CONNECTED**: all correct pairs must be connected
+- **ONLY_CORRECT**: only correct pairs may be connected (extra connection = error)
+- **EXACT_MATCH**: active connections must match the configured pairs exactly
 
 ## Feedback
 
-- NeoPixel: verde para conexões corretas, vermelho para incorretas
-- Áudio: beep ao conectar, som de erro ao conectar errado
-- Display HT16K33: número de conexões restantes
+- NeoPixel: green for correct connections, red for incorrect ones
+- Audio: beep on connecting, error sound on connecting wrong
+- HT16K33 display: number of remaining connections
 
 ## AP Mode + WiFi
 
-Configuração de rede via portal web em 192.168.4.1.
+Network configuration via web portal at 192.168.4.1.

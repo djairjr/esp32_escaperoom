@@ -1,32 +1,32 @@
-# SimonSays — Entidades Home Assistant
+# SimonSays — Home Assistant Entities
 
-## Sensores
-| Nome | ID | Valores |
+## Sensors
+| Name | ID | Values |
 |---|---|---|
-| Estado | `state` | idle, showing, waiting, correct, wrong, solved |
-| Round Atual | `round` | 1-maxRounds |
-| Sequência Correta | `sequence` | texto (ex: "R,B,G,Y") |
-| Entrada Jogador | `player_input` | texto |
+| State | `state` | idle, showing, waiting, correct, wrong, solved |
+| Current Round | `round` | 1-maxRounds |
+| Correct Sequence | `sequence` | text (e.g. "R,B,G,Y") |
+| Player Input | `player_input` | text |
 
-## Binários (por botão)
-| Nome | ID |
+## Binary sensors (per button)
+| Name | ID |
 |---|---|
-| Botão Vermelho | `btn_red` |
-| Botão Azul | `btn_blue` |
-| Botão Verde | `btn_green` |
-| Botão Amarelo | `btn_yellow` |
+| Red Button | `btn_red` |
+| Blue Button | `btn_blue` |
+| Green Button | `btn_green` |
+| Yellow Button | `btn_yellow` |
 
-## Botões
-| Nome | ID |
+## Buttons
+| Name | ID |
 |---|---|
-| Iniciar | `start` |
-| Resetar | `reset` |
+| Start | `start` |
+| Reset | `reset` |
 
-## Números
-| Nome | ID | Range |
+## Numbers
+| Name | ID | Range |
 |---|---|---|
 | Max Rounds | `max_rounds` | 3-50 |
-| Tempo Entre Notas | `note_interval` | 200-2000ms |
+| Time Between Notes | `note_interval` | 200-2000ms |
 
 ## AP Mode
-Rede WiFi "SimonSays-XXXX" + portal em 192.168.4.1.
+WiFi network "SimonSays-XXXX" + portal at 192.168.4.1.

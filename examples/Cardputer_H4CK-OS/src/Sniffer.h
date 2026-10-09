@@ -4,10 +4,10 @@
 #include "ConfigManager.h"
 
 // ============================================================================
-// SNIFFER — Captura configuração do alvo (simulado)
+// SNIFFER — Captures target configuration (simulated)
 // ============================================================================
-// sniff <ip>    → mostra "interceptação" com dados do config
-// sniff code    → mostra o código atual
+// sniff <ip>    → shows "interception" with config data
+// sniff code    → shows the current code
 // ============================================================================
 
 extern ConfigManager configManager;

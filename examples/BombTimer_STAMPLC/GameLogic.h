@@ -5,12 +5,12 @@
 #include "Pins.h"
 
 // ============================================================================
-// GAME LOGIC — Timer, Fios, Detonação, Desarme, Menu, Alarme RTC
+// GAME LOGIC — Timer, Wires, Detonation, Defusal, Menu, RTC Alarm
 // ============================================================================
 
 class GameLogic {
 public:
-    // ─── Estados principais ───────────────────────────────────────────
+    // ─── Main states ──────────────────────────────────────────────────
     enum State : uint8_t {
         STATE_IDLE       = 0,
         STATE_RUNNING    = 1,
@@ -25,38 +25,38 @@ public:
         MENU_COUNTDOWN     = 0,  // 5-5999s
         MENU_DEFUSE_MODE   = 1,  // CODE / WIRE / ORDER
         MENU_DEFUSE_CODE   = 2,  // 0000-9999
-        MENU_DEFUSE_ORDER  = 3,  // ordem dos fios (ex: 1234)
+        MENU_DEFUSE_ORDER  = 3,  // wire order (e.g. 1234)
         MENU_DET_WIRE      = 4,  // RAND / 1-4 / NONE
         MENU_SPEED_WIRE    = 5,  // RAND / 1-4 / NONE
         MENU_PAUSE_WIRE    = 6,  // RAND / 1-4 / NONE
         MENU_BRIGHTNESS    = 7,  // 0-15
         MENU_TICK          = 8,  // ON / OFF
         MENU_RFID_ENABLE   = 9,  // ON / OFF
-        MENU_RFID_DEFU     = 10, // aprender tag de desarme
-        MENU_RFID_DETO     = 11, // aprender tag de detonação
+        MENU_RFID_DEFU     = 10, // learn defuse tag
+        MENU_RFID_DETO     = 11, // learn detonate tag
         MENU_DET_TRIGGER   = 12, // 1-10s (TDET)
         MENU_DEFUSE_TRIGGER= 13, // 1-10s (TDEF)
         MENU_ALARM_H       = 14, // 0-23
         MENU_ALARM_M       = 15, // 0-59
-        MENU_RFID_CLR_DEFU = 16, // limpar tags de desarme
-        MENU_RFID_CLR_DETO = 17, // limpar tags de detonação
+        MENU_RFID_CLR_DEFU = 16, // clear defuse tags
+        MENU_RFID_CLR_DETO = 17, // clear detonate tags
         MENU_COUNT         = 18
     };
 
-    // ─── Modos de desarme ────────────────────────────────────────────
+    // ─── Defuse modes ─────────────────────────────────────────────────
     enum DefuseMode : uint8_t {
         DEFUSE_CODE   = 0,
         DEFUSE_WIRE   = 1,
         DEFUSE_ORDER  = 2
     };
 
-    // ─── Configuração ────────────────────────────────────────────────
+    // ─── Configuration ───────────────────────────────────────────────
     struct Config {
         int countdownSeconds = 180;
         DefuseMode defuseMode = DEFUSE_CODE;
         int defuseCode = 1234;
-        int defuseOrder = 1234;  // 4 dígitos, 1-4 cada
-        int detWire = 5;         // 5=NONE (padrão: sem função)
+        int defuseOrder = 1234;  // 4 digits, 1-4 each
+        int detWire = 5;         // 5=NONE (default: no function)
         int defuseWire = 5;      // 5=NONE
         int speedupWire = 5;     // 5=NONE
         int pauseWire = 5;       // 5=NONE
@@ -67,10 +67,10 @@ public:
         int alarmMin = 0;
         bool alarmEnabled = false;
         int maxCodeAttempts = 3;
-        int detTriggerSec = 5;     // tempo em s que relés detonacao ficam ativos
-        int defuseTriggerSec = 5;  // tempo em s que relés desarme ficam ativos
+        int detTriggerSec = 5;     // time in s the detonation relays stay active
+        int defuseTriggerSec = 5;  // time in s the defuse relays stay active
 
-        // RFID tags (armazenadas como uint32_t = bytes 0-3 do UID)
+        // RFID tags (stored as uint32_t = bytes 0-3 of the UID)
         uint32_t defuseTags[4] = {0};
         uint8_t defuseTagCount = 0;
         uint32_t detonateTags[4] = {0};
@@ -99,11 +99,11 @@ public:
         countdownActive_ = false;
     }
 
-    // ─── Estado ───────────────────────────────────────────────────────
+    // ─── State ────────────────────────────────────────────────────────
     State getState() { return state_; }
     void setState(State s) { state_ = s; }
 
-    // ─── Getter/setter countdown ───────────────────────────────────────
+    // ─── Countdown getter/setter ───────────────────────────────────────
     int getCountdownSeconds() { return config.countdownSeconds; }
     void setCountdownSeconds(int s) {
         if (s < 5) s = 5;
@@ -126,7 +126,7 @@ public:
         pauseActive_ = false;
         currentCodeAttempt_ = 0;
         assignRandomWires();
-        // Lê estado inicial dos fios: só processa corte se viu conectado primeiro
+        // Reads the wires' initial state: only processes a cut if it saw them connected first
         for (int i = 0; i < 4; i++) {
             wireSeenConnected_[i] = false;
         }
@@ -134,7 +134,7 @@ public:
 
     void stopTimer() { countdownActive_ = false; }
 
-    // Alias para compatibilidade com código existente que chama resetWires
+    // Alias for compatibility with existing code that calls resetWires
     void resetWires() { resetGame(); }
 
     void toggleDoubleSpeed() { doubleSpeed_ = !doubleSpeed_; }
@@ -175,7 +175,7 @@ public:
         return false;
     }
 
-    // ─── Fios ─────────────────────────────────────────────────────────
+    // ─── Wires ────────────────────────────────────────────────────────
     struct WireConfig {
         uint8_t detWire;       // 0-3 (index), 4=RAND
         uint8_t defuseWire;    // 0-3 (index), 4=RAND, 5=CODE, 6=ORDER
@@ -186,7 +186,7 @@ public:
     WireConfig wires;
 
     void assignRandomWires() {
-        // Sorteia pinos dos fios com base na config
+        // Draws the wire pins based on the config
         uint8_t wires_assigned[4] = {0};
         int assigned_count = 0;
 
@@ -210,14 +210,14 @@ public:
         assignWire(config.speedupWire, wires.speedupWire);
         assignWire(config.pauseWire, wires.pauseWire);
 
-        // Defuse wire: depende do modo
+        // Defuse wire: depends on the mode
         if (config.defuseMode == DEFUSE_ORDER) {
             wires.defuseWire = 6; // ORDER
             setDefuseOrder(config.defuseOrder);
         }
     }
 
-    // Estado dos fios
+    // Wires state
     bool wireCut_[4] = {false};
     bool wireCutState_[4] = {false};
     bool wireSeenConnected_[4] = {false};
@@ -237,7 +237,7 @@ public:
         return wireCutState_[idx];
     }
 
-    // Alias para compatibilidade com código que chama isWireCutState
+    // Alias for compatibility with code that calls isWireCutState
     bool isWireCutState(int idx) {
         return isWireCut(idx);
     }
@@ -250,12 +250,12 @@ public:
     int getWiresCut() { return wiresCut_; }
 
     // ─── Wire conflict detection ──────────────────────────────────────
-// key: qual config está sendo ajustada (1=DET, 2=SPEEDUP, 3=PAUSE, 4=DEFUSE)
-// value: novo valor do fio (0=RAND, 1-4=fio, 5=NONE)
-// returns true se há conflito (fio já usado por outra função)
+// key: which config is being adjusted (1=DET, 2=SPEEDUP, 3=PAUSE, 4=DEFUSE)
+// value: new wire value (0=RAND, 1-4=wire, 5=NONE)
+// returns true if there is a conflict (wire already used by another function)
     bool wireConflict(int key, int value) {
-        if (value == 0 || value == 5) return false; // RAND e NONE nunca conflitam
-        // Verifica cada uma das outras funções
+        if (value == 0 || value == 5) return false; // RAND and NONE never conflict
+        // Checks each of the other functions
         for (int k = 1; k <= 4; k++) {
             if (k == key) continue;
             int otherVal = 0;
@@ -271,7 +271,7 @@ public:
         return false;
     }
 
-    // ─── Desarme ORDER ───────────────────────────────────────────────
+    // ─── ORDER defusal ────────────────────────────────────────────────
     uint8_t defuseOrderSeq[4];
     uint8_t wireOrderIndex_ = 0;
 
@@ -294,7 +294,7 @@ public:
 
     uint8_t getOrderIndex() { return wireOrderIndex_; }
 
-    // ─── Código ──────────────────────────────────────────────────────
+    // ─── Code ─────────────────────────────────────────────────────────
     int currentCodeAttempt_ = 0;
 
     bool checkDefuseCode(int code) {
@@ -309,7 +309,7 @@ public:
 
     int getCodeAttempts() { return currentCodeAttempt_; }
 
-    // ─── Relés ────────────────────────────────────────────────────────
+    // ─── Relays ────────────────────────────────────────────────────────
     void triggerDetonate() {
         M5StamPLC.writePlcRelay(0, true);
         M5StamPLC.writePlcRelay(1, true);
@@ -331,10 +331,10 @@ public:
         relayActive_ = false;
     }
 
-    // Retorna true se ainda está no período de acionamento dos relés
+    // Returns true if still within the relay triggering period
     bool isRelayActive() { return relayActive_; }
 
-    // Chama no loop — desliga automaticamente após o tempo configurado
+    // Call in the loop — turns off automatically after the configured time
     void updateRelays() {
         if (!relayActive_) return;
         unsigned long elapsed = millis() - relayTriggeredAt_;
@@ -349,7 +349,7 @@ public:
     // ─── Tick ─────────────────────────────────────────────────────────
     bool isTickEnabled() { return config.tickEnabled; }
 
-    // ─── Persistência via NVS ─────────────────────────────────────────
+    // ─── Persistence via NVS ──────────────────────────────────────────
     void saveConfig() {
         Preferences prefs;
         prefs.begin("bomb", false);
@@ -383,7 +383,7 @@ public:
             prefs.putUInt(key, config.defuseTags[i]);
         }
         prefs.end();
-        Serial.printf("[NVS] Config salva: %ds, mode=%d, code=%04d\n",
+        Serial.printf("[NVS] Config saved: %ds, mode=%d, code=%04d\n",
             config.countdownSeconds, config.defuseMode, config.defuseCode);
     }
 
@@ -420,12 +420,12 @@ public:
             config.defuseTags[i] = prefs.getUInt(key, 0);
         }
         prefs.end();
-        Serial.printf("[NVS] Config carregada: %ds, mode=%d, code=%04d, detW=%d, spdW=%d, psW=%d, bri=%d\n",
+        Serial.printf("[NVS] Config loaded: %ds, mode=%d, code=%04d, detW=%d, spdW=%d, psW=%d, bri=%d\n",
             config.countdownSeconds, config.defuseMode, config.defuseCode,
             config.detWire, config.speedupWire, config.pauseWire, config.brightness);
     }
 
-    // ─── Alarme ──────────────────────────────────────────────────────
+    // ─── Alarm ───────────────────────────────────────────────────────
     bool checkAlarm(int hour, int min) {
         if (!config.alarmEnabled) return false;
         return (hour == config.alarmHour && min == config.alarmMin);

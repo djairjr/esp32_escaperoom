@@ -3,12 +3,12 @@
 #include <M5Cardputer.h>
 
 // ============================================================================
-// SCANNER — scan + nmap (simulados)
+// SCANNER — scan + nmap (simulated)
 // ============================================================================
-// Lista dispositivos por IP + MAC + hostname.
-// Apenas a bomba (192.168.1.100) aparece como "unknown".
-// Todos os demais são estações de trabalho da empresa —
-// o jogador deduz que o desconhecido é o alvo.
+// Lists devices by IP + MAC + hostname.
+// Only the bomb (192.168.1.100) shows up as "unknown".
+// All the others are company workstations —
+// the player deduces that the unknown one is the target.
 // ============================================================================
 
 class Scanner {
@@ -18,11 +18,11 @@ public:
         delay(2000);
         print("[HACK] 7 hosts up:");
         print("  192.168.1.1    7C:9E:BD:3F:2A:00  gateway");
-        print("  192.168.1.10   D4:3C:2E:11:AB:01  gerencia");
-        print("  192.168.1.11   D4:3C:2E:11:AB:02  desenvolvimento");
+        print("  192.168.1.10   D4:3C:2E:11:AB:01  management");
+        print("  192.168.1.11   D4:3C:2E:11:AB:02  development");
         print("  192.168.1.12   D4:3C:2E:11:AB:03  joe-laptop");
-        print("  192.168.1.13   D4:3C:2E:11:AB:04  ralador");
-        print("  192.168.1.14   D4:3C:2E:11:AB:05  seguranca");
+        print("  192.168.1.13   D4:3C:2E:11:AB:04  shredder");
+        print("  192.168.1.14   D4:3C:2E:11:AB:05  security");
         print("  192.168.1.100  F4:5C:89:AB:CD:EF  unknown");
         print("");
         print("[HACK] 1 unidentified host — use 'nmap <ip>'");
@@ -40,12 +40,12 @@ public:
 
         snprintf(buf, sizeof(buf), "  PORT     STATE  SERVICE");
         print(buf);
-        // Todos os hosts tem portas comuns
+        // All hosts have common ports
         print("  80/tcp   open   http");
         print("  443/tcp  open   https");
         print("  22/tcp   open   ssh");
 
-        // Unknown (bomba) tem portas extras
+        // The unknown (bomb) has extra ports
         if (strcmp(target, "192.168.1.100") == 0) {
             print("  8080/tcp open   custom");
             print("  9090/tcp open   custom");

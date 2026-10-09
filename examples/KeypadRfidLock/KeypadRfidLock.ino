@@ -1,10 +1,10 @@
 /**
- * EXEMPLO: KEYPAD RFID LOCK - FECHADURA COM SENHA + RFID
+ * EXAMPLE: KEYPAD RFID LOCK - LOCK WITH PASSWORD + RFID
  * --------------------------------------------------------
- * Combina teclado 4x3 (I2C/PCF8575) + leitor PN532 (I2C) para
- * liberar uma fechadura. Configuracao via /lock.json no LittleFS.
+ * Combines a 4x3 keypad (I2C/PCF8575) + PN532 reader (I2C) to
+ * release a lock. Configuration via /lock.json in LittleFS.
  *
- * Portado para ESP32-S3 + Home Assistant (ArduinoHA).
+ * Ported to ESP32-S3 + Home Assistant (ArduinoHA).
  */
 
 #include <ESP32EscapeRoom.h>
@@ -16,7 +16,7 @@
 using namespace esp32_escaperoom;
 
 // ============================================================================
-// MODOS DE AUTENTICACAO
+// AUTHENTICATION MODES
 // ============================================================================
 enum class AuthMode : uint8_t {
     KEYPAD_ONLY = 0,
@@ -26,7 +26,7 @@ enum class AuthMode : uint8_t {
 };
 
 // ============================================================================
-// CONFIGURACAO JSON
+// JSON CONFIGURATION
 // ============================================================================
 struct RfidTagBin {
     uint8_t bytes[7];
@@ -77,14 +77,14 @@ static AuthMode parseAuthMode(const char* s) {
 
 static void loadConfig() {
     if (!LittleFS.exists("/lock.json")) {
-        Serial.println(F("[CONFIG] /lock.json nao existe, usando padrao"));
+        Serial.println(F("[CONFIG] /lock.json does not exist, using defaults"));
         return;
     }
     File f = LittleFS.open("/lock.json", "r");
     JsonDocument doc;
     DeserializationError err = deserializeJson(doc, f);
     f.close();
-    if (err) { Serial.printf("[CONFIG] Erro JSON: %s\n", err.c_str()); return; }
+    if (err) { Serial.printf("[CONFIG] JSON error: %s\n", err.c_str()); return; }
 
     config.mode = parseAuthMode(doc["mode"] | "");
     config.lockPin = doc["lockPin"] | config.lockPin;
@@ -192,20 +192,20 @@ public:
         else display.printString("____");
 
         nfc_ = hw.createNfcReader();
-        if (nfc_) Serial.println(F("[RFID] PN532 pronto"));
-        else Serial.println(F("[RFID] PN532 nao detectado"));
+        if (nfc_) Serial.println(F("[RFID] PN532 ready"));
+        else Serial.println(F("[RFID] PN532 not detected"));
 
         setVisualIdle();
-        Serial.printf("[LOCK] Modo=%d\n", (int)config.mode);
+        Serial.printf("[LOCK] Mode=%d\n", (int)config.mode);
     }
 
     void setupHA() {
-        haSensorState_.setName("Estado");      haSensorState_.setIcon("mdi:lock");
-        haSensorMode_.setName("Modo Auth");     haSensorMode_.setIcon("mdi:tune");
-        haSensorLock_.setName("Fechadura");     haSensorLock_.setIcon("mdi:door");
-        haBtnReset_.setName("Resetar");         haBtnReset_.setIcon("mdi:restart");
+        haSensorState_.setName("State");      haSensorState_.setIcon("mdi:lock");
+        haSensorMode_.setName("Auth Mode");     haSensorMode_.setIcon("mdi:tune");
+        haSensorLock_.setName("Lock");     haSensorLock_.setIcon("mdi:door");
+        haBtnReset_.setName("Reset");         haBtnReset_.setIcon("mdi:restart");
         haBtnReset_.onCommand(haResetCallback);
-        haBtnUnlock_.setName("Destravar");       haBtnUnlock_.setIcon("mdi:lock-open");
+        haBtnUnlock_.setName("Unlock");       haBtnUnlock_.setIcon("mdi:lock-open");
         haBtnUnlock_.onCommand(haUnlockCallback);
         publishAllHA();
     }
@@ -225,7 +225,7 @@ public:
         if (lockOpen && millis() >= unlockUntil) {
             lockOpen = false;
             hw.digitalWrite(config.lockPin, HIGH);
-            Serial.println(F("[LOCK] Fechadura trancada"));
+            Serial.println(F("[LOCK] Lock engaged"));
             display.printString(config.mode == AuthMode::RFID_ONLY ? "rFId" : "____");
             setVisualIdle();
             publishAllHA();
@@ -277,12 +277,12 @@ private:
         for (uint8_t i = 0; i < config.rfidTagCount; i++) {
             RfidTagBin& tag = config.rfidTags[i];
             if (tag.valid && tag.len == len && memcmp(tag.bytes, uid, len) == 0) {
-                Serial.println(F("[RFID] TAG autorizada!"));
+                Serial.println(F("[RFID] TAG authorized!"));
                 onRfidAuthorized();
                 return;
             }
         }
-        Serial.println(F("[RFID] TAG desconhecida"));
+        Serial.println(F("[RFID] Unknown TAG"));
     }
 
     void onRfidAuthorized() {
@@ -333,12 +333,12 @@ private:
         hw.sound().playOnce(config.sfxUnlock);
         display.printString("OPEn");
         hw.setLightAll(config.colorUnlock);
-        Serial.printf("[LOCK] ABERTO por %d ms\n", config.unlockDurationMs);
+        Serial.printf("[LOCK] OPEN for %d ms\n", config.unlockDurationMs);
         publishAllHA();
     }
 
     void handleDenied() {
-        Serial.println(F("[LOCK] ACESSO NEGADO"));
+        Serial.println(F("[LOCK] ACCESS DENIED"));
         hw.sound().playOnce(config.sfxDenied);
         display.printString("no  ");
         hw.setLightAll(config.colorDenied);
@@ -360,7 +360,7 @@ private:
 };
 
 // ============================================================================
-// INSTANCIAS GLOBAIS
+// GLOBAL INSTANCES
 // ============================================================================
 LogicManager master(13);
 KeypadRfidLock puzzle;
@@ -397,7 +397,7 @@ void setup() {
     master.addPuzzle(&puzzle);
     master.begin();
     puzzle.run();
-    Serial.println(F("[LOCK] Pronto!"));
+    Serial.println(F("[LOCK] Ready!"));
 }
 
 void loop() {

@@ -12,13 +12,13 @@ void PuzzleEngine::begin() {
     const auto& logic = config_.getLogicConfig();
     const auto& inputs = config_.getInputConfig();
 
-    // Inicializa sequência baseada no modo
+    // Initializes the sequence based on the mode
     switch (logic.mode) {
         case PuzzleMode::CUSTOM_SEQUENCE:
-            // Usa sequência definida no JSON
+            // Uses the sequence defined in the JSON
             sequenceLength_ = logic.sequenceLength;
             for (uint8_t i = 0; i < sequenceLength_; i++) {
-                sequence_[i] = logic.sequence[i] - 1;  // Converte para índice 0-based
+                sequence_[i] = logic.sequence[i] - 1;  // Converts to 0-based index
             }
             break;
 
@@ -27,7 +27,7 @@ void PuzzleEngine::begin() {
             break;
 
         case PuzzleMode::ALL_CONNECTED:
-            // Todas as entradas devem ser ativadas
+            // All inputs must be activated
             sequenceLength_ = inputs.count;
             for (uint8_t i = 0; i < sequenceLength_; i++) {
                 sequence_[i] = i;
@@ -39,7 +39,7 @@ void PuzzleEngine::begin() {
             break;
 
         case PuzzleMode::MUSICAL_SEQUENCE:
-            // Sequência vem do config musical (notas MIDI)
+            // Sequence comes from the musical config (MIDI notes)
             sequenceLength_ = config_.getMusicalConfig().noteCount;
             for (uint8_t i = 0; i < sequenceLength_; i++) {
                 sequence_[i] = config_.getMusicalConfig().notes[i].midi;
@@ -51,15 +51,15 @@ void PuzzleEngine::begin() {
     currentStep_ = 0;
     progress_ = 0;
 
-    // Log da sequência
-    Serial.printf("[PuzzleEngine] Modo: %s | Sequência: ", ConfigManager::modeToString(logic.mode));
+    // Sequence log
+    Serial.printf("[PuzzleEngine] Mode: %s | Sequence: ", ConfigManager::modeToString(logic.mode));
     for (uint8_t i = 0; i < sequenceLength_; i++) {
         Serial.printf("%d ", sequence_[i] + 1);
     }
     Serial.printf("| Total steps: %d\n", totalSteps_);
 
 #ifndef ESP32_ESCAPEROOM_NO_IOABSTRACTION
-    // Configura NeoPixel se habilitado (NÃO no modo musical — sem feedback local)
+    // Configures NeoPixel if enabled (NOT in musical mode — no local feedback)
     const auto& np = config_.getNeoPixelConfig();
     if (logic.mode != PuzzleMode::MUSICAL_SEQUENCE && np.enabled && np.count > 0) {
         hw.pixelsExternal().updateLength(np.count);
@@ -79,11 +79,11 @@ void PuzzleEngine::begin() {
 void PuzzleEngine::update() {
     const auto& logic = config_.getLogicConfig();
 
-    // Timeout GLOBAL de partida — NAO se aplica ao modo musical.
-    // O acordeon e' SENSOR PURO: nao ha botao de start, o jogo fica armado
-    // enquanto houver gente tocando. Um relogio correndo em segundo plano
-    // encerraria a partida no meio da musica (medido: TIMEOUT 30 s apos o
-    // start, com a sequencia intacta).
+    // GLOBAL start timeout — does NOT apply to musical mode.
+    // The accordion is a PURE SENSOR: there is no start button, the game stays
+    // armed while someone is playing. A clock running in the background would
+    // end the game in the middle of the music (measured: TIMEOUT 30 s after
+    // start, with the sequence intact).
     if (logic.mode != PuzzleMode::MUSICAL_SEQUENCE &&
         logic.timeoutSeconds > 0 && state_ == EngineState::RUNNING) {
         if (millis() - puzzleStartTime_ > logic.timeoutSeconds * 1000UL) {
@@ -92,10 +92,10 @@ void PuzzleEngine::update() {
         }
     }
 
-    // Processa baseado no estado
+    // Processes based on the state
     switch (state_) {
         case EngineState::IDLE:
-            // Aguarda comando para iniciar
+            // Waits for a command to start
             break;
 
         case EngineState::RUNNING:
@@ -119,7 +119,7 @@ void PuzzleEngine::update() {
             break;
 
         case EngineState::INPUT_CORRECT:
-            // Aguarda breve momento antes de continuar
+            // Waits a brief moment before continuing
             if (millis() - stateStartTime_ > 500) {
                 state_ = EngineState::RUNNING;
 #ifndef ESP32_ESCAPEROOM_NO_IOABSTRACTION
@@ -129,7 +129,7 @@ void PuzzleEngine::update() {
             break;
 
         case EngineState::INPUT_WRONG:
-            // Aguarda breve momento para feedback
+            // Waits a brief moment for feedback
             if (millis() - stateStartTime_ > 1000) {
                 if (logic.resetOnError) {
                     reset();
@@ -145,11 +145,11 @@ void PuzzleEngine::update() {
 
         case EngineState::ERROR:
         case EngineState::TIMEOUT:
-            // Estados finais de erro
+            // Final error states
             break;
 
         case EngineState::SOLVED:
-            // Mantém efeito de solução
+            // Keeps the solved effect
 #ifndef ESP32_ESCAPEROOM_NO_IOABSTRACTION
             showSolvedEffect();
 #endif
@@ -157,10 +157,10 @@ void PuzzleEngine::update() {
     }
 
 #ifndef ESP32_ESCAPEROOM_NO_IOABSTRACTION
-    // Atualiza PWM
+    // Updates PWM
     updatePwmOutput();
 
-    // Atualiza NeoPixel
+    // Updates NeoPixel
     updateNeoPixel();
 #endif
 }
@@ -185,13 +185,14 @@ void PuzzleEngine::start() {
 #ifndef ESP32_ESCAPEROOM_NO_IOABSTRACTION
     showRunningEffect();
 #endif
-    Serial.println("[PuzzleEngine] Puzzle iniciado");
+    Serial.println("[PuzzleEngine] Puzzle started");
 }
 
-// Zera o PROGRESSO da sequencia e mantem o motor armado. Diferente de start():
-// nao mexe em puzzleStartTime_, nao dispara efeito visual e NAO IMPRIME nada.
-// Usado quando o jogador pausa entre frases — eventos frequentes em uso real,
-// onde uma linha de log por pausa poluiria o serial sem informar nada.
+// Resets the sequence PROGRESS and keeps the engine armed. Unlike start():
+// it does not touch puzzleStartTime_, does not trigger a visual effect and
+// PRINTS nothing. Used when the player pauses between phrases — frequent
+// events in real use, where one log line per pause would clutter the serial
+// without conveying anything.
 void PuzzleEngine::restartProgress() {
     currentStep_ = 0;
     noteStreak_ = 0;
@@ -209,10 +210,10 @@ uint16_t PuzzleEngine::getRemainingTime() const {
     return logic.timeoutSeconds - elapsed;
 }
 
-// ===== PROCESSAMENTO POR MODO =====
+// ===== PROCESSING PER MODE =====
 
 void PuzzleEngine::processCustomSequence() {
-    // Verifica se há input correto na sequência
+    // Checks whether there is a correct input in the sequence
     for (uint8_t i = 0; i < config_.getInputConfig().count; i++) {
         if (detectInputRisingEdge(i)) {
             uint8_t expectedInput = sequence_[currentStep_];
@@ -222,18 +223,18 @@ void PuzzleEngine::processCustomSequence() {
             } else {
                 onInputWrong(i);
             }
-            break;  // Só processa um input por ciclo
+            break;  // Only processes one input per cycle
         }
     }
 }
 
 void PuzzleEngine::processLinearSequence() {
-    // Mesma lógica de custom sequence, mas sequência é 0,1,2,3...
+    // Same logic as custom sequence, but the sequence is 0,1,2,3...
     processCustomSequence();
 }
 
 void PuzzleEngine::processAllConnected() {
-    // Verifica se todas as entradas estão ativas
+    // Checks whether all inputs are active
     uint8_t activeCount = 0;
     const auto& inputs = config_.getInputConfig();
 
@@ -252,7 +253,7 @@ void PuzzleEngine::processAllConnected() {
 }
 
 void PuzzleEngine::processRandomSequence() {
-    // Mesma lógica de custom sequence
+    // Same logic as custom sequence
     processCustomSequence();
 }
 
@@ -266,76 +267,76 @@ void PuzzleEngine::processMusicalSequence() {
     const auto& musical = config_.getMusicalConfig();
     if (!musical.enabled || musical.noteCount == 0) return;
 
-    // Frequencia em Hz — NAO a nota MIDI arredondada. A tolerancia e' em cents,
-    // e round() para MIDI inteiro descarta exatamente a informacao que ela mede.
+    // Frequency in Hz — NOT the rounded MIDI note. The tolerance is in cents,
+    // and round() to an integer MIDI discards exactly the information it measures.
     float freq = mic_->detectFrequency();
     if (freq <= 0.0f) {
-        // Silencio: libera a trava de nota e zera as confirmacoes.
-        // A trava e' o que impede UMA nota de avancar VARIOS passos: sem ela,
-        // as ~10 leituras/s de uma nota de 400 ms confirmariam o passo novo
-        // logo depois de aceitar o anterior.
+        // Silence: releases the note latch and resets the confirmations.
+        // The latch is what prevents ONE note from advancing SEVERAL steps: without
+        // it, the ~10 readings/s of a 400 ms note would confirm the new step
+        // right after accepting the previous one.
         awaitingNoteEnd_ = false;
         noteStreak_ = 0;
         wrongStreak_ = 0;
-        // Gap excedido: reinicia o PROGRESSO, nao o jogo. Precisa continuar em
-        // RUNNING — reset() sozinho poe em IDLE, e IDLE nao processa nada
-        // (o jogo pararia silenciosamente, que e' o defeito que isto corrige).
+        // Gap exceeded: resets the PROGRESS, not the game. It must stay in
+        // RUNNING — reset() alone sets it to IDLE, and IDLE processes nothing
+        // (the game would silently stop, which is the defect this fixes).
         if (lastInputTime_ > 0 && (millis() - lastInputTime_ > musical.maxGapMs)) {
-            // Pausa prolongada: o jogador parou de tocar. Zera SO' o progresso
-            // e mantem armado — NAO chama start(): ela reinicia o relogio de
-            // partida, dispara o efeito visual de running e imprime no serial.
-            // Chamada a cada pausa musical, aquilo enchia a janela de debug e
-            // reiniciava estado que nao deve ser reiniciado.
+            // Prolonged pause: the player stopped playing. Resets ONLY the
+            // progress and keeps it armed — does NOT call start(): that would
+            // restart the start clock, trigger the running visual effect and
+            // print to serial. Called on every musical pause, that filled the
+            // debug window and restarted state that should not be restarted.
             restartProgress();
         }
 
-        // Nota nova pode voltar a ser acusada: o silencio libera a trava de
-        // erro, senao a MESMA nota errada nunca voltaria a ser reportada.
+        // A new note can be flagged again: silence releases the error latch,
+        // otherwise the SAME wrong note would never be reported again.
         wrongNoteLatched_ = false;
         return;
     }
 
-    // Frequencia esperada da nota alvo (temperamento igual, A4 = 440 Hz)
+    // Expected frequency of the target note (equal temperament, A4 = 440 Hz)
     uint8_t expectedMidi = sequence_[currentStep_];
     float expectedFreq = 440.0f * powf(2.0f, ((float)expectedMidi - 69.0f) / 12.0f);
 
-    // Desvio em CENTS — grandeza real da tolerancia
+    // Deviation in CENTS — the real unit of the tolerance
     float cents = 1200.0f * log2f(freq / expectedFreq);
 
-    // Nota mais proxima da frequencia lida (para diagnostico e para o HA)
+    // Note closest to the read frequency (for diagnostics and for HA)
     int nearestMidi = (int)roundf(12.0f * log2f(freq / 440.0f) + 69.0f);
     playNote(nearestMidi);
 
     lastInputTime_ = millis();
 
-    // Trava: enquanto a MESMA nota continua soando, nao aceita de novo.
-    // Liberada apenas por silencio (acima) ou por nota CLARAMENTE diferente.
+    // Latch: while the SAME note keeps sounding, do not accept it again.
+    // Released only by silence (above) or by a CLEARLY different note.
     if (awaitingNoteEnd_) {
-        if (nearestMidi == lastPlayedMidi_) return;   // ainda a mesma nota
-        awaitingNoteEnd_ = false;                     // trocou de nota -> libera
+        if (nearestMidi == lastPlayedMidi_) return;   // still the same note
+        awaitingNoteEnd_ = false;                     // changed note -> release
     }
 
     if (fabsf(cents) <= (float)musical.toleranceCents) {
-        // Correto — mas exige CONFIRMACAO: o ataque da nota gera leituras
-        // instaveis, e decidir no primeiro frame conta isso como erro.
+        // Correct — but requires CONFIRMATION: the note's attack generates
+        // unstable readings, and deciding on the first frame counts that as an error.
         wrongStreak_ = 0;
         if (noteStreak_ < NOTE_CONFIRM_FRAMES) noteStreak_++;
         if (noteStreak_ >= NOTE_CONFIRM_FRAMES) {
             noteStreak_ = 0;
-            awaitingNoteEnd_ = true;                  // trava ate' a nota acabar
+            awaitingNoteEnd_ = true;                  // latch until the note ends
             onNoteCorrect((uint8_t)nearestMidi);
         }
     } else {
-        // Fora do alvo — tambem exige confirmacao, senao um transiente do
-        // ataque (ou um erro de 1 leitura do YIN) zera o progresso.
+        // Off target — also requires confirmation, otherwise an attack
+        // transient (or a 1-reading error from the YIN) resets the progress.
         noteStreak_ = 0;
         if (wrongStreak_ < NOTE_CONFIRM_FRAMES) wrongStreak_++;
         if (wrongStreak_ >= NOTE_CONFIRM_FRAMES) {
-            // Trava de nota errada sustentada. Sem isto, onInputWrong() zerava
-            // o contador e volta a acusar a cada 3 leituras (~120 ms): com a
-            // nota errada soando por 2 s, eram ~16 linhas de log e ~16
-            // publicacoes no HA para UM unico erro do jogador.
-            // Acusa UMA vez e espera a nota mudar (o silencio zera wrongStreak_).
+            // Sustained wrong-note latch. Without this, onInputWrong() reset
+            // the counter and flagged again every 3 readings (~120 ms): with the
+            // wrong note sounding for 2 s, that was ~16 log lines and ~16
+            // publications to HA for a SINGLE player mistake.
+            // Flags ONCE and waits for the note to change (silence resets wrongStreak_).
             wrongStreak_ = 0;
             if (!wrongNoteLatched_ || lastWrongMidi_ != nearestMidi) {
                 wrongNoteLatched_ = true;
@@ -353,7 +354,7 @@ void PuzzleEngine::onNoteCorrect(uint8_t midi) {
     currentStep_++;
     updateProgress();
 
-    Serial.printf("[PuzzleEngine] Nota %d CORRETA | Progresso: %d/%d\n",
+    Serial.printf("[PuzzleEngine] Note %d CORRECT | Progress: %d/%d\n",
                   midi, currentStep_, totalSteps_);
 
     if (currentStep_ >= totalSteps_) {
@@ -373,14 +374,14 @@ bool PuzzleEngine::detectInputRisingEdge(uint8_t pin) {
     auto* io = hw.io();
     if (!io) return false;
 
-    // Lê estado atual (LOW = ativo com PULLUP)
+    // Reads current state (LOW = active with PULLUP)
     uint8_t current = (io->digitalRead(inputs.pinMapping[pin]) == LOW) ? 1 : 0;
     uint8_t previous = lastInputStates_[pin];
 
-    // Atualiza estado para próxima chamada
+    // Updates the state for the next call
     lastInputStates_[pin] = current;
 
-    // Borda de subida: inativo -> ativo
+    // Rising edge: inactive -> active
     return (previous == 0 && current == 1);
 }
 
@@ -396,8 +397,8 @@ bool PuzzleEngine::isInputActive(uint8_t pin) {
     return (io->digitalRead(inputs.pinMapping[pin]) == LOW);
 }
 #else
-// ESP32-C3: sem IoAbstraction — detectInputRisingEdge/isInputActive
-// nunca são chamados (modo MUSICAL_SEQUENCE não usa inputs físicos).
+// ESP32-C3: no IoAbstraction — detectInputRisingEdge/isInputActive
+// are never called (MUSICAL_SEQUENCE mode does not use physical inputs).
 bool PuzzleEngine::detectInputRisingEdge(uint8_t) { return false; }
 bool PuzzleEngine::isInputActive(uint8_t) { return false; }
 #endif
@@ -413,7 +414,7 @@ void PuzzleEngine::onInputCorrect(uint8_t inputIndex) {
     showCorrectEffect();
 #endif
 
-    Serial.printf("[PuzzleEngine] Input %d CORRETO | Progresso: %d/%d\n",
+    Serial.printf("[PuzzleEngine] Input %d CORRECT | Progress: %d/%d\n",
                   inputIndex + 1, currentStep_, totalSteps_);
 
     if (currentStep_ >= totalSteps_) {
@@ -430,16 +431,16 @@ void PuzzleEngine::onInputWrong(uint8_t inputIndex) {
     showErrorEffect();
 #endif
 
-    // Modo musical: o que existe e' uma NOTA, nao "input 1". O texto antigo
-    // vinha do modelo de puzzle de ENTRADA (botoes) e fazia o log parecer
-    // defeito de fiacao/botao. Aqui reporta as duas notas em MIDI e nome.
+    // Musical mode: what exists is a NOTE, not "input 1". The old text
+    // came from the INPUT puzzle model (buttons) and made the log look like a
+    // wiring/button defect. Here it reports both notes in MIDI and by name.
     if (config_.getLogicConfig().mode == PuzzleMode::MUSICAL_SEQUENCE) {
         int esperada = getExpectedNote();
-        Serial.printf("[PuzzleEngine] NOTA ERRADA | tocada MIDI %d | esperada MIDI %d (%s)\n",
+        Serial.printf("[PuzzleEngine] WRONG NOTE | played MIDI %d | expected MIDI %d (%s)\n",
                       (int)lastWrongMidi_, esperada,
                       esperada >= 0 ? ConfigManager::midiToNoteName((uint8_t)esperada) : "--");
     } else {
-        Serial.printf("[PuzzleEngine] Input %d ERRADO | Esperado: %d\n",
+        Serial.printf("[PuzzleEngine] Input %d WRONG | Expected: %d\n",
                       inputIndex + 1, sequence_[currentStep_] + 1);
     }
 }
@@ -452,13 +453,13 @@ void PuzzleEngine::onSequenceComplete() {
     playUnlockSound();
     showSolvedEffect();
 
-    // Ativa saída (relê/trava)
+    // Activates output (relay/lock)
     const auto& output = config_.getOutputConfig();
     hw.pinMode(output.lockPin, OUTPUT);
     hw.digitalWrite(output.lockPin, output.activeHigh ? HIGH : LOW);
 #endif
 
-    Serial.println("[PuzzleEngine] PUZZLE RESOLVIDO!");
+    Serial.println("[PuzzleEngine] PUZZLE SOLVED!");
 }
 
 void PuzzleEngine::onTimeout() {
@@ -479,10 +480,10 @@ void PuzzleEngine::updatePwmOutput() {
     const auto& pwm = config_.getPwmConfig();
     if (!pwm.enabled) return;
 
-    // Calcula valor PWM baseado no progresso
+    // Computes the PWM value based on the progress
     uint8_t value = map(progress_, 0, 100, pwm.minValue, pwm.maxValue);
 
-    // Define saída PWM
+    // Sets the PWM output
     hw.setAnalogOutput(pwm.channel, value);
 }
 
@@ -496,7 +497,7 @@ void PuzzleEngine::updateNeoPixel() {
         if (i < ledsToLight) {
             hw.pixelsExternal().setPixelColor(i, np.colorProgress);
         } else if (i == ledsToLight && state_ == EngineState::INPUT_CORRECT) {
-            // Efeito de pulso no LED atual
+            // Pulse effect on the current LED
             uint8_t brightness = 128 + 127 * sin(millis() / 200.0);
             uint32_t color = Adafruit_NeoPixel::Color(
                 (np.colorProgress >> 16) & 0xFF * brightness / 255,
@@ -512,7 +513,7 @@ void PuzzleEngine::updateNeoPixel() {
     hw.pixelsExternal().show();
 }
 
-// ===== ÁUDIO =====
+// ===== AUDIO =====
 
 void PuzzleEngine::playInputSound(uint8_t index) {
     const auto& audio = config_.getAudioConfig();
@@ -541,13 +542,13 @@ void PuzzleEngine::playResetSound() {
     hw.sound().playOnce(audio.resetSound);
 }
 
-// ===== EFEITOS VISUAIS =====
+// ===== VISUAL EFFECTS =====
 
 void PuzzleEngine::showIdleEffect() {
     const auto& np = config_.getNeoPixelConfig();
     if (!np.enabled || np.count == 0) return;
 
-    // Todos os LEDs na cor idle, efeito de respiração
+    // All LEDs in the idle color, breathing effect
     for (uint8_t i = 0; i < np.count; i++) {
         hw.pixelsExternal().setPixelColor(i, np.colorIdle);
     }
@@ -558,7 +559,7 @@ void PuzzleEngine::showRunningEffect() {
     const auto& np = config_.getNeoPixelConfig();
     if (!np.enabled || np.count == 0) return;
 
-    // Barra de progresso vazia
+    // Empty progress bar
     for (uint8_t i = 0; i < np.count; i++) {
         hw.pixelsExternal().setPixelColor(i, np.colorIdle);
     }
@@ -569,7 +570,7 @@ void PuzzleEngine::showCorrectEffect() {
     const auto& np = config_.getNeoPixelConfig();
     if (!np.enabled || np.count == 0) return;
 
-    // Flash verde breve
+    // Brief green flash
     for (uint8_t i = 0; i < np.count; i++) {
         hw.pixelsExternal().setPixelColor(i, np.colorSolved);
     }
@@ -580,7 +581,7 @@ void PuzzleEngine::showErrorEffect() {
     const auto& np = config_.getNeoPixelConfig();
     if (!np.enabled || np.count == 0) return;
 
-    // Flash vermelho
+    // Red flash
     for (uint8_t i = 0; i < np.count; i++) {
         hw.pixelsExternal().setPixelColor(i, np.colorError);
     }
@@ -591,7 +592,7 @@ void PuzzleEngine::showSolvedEffect() {
     const auto& np = config_.getNeoPixelConfig();
     if (!np.enabled || np.count == 0) return;
 
-    // Efeito de celebração (fade in/out verde)
+    // Celebration effect (green fade in/out)
     static unsigned long lastUpdate = 0;
     static uint8_t brightness = 0;
     static bool increasing = true;
@@ -627,7 +628,7 @@ void PuzzleEngine::showSolvedEffect() {
 }
 #endif // ESP32_ESCAPEROOM_NO_IOABSTRACTION
 
-// ===== GERAÇÃO DE SEQUÊNCIAS =====
+// ===== SEQUENCE GENERATION =====
 
 void PuzzleEngine::generateLinearSequence() {
     const auto& inputs = config_.getInputConfig();
@@ -641,7 +642,7 @@ void PuzzleEngine::generateRandomSequence() {
     const auto& inputs = config_.getInputConfig();
     sequenceLength_ = inputs.count;
 
-    // Preenche array com todas as entradas
+    // Fills the array with all inputs
     uint8_t temp[16];
     for (uint8_t i = 0; i < sequenceLength_; i++) {
         temp[i] = i;
@@ -655,7 +656,7 @@ void PuzzleEngine::generateRandomSequence() {
         temp[j] = swap;
     }
 
-    // Copia para sequência
+    // Copies to the sequence
     for (uint8_t i = 0; i < sequenceLength_; i++) {
         sequence_[i] = temp[i];
     }

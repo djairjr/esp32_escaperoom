@@ -1,112 +1,112 @@
-# Manual do BallMaze - Labirinto com Acelerometro
+# BallMaze Manual - Maze with Accelerometer
 
-Guia para donos de sala, game masters e jogadores.
-
----
-
-## 1. Visao Geral
-
-### O que e este dispositivo?
-
-O **BallMaze** e um puzzle de labirinto fisico virtual. A caixa contem uma placa PropMaker com acelerometro LIS3DH que detecta a inclinacao da caixa. Uma "bola" virtual se move na tela de LEDs na direcao da inclinacao. O jogador deve guiar a bola ate todas as zonas-alvo para resolver o puzzle.
-
-### Como funciona no jogo?
-
-- Os jogadores encontram uma caixa com luzes LED
-- Ao inclinar a caixa, uma bola virtual se move na direcao da inclinacao
-- O objetivo e visitar todas as zonas-alvo (marcadas em amarelo nos LEDs)
-- Quando a bola passa por uma zona-alvo, ela fica verde e um som e tocado
-- Ao visitar todas as zonas, o puzzle e resolvido
+Guide for room owners, game masters and players.
 
 ---
 
-## 2. Componentes do Jogo
+## 1. Overview
 
-| Componente | Descricao |
+### What is this device?
+
+The **BallMaze** is a physical virtual maze puzzle. The box contains a PropMaker board with a LIS3DH accelerometer that detects the box's tilt. A virtual "ball" moves on the LED screen in the direction of the tilt. The player must guide the ball to all target zones to solve the puzzle.
+
+### How does it work in the game?
+
+- Players find a box with LED lights
+- When tilting the box, a virtual ball moves in the direction of the tilt
+- The goal is to visit all target zones (marked in yellow on the LEDs)
+- When the ball passes over a target zone, it turns green and a sound plays
+- On visiting all zones, the puzzle is solved
+
+---
+
+## 2. Game Components
+
+| Component | Description |
 |------------|-----------|
-| **LEDs NeoPixel** | Fileira de luzes que mostra a posicao da bola e das zonas-alvo |
-| **Caixa** | O proprio corpo do dispositivo - deve ser inclinada |
-| **Alto-falante** | Emite sons de movimento, acerto e vitoria |
+| **NeoPixel LEDs** | A row of lights that shows the position of the ball and the target zones |
+| **Box** | The device's own body - it must be tilted |
+| **Speaker** | Emits movement, hit and victory sounds |
 
 ---
 
-## 3. Configuracao Inicial
+## 3. Initial Configuration
 
-### Antes de usar pela primeira vez
+### Before first use
 
-1. Carregue os arquivos de audio no LittleFS ou SD Card
-2. Ajuste o arquivo `/ballmaze.json` se necessario (veja secao 8)
-3. Ligue o dispositivo
+1. Upload the audio files to LittleFS or the SD Card
+2. Adjust the `/ballmaze.json` file if needed (see section 8)
+3. Power on the device
 
-### Verificacao de funcionamento
+### Operation check
 
-1. Ligue o dispositivo
-2. Os LEDs devem acender em azul suave e pulsante
-3. Incline a caixa - a bola (LED branco) deve se mover na direcao da inclinacao
-4. Se os LEDs piscarem vermelho, o acelerometro nao foi detectado
-
----
-
-## 4. Como Jogar
-
-### Para o Game Master - Iniciando o jogo
-
-1. Coloque a caixa em uma superficie plana
-2. Explique aos jogadores que devem inclinar a caixa para mover a bola
-3. Quando estiverem prontos, peca para sacudirem levemente a caixa para comecar
-4. O puzzle esta em andamento quando a bola comeca a se mover
-
-### Para os jogadores - Durante o jogo
-
-1. **Inicie**: Sacuda a caixa levemente para comecar
-2. **Mova a bola**: Incline a caixa na direcao que quer que a bola va
-3. **Encontre os alvos**: Guie a bola ate as zonas amarelas
-4. **Veja o progresso**: Cada zona visitada fica verde
-5. **Venca**: Quando todas as zonas estiverem verdes, o puzzle e resolvido!
-
-### Dicas de jogabilidade
-
-- Inclinacoes suaves funcionam melhor que movimentos bruscos
-- A bola tem inercia - ela continua se movendo um pouco apos parar de inclinar
-- Se a bola bater na borda, ela quica de volta
-- Agite a caixa para comecar um novo jogo apos vencer
+1. Power on the device
+2. The LEDs should light up in a soft, pulsing blue
+3. Tilt the box - the ball (white LED) should move in the direction of the tilt
+4. If the LEDs blink red, the accelerometer was not detected
 
 ---
 
-## 5. O que acontece ao resolver
+## 4. How to Play
 
-Quando todas as zonas-alvo sao visitadas:
+### For the Game Master - Starting the game
 
-1. Os LEDs fazem um efeito rainbow (todas as cores)
-2. O som de vitoria toca
-3. A trava (se configurada) e liberada
-4. Apos 10 segundos, o puzzle volta ao estado inicial
+1. Place the box on a flat surface
+2. Explain to the players that they must tilt the box to move the ball
+3. When they are ready, ask them to shake the box lightly to start
+4. The puzzle is in progress when the ball starts moving
+
+### For the players - During the game
+
+1. **Start**: Shake the box lightly to start
+2. **Move the ball**: Tilt the box in the direction you want the ball to go
+3. **Find the targets**: Guide the ball to the yellow zones
+4. **Watch the progress**: Each visited zone turns green
+5. **Win**: When all zones are green, the puzzle is solved!
+
+### Gameplay tips
+
+- Gentle tilts work better than abrupt movements
+- The ball has inertia - it keeps moving a bit after you stop tilting
+- If the ball hits the edge, it bounces back
+- Shake the box to start a new game after winning
 
 ---
 
-## 6. Configuracao Avancada (ballmaze.json)
+## 5. What happens when it is solved
 
-### Parametros de Fisica
+When all target zones are visited:
 
-| Parametro | O que faz | Valor Recomendado |
+1. The LEDs do a rainbow effect (all colors)
+2. The victory sound plays
+3. The lock (if configured) is released
+4. After 10 seconds, the puzzle returns to its initial state
+
+---
+
+## 6. Advanced Configuration (ballmaze.json)
+
+### Physics parameters
+
+| Parameter | What it does | Recommended Value |
 |-----------|-----------|-------------------|
-| `phys.accel` | Sensibilidade a inclinacao | 600 (mais = mais rapido) |
-| `phys.damp` | Atrito da bola | 3.5 (mais = para mais rapido) |
-| `phys.bounce` | Quique nas paredes | 0.3 (0 = nao quica, 1 = quica total) |
-| `phys.maxSpd` | Velocidade maxima | 250 |
-| `phys.deadZ` | Zona morta (ignora ruido) | 0.25 (menos = mais sensivel) |
+| `phys.accel` | Sensitivity to tilt | 600 (higher = faster) |
+| `phys.damp` | Ball friction | 3.5 (higher = stops faster) |
+| `phys.bounce` | Bounce off the walls | 0.3 (0 = no bounce, 1 = full bounce) |
+| `phys.maxSpd` | Maximum speed | 250 |
+| `phys.deadZ` | Dead zone (ignores noise) | 0.25 (lower = more sensitive) |
 
-### Dicas de ajuste
+### Tuning tips
 
-- **Bola muito lenta**: Aumente `phys.accel` ou diminua `phys.damp`
-- **Bola muito rapida**: Diminua `phys.accel` ou `phys.maxSpd`
-- **Bola treme parada**: Aumente `phys.deadZ`
-- **Alvos muito dificeis**: Aumente `targetRadius`
-- **Alvos muito faceis**: Diminua `targetRadius`
+- **Ball too slow**: Increase `phys.accel` or decrease `phys.damp`
+- **Ball too fast**: Decrease `phys.accel` or `phys.maxSpd`
+- **Ball jitters while still**: Increase `phys.deadZ`
+- **Targets too difficult**: Increase `targetRadius`
+- **Targets too easy**: Decrease `targetRadius`
 
-### Posicao das zonas-alvo
+### Target zone positions
 
-O arquivo JSON contem um array `targets` com posicoes X, Y e raio:
+The JSON file contains a `targets` array with X, Y positions and radius:
 
 ```json
 "targets": [
@@ -116,79 +116,79 @@ O arquivo JSON contem um array `targets` com posicoes X, Y e raio:
 ]
 ```
 
-O labirinto virtual tem 200x200 unidades. X=0 e Y=0 e o canto superior esquerdo.
+The virtual maze is 200x200 units. X=0 and Y=0 is the top-left corner.
 
 ---
 
-## 7. Checklist de Audio
+## 7. Audio Checklist
 
-| Arquivo | Quando Toca | Obrigatorio? |
+| File | When It Plays | Required? |
 |---------|-------------|--------------|
-| `ball_roll.mp3` | Enquanto a bola se move | Sim |
-| `target_hit.mp3` | Ao visitar uma zona-alvo | Sim |
-| `solved.mp3` | Puzzle resolvido | Sim |
-| `idle_chime.mp3` | A cada 15s no idle (opcional) | Nao |
+| `ball_roll.mp3` | While the ball moves | Yes |
+| `target_hit.mp3` | On visiting a target zone | Yes |
+| `solved.mp3` | Puzzle solved | Yes |
+| `idle_chime.mp3` | Every 15s while idle (optional) | No |
 
-### Formato dos arquivos
+### File format
 
-- **Formato**: MP3
-- **Taxa de bits**: 128 kbps
-- **Frequencia**: 44.1 kHz
-- **Canais**: Stereo
-- **Sem tags ID3**
-
----
-
-## 8. Solucao de Problemas
-
-### A bola nao se move
-
-1. Verifique se o acelerometro esta funcionando (hw.test() no Serial)
-2. Aumente `phys.accel` no JSON
-3. Diminua `phys.deadZ` para maior sensibilidade
-
-### A bola treme sem mexer
-
-1. Aumente `phys.deadZ` no JSON
-2. Coloque a caixa em uma superficie mais estavel
-3. Verifique se nao ha vibracao externa
-
-### LEDs vermelhos piscando
-
-- O acelerometro LIS3DH nao foi detectado
-- Verifique conexao I2C (endereco 0x18)
-- Pode ser necessario soldar ou substituir a placa
-
-### O puzzle nao inicia
-
-1. Agite a caixa com mais forca (threshold minimo de 15 m/s^2)
-2. Verifique no Serial se o shake esta sendo detectado
-3. Diminua o threshold no codigo (se necessario)
+- **Format**: MP3
+- **Bit rate**: 128 kbps
+- **Frequency**: 44.1 kHz
+- **Channels**: Stereo
+- **No ID3 tags**
 
 ---
 
-## Resumo Rapido
+## 8. Troubleshooting
 
-| Acao | Como Fazer |
+### The ball does not move
+
+1. Check whether the accelerometer is working (hw.test() on the Serial)
+2. Increase `phys.accel` in the JSON
+3. Decrease `phys.deadZ` for greater sensitivity
+
+### The ball jitters without moving
+
+1. Increase `phys.deadZ` in the JSON
+2. Place the box on a more stable surface
+3. Check for external vibration
+
+### Red LEDs blinking
+
+- The LIS3DH accelerometer was not detected
+- Check the I2C connection (address 0x18)
+- The board may need to be soldered or replaced
+
+### The puzzle does not start
+
+1. Shake the box harder (minimum threshold of 15 m/s^2)
+2. Check on the Serial whether the shake is being detected
+3. Decrease the threshold in the code (if necessary)
+
+---
+
+## Quick Summary
+
+| Action | How To Do It |
 |------|------------|
-| Iniciar jogo | Sacuda a caixa |
-| Mover a bola | Incline a caixa |
-| Visitar alvo | Passe a bola sobre a zona amarela |
-| Resolver puzzle | Visite todas as zonas-alvo |
-| Reiniciar | Apos solved, aguarde 10s ou sacuda |
+| Start game | Shake the box |
+| Move the ball | Tilt the box |
+| Visit a target | Pass the ball over the yellow zone |
+| Solve puzzle | Visit all target zones |
+| Restart | After solved, wait 10s or shake |
 
-### Estados dos LEDs
+### LED States
 
-| Cor/Padrao | Significado |
+| Color/Pattern | Meaning |
 |------------|-------------|
-| Azul suave pulsante | Aguardando inicio (idle) |
-| Branco + amarelos | Jogo em andamento |
-| Branco + verdes | Alvos ja visitados |
-| Rainbow | Puzzle resolvido! |
-| Vermelho piscando | Erro: acelerometro ausente |
+| Soft pulsing blue | Waiting to start (idle) |
+| White + yellows | Game in progress |
+| White + greens | Targets already visited |
+| Rainbow | Puzzle solved! |
+| Blinking red | Error: accelerometer missing |
 
 ---
 
-*Bom jogo! Nao deixe a bola cair...*
+*Good game! Don't let the ball fall...*
 
-*Manual BallMaze - Versao 1.0 para biblioteca PropMaker EscapeRoom*
+*BallMaze Manual - Version 1.0 for the PropMaker EscapeRoom library*

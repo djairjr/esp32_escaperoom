@@ -1,29 +1,29 @@
-# EscapeRoomPhone — Entidades Home Assistant
+# EscapeRoomPhone — Home Assistant Entities
 
-## Sensores
-| Nome | ID | Valores |
+## Sensors
+| Name | ID | Values |
 |---|---|---|
-| Estado | `state` | idle, off_hook, dialing, playing, busy |
-| Número Discado | `dialed_number` | texto (até 8 dígitos) |
-| Último Dígito | `last_digit` | 0-9 |
+| State | `state` | idle, off_hook, dialing, playing, busy |
+| Dialed Number | `dialed_number` | text (up to 8 digits) |
+| Last Digit | `last_digit` | 0-9 |
 
-## Binários
-| Nome | ID |
+## Binary Sensors
+| Name | ID |
 |---|---|
-| Gancho | `hook` | on_hook, off_hook |
-| Trava | `lock` | locked, unlocked |
+| Hook | `hook` | on_hook, off_hook |
+| Lock | `lock` | locked, unlocked |
 
-## Botões
-| Nome | ID |
+## Buttons
+| Name | ID |
 |---|---|
-| Destravar | `unlock` |
-| Resetar | `reset` |
+| Unlock | `unlock` |
+| Reset | `reset` |
 
-## Números
-| Nome | ID | Range |
+## Numbers
+| Name | ID | Range |
 |---|---|---|
-| Timeout Discagem | `dial_timeout` | 1-10s |
-| Máx Dígitos | `max_digits` | 1-8 |
+| Dial Timeout | `dial_timeout` | 1-10s |
+| Max Digits | `max_digits` | 1-8 |
 
 ## AP Mode
-Rede WiFi "EscapePhone-XXXX" + portal em 192.168.4.1.
+WiFi network "EscapePhone-XXXX" + portal at 192.168.4.1.

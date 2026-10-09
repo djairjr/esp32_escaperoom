@@ -1,28 +1,28 @@
-# KeypadCodeEntry — Documentação do Desenvolvedor
+# KeypadCodeEntry — Developer Documentation
 
-## Hardware Necessário
+## Required Hardware
 
-| Componente | Quantidade | Conexão |
+| Component | Quantity | Connection |
 |---|---|---|
 | XIAO ESP32-S3 + Expansion Board | 1 | Base |
 | PCF8574 I/O Expander (I2C 0x20) | 1 | Grove I2C |
-| Keypad matricial 4×3 | 1 | Pinos do PCF8574 |
-| Relé 5V (trava elétrica) | 1 | D0 (GPIO1) |
-| NeoPixel (opcional) | 4 LEDs | D2 (GPIO3) |
-| Buzzer passivo (Expansion Board) | 1 | D3 (GPIO4) |
+| 4×3 matrix keypad | 1 | PCF8574 pins |
+| 5V relay (electric strike) | 1 | D0 (GPIO1) |
+| NeoPixel (optional) | 4 LEDs | D2 (GPIO3) |
+| Passive buzzer (Expansion Board) | 1 | D3 (GPIO4) |
 
-## Pinagem do Keypad no PCF8574
+## Keypad Pinout on the PCF8574
 
 ```
-PCF8574 P0 → Linha 1    PCF8574 P4 → Coluna 1
-PCF8574 P1 → Linha 2    PCF8574 P5 → Coluna 2
-PCF8574 P2 → Linha 3    PCF8574 P6 → Coluna 3
-PCF8574 P3 → Linha 4
+PCF8574 P0 → Row 1    PCF8574 P4 → Column 1
+PCF8574 P1 → Row 2    PCF8574 P5 → Column 2
+PCF8574 P2 → Row 3    PCF8574 P6 → Column 3
+PCF8574 P3 → Row 4
 ```
 
-## Dependências
+## Dependencies
 
-| Biblioteca | Versão |
+| Library | Version |
 |---|---|
 | ArduinoHA | ^1.0.0 |
 | ArduinoJson | ^7.0.0 |
@@ -30,38 +30,38 @@ PCF8574 P3 → Linha 4
 | TaskManagerIO | ^3.0.0 |
 | Adafruit NeoPixel | ^1.0.0 |
 
-## Estrutura do Código
+## Code Structure
 
 ```
 setup()
-  ├─ loadConfig()          — JSON de /keypad.json
+  ├─ loadConfig()          — JSON from /keypad.json
   ├─ PCF8574 init (0x20)
-  ├─ KeyboardManager init  — keypad 4×3
+  ├─ KeyboardManager init  — 4×3 keypad
   ├─ NeoPixel init
-  ├─ Relé init (HIGH = travado)
-  └─ connectWiFi()         — STA ou AP mode
+  ├─ Relay init (HIGH = locked)
+  └─ connectWiFi()         — STA or AP mode
 
 loop()
-  ├─ taskManager.runLoop() — processa keypad via IoAbstraction
-  ├─ haMqtt.loop()         — MQTT para Home Assistant
-  ├─ handleKey(char)       — processa tecla pressionada
-  ├─ verifica código pendente (500ms delay)
-  └─ auto-reset após 5s em SOLVED/ERROR
+  ├─ taskManager.runLoop() — processes keypad via IoAbstraction
+  ├─ haMqtt.loop()         — MQTT for Home Assistant
+  ├─ handleKey(char)       — processes the pressed key
+  ├─ checks pending code (500ms delay)
+  └─ auto-reset after 5s in SOLVED/ERROR
 ```
 
-## Máquina de Estados
+## State Machine
 
 ```
-IDLE      → primeira tecla → ENTERING
-ENTERING  → 4 dígitos → CHECKING (500ms delay)
-CHECKING  → código certo → SOLVED
-CHECKING  → código errado, tentativas < max → IDLE
-CHECKING  → código errado, tentativas >= max → ERROR
-SOLVED    → 5s → IDLE (auto-reset, re-trava)
+IDLE      → first key → ENTERING
+ENTERING  → 4 digits → CHECKING (500ms delay)
+CHECKING  → correct code → SOLVED
+CHECKING  → wrong code, attempts < max → IDLE
+CHECKING  → wrong code, attempts >= max → ERROR
+SOLVED    → 5s → IDLE (auto-reset, re-locks)
 ERROR     → 5s → IDLE (auto-reset)
 ```
 
-## Configuração JSON (/keypad.json)
+## JSON Configuration (/keypad.json)
 
 ```json
 {
@@ -72,21 +72,21 @@ ERROR     → 5s → IDLE (auto-reset)
 
 ## Home Assistant (MQTT)
 
-| Entidade | Tipo | ID | Descrição |
+| Entity | Type | ID | Description |
 |---|---|---|---|
-| Estado | sensor | `state` | idle, entering, checking, solved, error |
-| Tentativas | sensor | `attempts` | contagem de erros |
-| Resetar | button | `reset` | volta ao IDLE |
-| Código | number | `code` | 0-9999 |
-| Máx Tentativas | number | `max_attempts` | 1-9 |
+| State | sensor | `state` | idle, entering, checking, solved, error |
+| Attempts | sensor | `attempts` | error count |
+| Reset | button | `reset` | returns to IDLE |
+| Code | number | `code` | 0-9999 |
+| Max Attempts | number | `max_attempts` | 1-9 |
 
 ## AP Mode
 
-- SSID: `KeypadCode-ESP32` (aberta)
-- Portal: `http://192.168.4.1` (configurar WiFi + MQTT)
-- Arquivo: `/wifi.json` no LittleFS
+- SSID: `KeypadCode-ESP32` (open)
+- Portal: `http://192.168.4.1` (configure WiFi + MQTT)
+- File: `/wifi.json` in LittleFS
 
-## Compilação
+## Build
 
 ```bash
 # PlatformIO

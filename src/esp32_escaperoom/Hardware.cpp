@@ -16,20 +16,20 @@ void Hardware::begin() {
   Serial.println(F("[HARDWARE]        Starting Diagnostic Boot"));
   Serial.println(F("[HARDWARE] ========================================="));
 
-  // 0. I2C Scan - apenas detecta dispositivos
+  // 0. I2C Scan - only detects devices
   Serial.println(F("[HARDWARE] Init I2C Bus"));
   Wire.begin();
   scanI2C();
 
-  // Nota: Expansores PCF857x devem ser configurados manualmente após o begin()
-  // Use: hw.addPcf8574(0x20) ou hw.addPcf8575(0x21)
-  // Ou use initExpanders() para inicializar todos os detectados (fallback)
+  // Note: PCF857x expanders must be configured manually after begin()
+  // Use: hw.addPcf8574(0x20) or hw.addPcf8575(0x21)
+  // Or use initExpanders() to initialize all detected ones (fallback)
 
   // SPI Start - SD Card Setup
   Serial.println(F("[HARDWARE] Init SPI Bus"));
   SPI.begin();
 
-  // Power Rail - liga imediatamente para áudio/servo/NeoPixel
+  // Power Rail - turns on immediately for audio/servo/NeoPixel
   pinMode(PIN_EXTERNAL_POWER, OUTPUT);
   setPower5V(true);
   Serial.println(F("[HARDWARE] External Power: ON"));
@@ -54,7 +54,7 @@ void Hardware::begin() {
     sdMounted_ = false;
   }
 
-  // Audio Subsystem - INICIALIZA PRIMEIRO (antes do NeoPixel)
+  // Audio Subsystem - INITIALIZES FIRST (before NeoPixel)
   Serial.print(F("[HARDWARE] Audio Amplifier (I2S): "));
   audio_.begin(sdMounted_, littleFsMounted_);
   Serial.println(audio_.mounted() ? F("READY") : F("FAIL"));
@@ -62,30 +62,30 @@ void Hardware::begin() {
   volumeFull_ = audio_.getVolume();
   
 
-  // NeoPixel Interno
+  // Internal NeoPixel
   pixelsInternal_.begin();
   pixelsInternal_.setBrightness(50);
   pixelBrightnessFull_ = 50;
   pixelsInternal_.clear();
   pixelsInternal_.show();
   // delay(500);
-  Serial.println(F("[HARDWARE] NeoPixel Interno: Initialized"));
+  Serial.println(F("[HARDWARE] Internal NeoPixel: Initialized"));
 
-  // NeoPixel Externo
+  // External NeoPixel
   pixelsExternal_.begin();
   pixelsExternal_.setBrightness(50);
   pixelsExternal_.clear();
   pixelsExternal_.show();
   // delay(500);
-  Serial.println(F("[HARDWARE] NeoPixel Externo: Initialized"));
+  Serial.println(F("[HARDWARE] External NeoPixel: Initialized"));
 
   // Servo
   servo_.attach(PIN_SERVO_PWM);
   Serial.println(F("[HARDWARE] Servo: ATTACHED")); 
-  // ── Inicialização de periféricos onboard (condicional por placa) ──
+  // ── Onboard peripheral initialization (conditional per board) ──
   boardInit();
 
-  // ── Relatório de periféricos onboard ──
+  // ── Onboard peripheral report ──
 #if HAS_ONBOARD_TFT
 #if HAS_M5UNIFIED
   Serial.printf("[HARDWARE] Onboard TFT: %dx%d (M5Unified)\n", M5.Display.width(), M5.Display.height());
@@ -126,25 +126,25 @@ void Hardware::begin() {
 
 #ifndef ESP32_ESCAPEROOM_NO_IOABSTRACTION
 uint8_t Hardware::detectPcfType(uint8_t address) {
-  // PCF8575 tem 16 bits de I/O, PCF8574 tem apenas 8 bits
-  // Método: ler sem escrever nada - PCF8575 retorna 2 bytes, PCF8574 retorna 1
+  // PCF8575 has 16 I/O bits, PCF8574 has only 8 bits
+  // Method: read without writing anything - PCF8575 returns 2 bytes, PCF8574 returns 1
 
-  // Tenta ler 2 bytes diretamente (sem escrita prévia)
+  // Tries to read 2 bytes directly (without prior write)
   Wire.requestFrom(address, (uint8_t)2);
   uint32_t start = millis();
-  // Aguarda pelo menos 1 byte (ambos respondem)
+  // Waits for at least 1 byte (both respond)
   while (Wire.available() == 0 && (millis() - start) < 100) {
     delay(1);
   }
   uint8_t available = Wire.available();
 
-  // Se leu pelo menos 1 byte, dispositivo presente
+  // If at least 1 byte was read, device is present
   if (available >= 1) {
-    // PCF8575 responde com 2 bytes, PCF8574 responde com 1 byte
+    // PCF8575 responds with 2 bytes, PCF8574 responds with 1 byte
     if (available >= 2) return 2;  // PCF8575 (16 bits)
     return 1;  // PCF8574 (8 bits)
   }
-  return 0;  // Não respondeu
+  return 0;  // Did not respond
 }
 
 PCF8574IoAbstraction* Hardware::getExpanderByAddress(uint8_t address) {
@@ -194,7 +194,7 @@ void Hardware::addExpander(uint8_t address, bool is16bit) {
   }
 
   expanders_[expanderCount_] = new PCF8574IoAbstraction(address, IO_PIN_NOT_DEFINED, &Wire, is16bit);
-  expanders_[expanderCount_]->runLoop();  // Inicializa estado I/O
+  expanders_[expanderCount_]->runLoop();  // Initializes I/O state
   isPcf8575_[expanderCount_] = is16bit;
   expanderAddresses_[expanderCount_] = address;
   expanderCount_++;
@@ -219,7 +219,7 @@ bool Hardware::initPortExpander(uint8_t address) {
   if (type == 2) {
     // PCF8575 (16 bits)
     expanders_[expanderCount_] = new PCF8574IoAbstraction(address, IO_PIN_NOT_DEFINED, &Wire, true);
-    expanders_[expanderCount_]->runLoop();  // Inicializa estado I/O
+    expanders_[expanderCount_]->runLoop();  // Initializes I/O state
     isPcf8575_[expanderCount_] = true;
     expanderAddresses_[expanderCount_] = address;
     expanderCount_++;
@@ -230,7 +230,7 @@ bool Hardware::initPortExpander(uint8_t address) {
   if (type == 1) {
     // PCF8574 (8 bits)
     expanders_[expanderCount_] = new PCF8574IoAbstraction(address, IO_PIN_NOT_DEFINED, &Wire, false);
-    expanders_[expanderCount_]->runLoop();  // Inicializa estado I/O
+    expanders_[expanderCount_]->runLoop();  // Initializes I/O state
     isPcf8575_[expanderCount_] = false;
     expanderAddresses_[expanderCount_] = address;
     expanderCount_++;
@@ -269,24 +269,24 @@ void Hardware::scanI2C() {
         }
       }
 
-      // PCF8574/PCF8575 (0x20-0x27) - apenas detecta, tipo deve ser configurado manualmente
+      // PCF8574/PCF8575 (0x20-0x27) - only detects, type must be configured manually
       if (address >= 0x20 && address <= 0x27) {
         Serial.print(F(" (PCF857x)"));
         hasPortExpander_ = true;
         Serial.print(F(" - DETECTED (use hw.addPcf8574(0x"));
         if (address < 16) Serial.print("0");
         Serial.print(address, HEX);
-        Serial.print(F(") ou hw.addPcf8575)"));
+        Serial.print(F(") or hw.addPcf8575)"));
       }
 
-      // PCF8574A/PCF8575A (0x38-0x3F) - apenas detecta, tipo deve ser configurado manualmente
+      // PCF8574A/PCF8575A (0x38-0x3F) - only detects, type must be configured manually
       if (address >= 0x38 && address <= 0x3F) {
         Serial.print(F(" (PCF857xA)"));
         hasPortExpander_ = true;
         Serial.print(F(" - DETECTED (use hw.addPcf8574(0x"));
         if (address < 16) Serial.print("0");
         Serial.print(address, HEX);
-        Serial.print(F(") ou hw.addPcf8575)"));
+        Serial.print(F(") or hw.addPcf8575)"));
       }
 
       // RTC PCF8563 (0x51)
@@ -303,7 +303,7 @@ void Hardware::scanI2C() {
         Serial.print(F(" - DETECTED"));
       }
 
-      // PCA9685 PWM Driver (0x40-0x47, 0x4C-0x4F) - exclui 0x48-0x4B (ADS1115)
+      // PCA9685 PWM Driver (0x40-0x47, 0x4C-0x4F) - excludes 0x48-0x4B (ADS1115)
       if ((address >= 0x40 && address <= 0x47) || (address >= 0x4C && address <= 0x4F)) {
         Serial.print(F(" (PCA9685 PWM)"));
         if (!hasPwmDriver_) {
@@ -362,7 +362,7 @@ void Hardware::scanI2C() {
     }
   }
 
-  // Relatório final
+  // Final report
   Serial.println(F("[HARDWARE] ========================================="));
   Serial.println(F("[HARDWARE] Hardware Detection Summary:"));
   Serial.printf("  - Port Expander (PCF857x): %s\n", hasPortExpander_ ? "FOUND" : "NOT FOUND");
@@ -460,7 +460,7 @@ void Hardware::beginBatteryMonitor(uint8_t sensePin) {
   batteryMonitorBegun_ = true;
   lastBatteryRead_ = 0;
 
-  // Leitura inicial
+  // Initial reading
   int raw = analogRead(batterySensePin_);
   batteryVoltage_ = (raw / 1023.0f) * 3.3f * 2.0f;
 
@@ -521,10 +521,10 @@ void Hardware::updatePowerSave() {
 
   float v = readBatteryVoltage();
 
-  // Só atua se bateria estiver conectada
+  // Only acts if the battery is connected
   if (v <= 3.0f) return;
 
-  // Ratio linear entre warn e critical
+  // Linear ratio between warn and critical
   float ratio = 1.0f;
   if (v <= criticalVoltage_) {
     ratio = 0.0f;
@@ -532,7 +532,7 @@ void Hardware::updatePowerSave() {
     ratio = (v - criticalVoltage_) / (warnVoltage_ - criticalVoltage_);
   }
 
-  // Aplica dimming proporcional
+  // Applies proportional dimming
   uint8_t neoB = (uint8_t)(pixelBrightnessFull_ * ratio);
   uint8_t dispB = hasDisplay_ ? (uint8_t)(displayBrightnessFull_ * ratio) : 0;
   uint8_t vol = (uint8_t)(volumeFull_ * ratio);
@@ -542,7 +542,7 @@ void Hardware::updatePowerSave() {
   if (hasDisplay_) display_.setBrightness(dispB);
   audio_.setVolume(vol);
 
-  // Corte critico - desliga EXTERNAL_POWER
+  // Critical cut - turns off EXTERNAL_POWER
   if (ratio == 0.0f && !powerWasCut_) {
     setPower5V(false);
     powerWasCut_ = true;
@@ -553,7 +553,7 @@ void Hardware::updatePowerSave() {
     Serial.println(F("[POWER] Restored external power"));
   }
 
-  // Debug a cada 5 segundos
+  // Debug every 5 seconds
   static unsigned long lastLog = 0;
   if (millis() - lastLog > 5000) {
     Serial.printf("[POWER] Battery=%.2fV (%d%%) ratio=%.2f neo=%d disp=%d vol=%d\n",

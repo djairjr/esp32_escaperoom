@@ -3,11 +3,11 @@
 namespace esp32_escaperoom {
 
 void Display14Seg::begin(uint8_t address) {
-  // Testa se dispositivo responde no I2C
+  // Tests whether the device responds on I2C
   Wire.beginTransmission(address);
   uint8_t error = Wire.endTransmission();
   if (error != 0) {
-    Serial.printf("[HT16K33] Desconectado - Nao responde em 0x%02X (erro=%d)\n", address, error);
+    Serial.printf("[HT16K33] Disconnected - Does not respond at 0x%02X (error=%d)\n", address, error);
     initialized_ = false;
     return;
   }
@@ -18,12 +18,12 @@ void Display14Seg::begin(uint8_t address) {
   display14x4_.clear();
   display14x4_.writeDisplay();
   initialized_ = true;
-  Serial.printf("[HT16K33] Inicializado em 0x%02X\n", address);
+  Serial.printf("[HT16K33] Initialized at 0x%02X\n", address);
 }
 
 void Display14Seg::setBrightness(uint8_t brightness) {
   if (!initialized_) {
-    Serial.printf("[HT16K33] Desconectado - setBrightness(%d)\n", brightness);
+    Serial.printf("[HT16K33] Disconnected - setBrightness(%d)\n", brightness);
     return;
   }
   if (brightness > 15) brightness = 15;
@@ -32,7 +32,7 @@ void Display14Seg::setBrightness(uint8_t brightness) {
 
 void Display14Seg::setBlinkRate(uint8_t rate) {
   if (!initialized_) {
-    Serial.printf("[HT16K33] Desconectado - setBlinkRate(%d)\n", rate);
+    Serial.printf("[HT16K33] Disconnected - setBlinkRate(%d)\n", rate);
     return;
   }
   if (rate > 3) rate = 0;
@@ -41,7 +41,7 @@ void Display14Seg::setBlinkRate(uint8_t rate) {
 
 void Display14Seg::clear() {
   if (!initialized_) {
-    Serial.println(F("[HT16K33] Desconectado - clear()"));
+    Serial.println(F("[HT16K33] Disconnected - clear()"));
     return;
   }
   display14x4_.clear();
@@ -50,11 +50,11 @@ void Display14Seg::clear() {
 
 void Display14Seg::setColon(bool on) {
   if (!initialized_) {
-    Serial.printf("[HT16K33] Desconectado - setColon(%s)\n", on ? "true" : "false");
+    Serial.printf("[HT16K33] Disconnected - setColon(%s)\n", on ? "true" : "false");
     return;
   }
-  // Colon no HT16K33 alpha-numeric e o segmento DP
-  // Nota: nao ha readDigitRaw na biblioteca Adafruit, entao sempre setamos
+  // Colon on the HT16K33 alpha-numeric is the DP segment
+  // Note: there is no readDigitRaw in the Adafruit library, so we always set it
   if (on) {
     display14x4_.writeDigitRaw(1, ALPHANUM_SEG_DP);
   } else {
@@ -65,7 +65,7 @@ void Display14Seg::setColon(bool on) {
 
 void Display14Seg::printNum(uint16_t value, bool leadingZeros) {
   if (!initialized_) {
-    Serial.printf("[HT16K33] Desconectado - Print number %04d\n", value);
+    Serial.printf("[HT16K33] Disconnected - Print number %04d\n", value);
     return;
   }
   char buffer[5];
@@ -75,7 +75,7 @@ void Display14Seg::printNum(uint16_t value, bool leadingZeros) {
 
 void Display14Seg::printString(const char *text) {
   if (!initialized_) {
-    Serial.printf("[HT16K33] Desconectado - Print string '%s'\n", text);
+    Serial.printf("[HT16K33] Disconnected - Print string '%s'\n", text);
     return;
   }
   for (uint8_t i = 0; i < 4; i++) {
@@ -88,16 +88,16 @@ void Display14Seg::printString(const char *text) {
 
 void Display14Seg::printTime(uint16_t minutes, uint16_t seconds, bool blink) {
   if (!initialized_) {
-    Serial.printf("[HT16K33] Desconectado - Print time %02d:%02d\n", minutes % 100, seconds % 60);
+    Serial.printf("[HT16K33] Disconnected - Print time %02d:%02d\n", minutes % 100, seconds % 60);
     return;
   }
   char buffer[5];
   snprintf(buffer, sizeof(buffer), "%02d%02d", minutes % 100, seconds % 60);
 
-  // Escreve todos os 4 digitos
-  // O segundo digito (indice 1) recebe o ponto se blink=true
+  // Writes all 4 digits
+  // The second digit (index 1) receives the dot if blink=true
   display14x4_.writeDigitAscii(0, buffer[0], false);
-  display14x4_.writeDigitAscii(1, buffer[1], blink);  // Ponto no segundo digito
+  display14x4_.writeDigitAscii(1, buffer[1], blink);  // Dot on the second digit
   display14x4_.writeDigitAscii(2, buffer[2], false);
   display14x4_.writeDigitAscii(3, buffer[3], false);
 
@@ -106,7 +106,7 @@ void Display14Seg::printTime(uint16_t minutes, uint16_t seconds, bool blink) {
 
 void Display14Seg::writeDisplay() {
   if (!initialized_) {
-    Serial.println(F("[HT16K33] Desconectado - writeDisplay()"));
+    Serial.println(F("[HT16K33] Disconnected - writeDisplay()"));
     return;
   }
   display14x4_.writeDisplay();
@@ -114,7 +114,7 @@ void Display14Seg::writeDisplay() {
 
 void Display14Seg::writeDigitRaw(uint8_t digit, uint16_t value) {
   if (!initialized_) {
-    Serial.printf("[HT16K33] Desconectado - writeDigitRaw(digit=%d, value=0x%04X)\n", digit, value);
+    Serial.printf("[HT16K33] Disconnected - writeDigitRaw(digit=%d, value=0x%04X)\n", digit, value);
     return;
   }
   if (digit >= 4) return;
@@ -124,7 +124,7 @@ void Display14Seg::writeDigitRaw(uint8_t digit, uint16_t value) {
 
 void Display14Seg::writeDigitAscii(uint8_t digit, char c) {
   if (!initialized_) {
-    Serial.printf("[HT16K33] Desconectado - writeDigitAscii(digit=%d, char='%c')\n", digit, c);
+    Serial.printf("[HT16K33] Disconnected - writeDigitAscii(digit=%d, char='%c')\n", digit, c);
     return;
   }
   if (digit >= 4) return;

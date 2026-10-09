@@ -1,6 +1,6 @@
-// PositionReactorPuzzles.h - Puzzle 4 e 5 do Nuclear Reactor
-// Level 1: Posicionamento (P4) - RFID nas bases das plataformas
-// Level 2: Reator (P5) - ReactorControl com 3 pots + ADS1115
+// PositionReactorPuzzles.h - Puzzles 4 and 5 of the Nuclear Reactor
+// Level 1: Positioning (P4) - RFID on the platform bases
+// Level 2: Reactor (P5) - ReactorControl with 3 pots + ADS1115
 
 #pragma once
 
@@ -9,12 +9,12 @@
 using namespace esp32_escaperoom;
 
 // ====================================================================
-// P4: RFID POSITIONING - Posicionar tecnicos nas plataformas
+// P4: RFID POSITIONING - Position technicians on the platforms
 // ====================================================================
-// Hardware: 3 modulos CH552G + MFRC522 (um por base A, B, C)
-// Conexao: cada CH552G vira um sensor digital no PCF (LOW = tag OK).
-// Mecanica: colocar o cracha certo no lugar certo.
-// Quando todos os 3 estao na posicao correta, puzzle resolvido.
+// Hardware: 3 CH552G modules + MFRC522 (one per base A, B, C)
+// Connection: each CH552G becomes a digital sensor on the PCF (LOW = tag OK).
+// Mechanics: place the right badge in the right place.
+// When all 3 are in the correct position, the puzzle is solved.
 
 class PositionRFIDPuzzle : public PuzzleBase {
 public:
@@ -30,12 +30,12 @@ public:
             return;
         }
 
-        // P0-P2: entradas dos modulos CH552G (LOW = tag valida)
+        // P0-P2: inputs from the CH552G modules (LOW = valid tag)
         for (uint8_t i = 0; i < 3; i++) {
             pcf->pinMode(i, INPUT_PULLUP);
         }
 
-        Serial.printf("[P4 PositionRFID] Setup PCF[%d] bases A,B,C em P0-P2\n", pcfIndex_);
+        Serial.printf("[P4 PositionRFID] Setup PCF[%d] bases A,B,C on P0-P2\n", pcfIndex_);
     }
 
     void update() override {
@@ -52,7 +52,7 @@ public:
         for (uint8_t i = 0; i < 3; i++) {
             if (positionCorrect_[i]) continue;
 
-            // CH552G output: LOW = tag valida, HIGH = negado/nada
+            // CH552G output: LOW = valid tag, HIGH = denied/nothing
             if (pcf->digitalRead(i) == LOW) {
                 positionCorrect_[i] = true;
                 Serial.printf("[P4] Tech positioned at platform %c!\n", 'A' + i);
@@ -94,11 +94,11 @@ private:
 };
 
 // ====================================================================
-// P5: REACTOR CONTROL - Estabilizar o nucleo do reator
+// P5: REACTOR CONTROL - Stabilize the reactor core
 // ====================================================================
-// Hardware: 3 pots (ADS1115 canais A0, A1, A2), NeoPixel
-// Mecanica: cada pot controla um subsistema.
-// Resolvido quando todos os 3 ficam na faixa por 5s continuos.
+// Hardware: 3 pots (ADS1115 channels A0, A1, A2), NeoPixel
+// Mechanics: each pot controls a subsystem.
+// Solved when all 3 stay within range for 5 continuous seconds.
 
 class ReactorControlPuzzle : public PuzzleBase {
 public:
@@ -113,7 +113,7 @@ public:
             Serial.println("[P5] ADS1115 NOT FOUND!");
         }
 
-        Serial.println("[P5 ReactorControl] Setup completo");
+        Serial.println("[P5 ReactorControl] Setup complete");
     }
 
     void update() override {

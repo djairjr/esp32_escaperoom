@@ -1,30 +1,30 @@
-# Mastermind — Entidades Home Assistant
+# Mastermind — Home Assistant Entities
 
-## Sensores
-| Nome | ID | Valores |
+## Sensors
+| Name | ID | Values |
 |---|---|---|
-| Estado | `state` | idle, running, solved, gameover |
-| Tentativa Atual | `current_attempt` | 1-maxAttempts |
-| Cores Posição Certa | `exact_matches` | 0-codeLength |
-| Cores Posição Errada | `color_matches` | 0-codeLength |
+| State | `state` | idle, running, solved, gameover |
+| Current Attempt | `current_attempt` | 1-maxAttempts |
+| Correct Position Colors | `exact_matches` | 0-codeLength |
+| Wrong Position Colors | `color_matches` | 0-codeLength |
 
-## Botões
-| Nome | ID |
+## Buttons
+| Name | ID |
 |---|---|
-| Resetar | `reset` |
-| Novo Jogo | `new_game` |
+| Reset | `reset` |
+| New Game | `new_game` |
 
-## Seletores (por posição)
-| Nome | ID | Opções |
+## Selectors (per position)
+| Name | ID | Options |
 |---|---|---|
-| Posição 1..8 | `pos_1`..`pos_8` | Vermelho, Azul, Verde, Amarelo, Magenta, Ciano |
+| Position 1..8 | `pos_1`..`pos_8` | Red, Blue, Green, Yellow, Magenta, Cyan |
 
-## Números
-| Nome | ID | Range |
+## Numbers
+| Name | ID | Range |
 |---|---|---|
-| Tamanho Código | `code_length` | 2-8 |
-| Máx Tentativas | `max_attempts` | 3-20 |
-| Nº Cores | `num_colors` | 2-6 |
+| Code Length | `code_length` | 2-8 |
+| Max Attempts | `max_attempts` | 3-20 |
+| No. Colors | `num_colors` | 2-6 |
 
 ## AP Mode
-Rede WiFi "Mastermind-XXXX" + portal em 192.168.4.1.
+WiFi network "Mastermind-XXXX" + portal at 192.168.4.1.

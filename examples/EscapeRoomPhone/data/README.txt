@@ -1,11 +1,11 @@
-Este exemplo de telefone utiliza um sistema híbrido de armazenamento:
+This phone example uses a hybrid storage system:
 
-Arquivos na Memória LittleFS (Efeitos de sistema):
-- dialtone.mp3   (Tom de discagem)
-- busy.mp3       (Sinal de ocupado)
-- naoexiste.mp3  (Aviso de número inválido)
+Files in LittleFS memory (System effects):
+- dialtone.mp3   (Dial tone)
+- busy.mp3       (Busy signal)
+- naoexiste.mp3  (Invalid number notice)
 
-Arquivos no Cartão SD (Conteúdo dinâmico):
-- [numero].mp3   (Arquivos de áudio para cada número discado, ex: 123.mp3)
+Files on the SD Card (Dynamic content):
+- [number].mp3   (Audio files for each dialed number, e.g. 123.mp3)
 
-Dica: No LittleFS, os arquivos devem estar na raiz (sem a pasta sfx/).
+Tip: On LittleFS, files must be in the root (without the sfx/ folder).

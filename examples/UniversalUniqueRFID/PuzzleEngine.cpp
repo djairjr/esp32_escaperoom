@@ -12,12 +12,12 @@ void PuzzleEngine::begin() {
     if (reader_ && reader_->isInitialized()) {
         Serial.println("[PuzzleEngine] NFC Reader OK");
     } else {
-        Serial.println("[PuzzleEngine] NFC Reader NAO inicializado");
+        Serial.println("[PuzzleEngine] The NFC Reader on NAO is initialized.");
     }
 
     if (rfid.mode == RfidMode::SEQUENCE && rfid.sequenceLength > 0) {
         totalSteps_ = rfid.sequenceLength;
-        Serial.printf("[PuzzleEngine] Modo: SEQUENCE | Passos: %d\n", totalSteps_);
+        Serial.printf("[PuzzleEngine] Mode: SEQUENCE | Steps: %d\n", totalSteps_);
     } else {
         totalSteps_ = 1;
         Serial.printf("[PuzzleEngine] Modo: UNIQUE | Tags: %d\n", rfid.tagCount);
@@ -158,7 +158,7 @@ void PuzzleEngine::onTagCorrect(uint8_t tagIndex) {
     }
     playCorrectSound();
     showCorrectEffect();
-    Serial.printf("[PuzzleEngine] Tag CORRETA: %s\n", config_.getRfidConfig().tags[tagIndex].name);
+    Serial.printf("[PuzzleEngine] Tag CORRECTED: %s\n", config_.getRfidConfig().tags[tagIndex].name);
     if (currentStep_ >= totalSteps_) onSequenceComplete();
 }
 

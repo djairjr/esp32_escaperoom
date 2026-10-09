@@ -6,9 +6,9 @@
 namespace esp32_escaperoom {
 
 /**
- * Wrapper para PCF8574/PCF8575 usando IoAbstraction.
- * Provê interface simples para controle de múltiplos pinos simultâneos.
- * Usado principalmente pelo RfidBus para selecionar leitores RFID.
+ * Wrapper for PCF8574/PCF8575 using IoAbstraction.
+ * Provides a simple interface to control multiple pins simultaneously.
+ * Used mainly by RfidBus to select RFID readers.
  */
 class Pcf857x {
  public:

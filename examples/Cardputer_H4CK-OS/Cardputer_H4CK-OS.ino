@@ -1,15 +1,15 @@
 /**
  * H4CK-OS — M5Stack Cardputer
  * ==============================
- * Terminal hacker miniatura para escape room.
- * Boot → Login → Shell com ferramentas de pentest simuladas.
+ * Miniature hacker terminal for escape room.
+ * Boot → Login → Shell with simulated pentest tools.
  *
  * Display: ST7789V2 240×135, rotation 1
  * UI: LVGL v9.5
  * Prompt: cmd>
  */
 
-// Desativa o shim LVGL do M5GFX e usa o LVGL real
+// Disables the M5GFX LVGL shim and uses the real LVGL
 #define M5GFX_USING_REAL_LVGL 1
 #include <lvgl.h>
 
@@ -38,7 +38,7 @@
 #include "src/BootScreen.h"
 
 // ============================================================================
-// INSTÂNCIAS GLOBAIS
+// GLOBAL INSTANCES
 // ============================================================================
 ConfigManager configManager;
 SoundManager sound;
@@ -55,7 +55,7 @@ LVGL_Login loginScreen;
 LVGL_Terminal scroll;
 
 // ============================================================================
-// ESTADO GLOBAL
+// GLOBAL STATE
 // ============================================================================
 SystemState systemState = STATE_BOOT;
 
@@ -64,7 +64,7 @@ int cmdLineLen = 0;
 unsigned long lastKeysMs = 0;
 
 // ============================================================================
-// PROTÓTIPOS
+// PROTOTYPES
 // ============================================================================
 void updateBoot();
 void updateLogin();
@@ -295,7 +295,7 @@ void processShellCommand(const char* cmd) {
         sound.cmdBeep(); const char* a = buf + 7; while (*a == ' ') a++;
         sound.exploitBeep(); exploit.generate(a, [](const char* l) { scroll.hack(l); }); sound.successBeep(); return;
     }
-    // hackcomm (RF433) — apenas código hex
+    // hackcomm (RF433) — hex code only
     if (strncmp(buf, "hackcomm", 8) == 0) {
         sound.cmdBeep(); const char* a = buf + 8; while (*a == ' ') a++;
         if (strlen(a) > 0) {
@@ -319,11 +319,11 @@ void processShellCommand(const char* cmd) {
         else sniffer.sniff(a, [](const char* l) { scroll.hack(l); });
         sound.successBeep(); return;
     }
-    // invade — sem argumentos = lista; invade <nome> = envia TOGGLE
+    // invade — no args = list; invade <name> = send TOGGLE
     if (strncmp(buf, "invade", 6) == 0) {
         sound.cmdBeep(); const char* a = buf + 6; while (*a == ' ') a++;
         if (strlen(a) == 0) {
-            // invade → lista targets
+            // invade → list targets
             if (configManager.targetCount == 0) scroll.result("[INVADE] No targets.");
             else {
                 scroll.hack("[INVADE] Targets:");
@@ -332,7 +332,7 @@ void processShellCommand(const char* cmd) {
                 }
             }
         } else {
-            // invade <nome> → send TOGGLE
+            // invade <name> → send TOGGLE
             if (!haClient.isMQTTOK()) shellError("[INVADE] No MQTT connection");
             else if (haClient.invadeTarget(a)) {
                 char m[64]; snprintf(m, sizeof(m), "[INVADE] Injecting %s...", a);
@@ -351,7 +351,7 @@ void processShellCommand(const char* cmd) {
 }
 
 // ============================================================================
-// SHELL -- LOOP PRINCIPAL
+// SHELL -- MAIN LOOP
 // ============================================================================
 
 void updateShell() {

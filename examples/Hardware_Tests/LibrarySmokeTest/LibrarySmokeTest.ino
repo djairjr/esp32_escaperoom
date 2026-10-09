@@ -1,16 +1,16 @@
 /*
   LibrarySmokeTest
 
-  Sketch de diagnóstico que valida todo hardware conectado como um Puzzle.
-  O boot verbose reporta dispositivos I2C/SPI detectados.
-  A logic task roda um loop com os testes de todos os dispositivos encontrados.
+  Diagnostic sketch that validates all connected hardware as a Puzzle.
+  The verbose boot reports detected I2C/SPI devices.
+  The logic task runs a loop with the tests for all detected devices.
 
-  ATENÇÃO: O áudio requer chamada contínua ao hw.sound().loop() no loop().
-  Sem isso, o sistema trava e o áudio não toca.
-  Veja: https://github.com/pschatzmann/arduino-audio-tools/issues
+  WARNING: Audio requires a continuous call to hw.sound().loop() in loop().
+  Without it, the system hangs and audio does not play.
+  See: https://github.com/pschatzmann/arduino-audio-tools/issues
 
-  Nota: Para FreeRTOS completo, habilite "FreeRTOS SMP" no menu da IDE.
-  Em produção, use tasks separadas para áudio (Core 1) e lógica (Core 0).
+  Note: For full FreeRTOS, enable "FreeRTOS SMP" in the IDE menu.
+  In production, use separate tasks for audio (Core 1) and logic (Core 0).
 */
 
 #include <ESP32EscapeRoom.h>
@@ -19,7 +19,7 @@
 #include <ArduinoHA.h>
 
 // ============================================================================
-// HOME ASSISTANT + WIFI (adicionado pelo port ESP32)
+// HOME ASSISTANT + WIFI (added by the ESP32 port)
 // ============================================================================
 ConfigManager netConfig;
 WiFiClient wifiClient;
@@ -34,7 +34,7 @@ void initHA() {
   haDevice.setUniqueId(mac, sizeof(mac));
   haDevice.setName(netConfig.devName());
   haDevice.setSoftwareVersion("1.0.0");
-  haSensorState.setName("Estado");
+  haSensorState.setName("State");
   haSensorState.setIcon("mdi:puzzle");
   haMqtt.begin(netConfig.mqttBroker(), netConfig.mqttUser(), netConfig.mqttPass());
 }
@@ -48,7 +48,7 @@ void loopHA() {
 using propmaker_escaperoom::PuzzleState;
 
 // ============================================
-// HardwareTestPuzzle - Puzzle de diagnóstico
+// HardwareTestPuzzle - Diagnostic puzzle
 // ============================================
 class HardwareTestPuzzle : public propmaker_escaperoom::PuzzleBase {
 public:
@@ -64,14 +64,14 @@ public:
   }
 
   void update() override {
-    // Máquina de estados de teste
+    // Test state machine
     switch (testState_) {
       case TestState::Running:
         runTestCycle();
         break;
 
       case TestState::Complete:
-        // Todos testes completados - pisca LED verde
+        // All tests completed - blinks green LED
         hw.setLightInternalAll(hw.pixelsInternal().Color(0, 50, 0));
         hw.testMemory();
         delay(5000);
@@ -80,7 +80,7 @@ public:
         break;
 
       case TestState::Error:
-        // Erro - pisca LED vermelho
+        // Error - blinks red LED
         hw.setLightInternalAll(hw.pixelsInternal().Color(50, 0, 0));
         break;
     }
@@ -99,7 +99,7 @@ private:
   void runTestCycle() {
     uint32_t now = millis();
 
-    // Testa NeoPixel Interno (sempre disponível)
+    // Tests Internal NeoPixel (always available)
     if (testIndex_ == 0) {
       if (now - testTimer_ > 100) {
         testTimer_ = now;
@@ -125,7 +125,7 @@ private:
       return;
     }
 
-    // Testa NeoPixel Externo
+    // Tests External NeoPixel
     if (testIndex_ == 1) {
       if (now - testTimer_ > 100) {
         testTimer_ = now;
@@ -151,7 +151,7 @@ private:
       return;
     }
 
-    // Testa Port Expander (PCF857x via IoAbstraction) << CRASH AQUI
+    // Tests Port Expander (PCF857x via IoAbstraction) << CRASH HERE
     if (testIndex_ == 2) {
       if (subStep_ == 0) {
         if (hw.hasPortExpander()) {
@@ -188,7 +188,7 @@ private:
       return;
     }
 
-    // Testa LIS3DH Accelerometer
+    // Tests LIS3DH Accelerometer
     if (testIndex_ == 3) {
       if (hw.hasAccelerometer()) {
         sensors_event_t event;
@@ -209,7 +209,7 @@ private:
       return;
     }
 
-    // Testa PCA9685 PWM Driver
+    // Tests PCA9685 PWM Driver
     if (testIndex_ == 4) {
       if (subStep_ == 0 && hw.hasPwmDriver()) {
         hw.pwmDriver().setChannelDutyCycle(0, 50.0);
@@ -232,14 +232,14 @@ private:
       return;
     }
 
-    // Testa Audio (ANTES do display para evitar conflitos I2C)
+    // Tests Audio (BEFORE the display to avoid I2C conflicts)
     if (testIndex_ == 5) {
       hw.sound().loop();
       hw.sound().setVolume(200);
-      // Aguarda áudio terminar (subStep_ == 1 após playOnce)
+      // Waits for audio to finish (subStep_ == 1 after playOnce)
       if (subStep_ == 1) {
-        if (now - testTimer_ > 5000) {  // Aguarda 5s para áudio tocar
-          hw.sound().stop();            // Stop explícito antes de próximo teste
+        if (now - testTimer_ > 5000) {  // Waits 5s for audio to play
+          hw.sound().stop();            // Explicit stop before the next test
           Serial.println(F("[HWTEST] Audio: stopped"));
           testIndex_++;
           subStep_ = 0;
@@ -247,7 +247,7 @@ private:
         return;
       }
 
-      // subStep_ == 0: inicia playback
+      // subStep_ == 0: starts playback
       Serial.print(F("[HWTEST] Audio: "));
       if (hw.isLittleFSMounted() || hw.isSDMounted()) {
         const char* testPath = nullptr;
@@ -262,7 +262,7 @@ private:
           Serial.print(F("[HWTEST] Audio: "));
           Serial.print(testPath);
 
-          // Verifica tamanho do arquivo
+          // Checks the file size
           File f = LittleFS.open(testPath, "r");
           if (f) {
             Serial.print(F(" size="));
@@ -288,7 +288,7 @@ private:
       return;
     }
 
-    // Testa HT16K33 Display
+    // Tests HT16K33 Display
     if (testIndex_ == 6) {
       if (subStep_ == 0 && hw.hasDisplay()) {
         hw.display().printString("TEST");
@@ -311,7 +311,7 @@ private:
       return;
     }
 
-    // Testa Servo
+    // Tests Servo
     if (testIndex_ == 7) {
       if (subStep_ == 0) {
         hw.setActuator(0);
@@ -341,7 +341,7 @@ private:
       return;
     }
 
-    // Testa ADS1115 ADC
+    // Tests ADS1115 ADC
     if (testIndex_ == 8) {
       if (hw.hasAdc()) {
         float mv = hw.readVoltage(0);
@@ -355,7 +355,7 @@ private:
       return;
     }
 
-    // Todos testes completados
+    // All tests completed
     testState_ = TestState::Complete;
     Serial.println(F("[HWTEST] ======================================="));
     Serial.println(F("[HWTEST]    All Hardware Diagnostics Complete"));
@@ -366,7 +366,7 @@ private:
 };
 
 // ============================================
-// Setup e Loop principais
+// Main Setup and Loop
 // ============================================
 
 HardwareTestPuzzle hwTestPuzzle;
@@ -377,10 +377,10 @@ void setup() {
 
   hw.begin();
 
-  // Configuração manual dos expansores (obrigatório após atualização)
-  // Ajuste os endereços e tipos conforme seu hardware
-  hw.addPcf8575(0x20);  // PCF8575 (16 canais) em 0x20
-  // hw.addPcf8574(0x21);  // Descomente se tiver PCF8574 (8 canais)
+  // Manual configuration of the expanders (required after the update)
+  // Adjust the addresses and types according to your hardware
+  hw.addPcf8575(0x20);  // PCF8575 (16 channels) at 0x20
+  // hw.addPcf8574(0x21);  // Uncomment if you have a PCF8574 (8 channels)
 
   Serial.println();
   Serial.println(F("== propmaker_escaperoom smoke test =="));
@@ -394,5 +394,5 @@ void setup() {
 
 void loop() {
   loopHA();
-  hwTestPuzzle.update();  // Audio loop movido para hwTestPuzzle.update
+  hwTestPuzzle.update();  // Audio loop moved to hwTestPuzzle.update
 }

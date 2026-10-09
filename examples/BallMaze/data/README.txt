@@ -1,8 +1,8 @@
-Assets de audio para BallMaze.
-Copie para a raiz do LittleFS ou SD Card.
+Audio assets for BallMaze.
+Copy to the root of LittleFS or SD Card.
 
-- /sfx/target.mp3  - Toca quando um alvo e atingido
-- /sfx/solved.mp3  - Fanfarra quando todos os alvos sao atingidos
-- /sfx/start.mp3   - Toca ao iniciar o puzzle (shake)
+- /sfx/target.mp3  - Plays when a target is hit
+- /sfx/solved.mp3  - Fanfare when all targets are hit
+- /sfx/start.mp3   - Plays when the puzzle starts (shake)
 
-Formato: MP3 128Kbps 44KHz estereo, sem ID3 tags.
+Format: MP3 128Kbps 44KHz stereo, no ID3 tags.

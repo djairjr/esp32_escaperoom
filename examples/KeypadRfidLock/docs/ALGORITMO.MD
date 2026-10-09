@@ -1,28 +1,28 @@
-# KeypadRfidLock — Algoritmo do Jogo
+# KeypadRfidLock — Game Algorithm
 
-## Visão Geral
+## Overview
 
-Fechadura com dupla autenticação: código via keypad OU tag RFID. O jogador pode destravar usando qualquer um dos métodos.
+Lock with dual authentication: code via keypad OR RFID tag. The player can unlock using either method.
 
-## Configuração (JSON: rfidlock.json)
+## Configuration (JSON: rfidlock.json)
 
-- **Modos**: KEYPAD, RFID, BOTH
-- **code**: código de 4 dígitos
-- **rfidTags**: UIDs de tags autorizadas
+- **Modes**: KEYPAD, RFID, BOTH
+- **code**: 4-digit code
+- **rfidTags**: UIDs of authorized tags
 - **Hardware**: lockPin, neoCount, volume
 
-## Estados
+## States
 
 IDLE → AUTHENTICATING → SOLVED → IDLE
 
-## Fluxo
+## Flow
 
-1. IDLE: aguardando input
-2. Keypad: igual ao KeypadCodeEntry
-3. RFID: leitura de tag, compara UID com lista autorizada
-4. Ambos os métodos podem ser usados simultaneamente no modo BOTH
-5. Sucesso → destrava por timeout configurável, depois re-trava
+1. IDLE: waiting for input
+2. Keypad: same as KeypadCodeEntry
+3. RFID: reads the tag, compares the UID against the authorized list
+4. Both methods can be used simultaneously in BOTH mode
+5. Success → unlocks for a configurable timeout, then re-locks
 
 ## AP Mode + WiFi
 
-Configuração de rede via portal web em 192.168.4.1.
+Network configuration via web portal at 192.168.4.1.

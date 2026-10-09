@@ -1,30 +1,30 @@
 /**
  * BOMB TIMER — M5Stack StamPLC (ESP32-S3)
  * ==========================================
- * Port do GameTimerPro original (AVR) + BombTimer XIAO S3
+ * Port of the original GameTimerPro (AVR) + BombTimer XIAO S3
  *
  * Hardware:
- *   - Display TFT ST7789v2 135x240 (M5.Lcd)
- *   - Buzzer PWM (M5StamPLC.tone)
- *   - 3 botões A/B/C (PI4IOE5V6408) + BOOT (DET)
- *   - Keypad 4x3 via PCF8574 I2C
- *   - 4 relés (AW9523B) — 2 DETONATE + 2 DEFUSE
- *   - 4 opto-inputs (AW9523B) — fios
- *   - 1 opto-input (AW9523B) — DET externo
+ *   - TFT Display ST7789v2 135x240 (M5.Lcd)
+ *   - PWM Buzzer (M5StamPLC.tone)
+ *   - 3 buttons A/B/C (PI4IOE5V6408) + BOOT (DET)
+ *   - 4x3 Keypad via PCF8574 I2C
+ *   - 4 relays (AW9523B) — 2 DETONATE + 2 DEFUSE
+ *   - 4 opto-inputs (AW9523B) — wires
+ *   - 1 opto-input (AW9523B) — external DET
  *   - RFID PN532 via I2C
  *   - RTC RX8130CE (RTC)
  *   - WiFi + ArduinoHA (MQTT)
  *
- * Layout TFT:
+ * TFT Layout:
  *   ┌──────────────────────────┐
  *   │              [W][M][R][T]│ ← status bar
  *   │                          │
  *   │       ┌──────────┐       │
- *   │       │  03:00   │       │ ← timer DSEG14 gigante
+ *   │       │  03:00   │       │ ← giant DSEG14 timer
  *   │       └──────────┘       │
- *   │           180s           │ ← segundos (small)
+ *   │           180s           │ ← seconds (small)
  *   │                          │
- *   │  ●Y ●R ●B ●G      IDLE  │ ← círculos fios + status
+ *   │  ●Y ●R ●B ●G      IDLE  │ ← wire circles + status
  *   └──────────────────────────┘
  */
 
@@ -37,11 +37,11 @@
 #include "GameLogic.h"
 #include "ConfigHA.h"
 
-// I2C bus externo (PORT.A: G2=Amarelo=SDA, G1=Branco=SCL)
+// External I2C bus (PORT.A: G2=Yellow=SDA, G1=White=SCL)
 TwoWire PortA(1);  // I2C1
 
 // ============================================================================
-// INSTÂNCIAS GLOBAIS
+// GLOBAL INSTANCES
 // ============================================================================
 DisplayManager display;
 InputManager input;
@@ -49,13 +49,13 @@ GameLogic game;
 ConfigHA configHA;
 
 // ============================================================================
-// VARIÁVEIS DE ESTADO (entre ciclos de loop)
+// STATE VARIABLES (between loop cycles)
 // ============================================================================
 unsigned long lastTickDisplay = 0;
 unsigned long lastTickSound = 0;       // tickDue() check
 unsigned long lastWireScan = 0;
 unsigned long lastHALoop = 0;
-unsigned long lastHAPublish = 0;       // publishAll() a cada 2s
+unsigned long lastHAPublish = 0;       // publishAll() every 2s
 unsigned long lastRFIDScan = 0;
 unsigned long lastRtcCheck = 0;
 unsigned long lastKeypadPoll = 0;   // hot-plug check
@@ -64,21 +64,21 @@ bool lastWiFiStatus = false;
 bool lastMQTTStatus = false;
 bool lastRFIDStatus = false;
 
-// ─── Código de desarme (modo CODE) ────────────────────────────────────
+// ─── Defuse code (CODE mode) ───────────────────────────────────────────
 char codeDigits[4] = {0, 0, 0, 0};
 int codeDigitIndex = 0;
 bool enteringCode = false;
 
-// ─── Delay de verificação do código (mostra os 4 dígitos por 1s) ─────
+// ─── Code verification delay (shows the 4 digits for 1s) ──────────────
 bool codePendingVerification = false;
 int pendingCodeValue = 0;
 unsigned long verifyCodeAt = 0;
 
-// ─── Estado do display pós-detonação/desarme ──────────────────────────
+// ─── Display state post-detonation/defusal ─────────────────────────────
 unsigned long fullScreenUntil = 0;
 
 // ============================================================================
-// FUNÇÕES AUXILIARES
+// AUXILIARY FUNCTIONS
 // ============================================================================
 
 void resetGame() {
@@ -94,12 +94,12 @@ void resetGame() {
     fullScreenUntil = 0;
     lastDisplayedRemaining = -1;
     M5StamPLC.setStatusLight(0, 0, 0);  // OFF
-    // Invalida status dos ícones para forçar redesenho (clearScreen apagou tudo)
+    // Invalidates the icons' status to force a redraw (clearScreen erased everything)
     lastWiFiStatus = !configHA.isWiFiOK();
     lastMQTTStatus = !configHA.isMQTTOK();
     lastRFIDStatus = !input.hasRFID();
     display.clearScreen();
-    updateDisplay();  // desenha timer, círculos, ícones e status bar
+    updateDisplay();  // draws timer, circles, icons and status bar
     configHA.publishAll();
 }
 
@@ -136,7 +136,7 @@ void handleDefuse() {
     configHA.publishAll();
 }
 
-// Função auxiliar: atualiza o display se estiver em IDLE
+// Auxiliary function: updates the display if it is in IDLE
 void refreshDisplayIfIdle() {
     if (game.getState() == GameLogic::STATE_IDLE) {
         display.clearScreen();
@@ -145,7 +145,7 @@ void refreshDisplayIfIdle() {
 }
 
 // ============================================================================
-// CALLBACKS HA + HARDWARE
+// HA + HARDWARE CALLBACKS
 // ============================================================================
 void haOnStart() { startGame(); }
 void haOnReset() { resetGame(); }
@@ -155,19 +155,19 @@ void haHardwareChange(const char* status) {
 }
 
 // ============================================================================
-// ATUALIZAÇÃO DE DISPLAY
+// DISPLAY UPDATE
 // ============================================================================
 
 void updateDisplay() {
-    // Se está entrando código, não redesenha timer — drawCodeEntry já cuida
+    // If entering a code, do not redraw the timer — drawCodeEntry already handles it
     if (enteringCode) return;
 
-    // Só redesenha se o valor mudou
+    // Only redraws if the value changed
     int rem = game.getRemainingSeconds();
     if (rem == lastDisplayedRemaining && fullScreenUntil == 0) return;
     lastDisplayedRemaining = rem;
 
-    // Se está em tela cheia (detonação/desarme), não atualiza o resto
+    // If in full screen (detonation/defusal), does not update the rest
     if (fullScreenUntil > millis()) return;
     if (fullScreenUntil > 0 && millis() >= fullScreenUntil) {
         fullScreenUntil = 0;
@@ -196,7 +196,7 @@ void updateDisplay() {
         lastRFIDStatus = rfidOK;
     }
 
-    // Canto inferior direito
+    // Bottom right corner
     switch (game.getState()) {
         case GameLogic::STATE_IDLE:
             display.drawBottomRight("IDLE", TFT_YELLOW);
@@ -216,7 +216,7 @@ void updateDisplay() {
 }
 
 // ============================================================================
-// ATUALIZAÇÃO DOS FIOS
+// WIRE UPDATE
 // ============================================================================
 
 void scanWires() {
@@ -230,12 +230,12 @@ void scanWires() {
         bool connected = (aw.digitalRead(wirePins[i]) == 1);
         bool wasCut = game.isWireCut(i);
 
-        // Ignora desconexão inicial (fios nunca conectados não disparam)
+        // Ignores initial disconnection (wires never connected do not trigger)
         if (!connected && !game.wireSeenConnected_[i]) {
             continue;
         }
 
-        // Marca que já vimos este fio conectado
+        // Marks that this wire was already seen connected
         if (connected) {
             game.wireSeenConnected_[i] = true;
         }
@@ -244,43 +244,43 @@ void scanWires() {
             // Wire just got cut
             game.setWireCut(i, true);
             configHA.setWireCut(i, true);
-            Serial.printf("[WIRE] Fio %d CORTADO\\n", i + 1);
+            Serial.printf("[WIRE] Wire %d CUT\\n", i + 1);
 
             if (game.getState() == GameLogic::STATE_RUNNING) {
-                // Verifica DET wire
+                // Checks DET wire
                 if (game.wires.detWire <= 3 && i == game.wires.detWire) {
-                    Serial.println("[WIRE] DET wire! DETONANDO...");
+                    Serial.println("[WIRE] DET wire! DETONATING...");
                     handleDetonation();
                     return;
                 }
-                // Verifica ORDER mode
+                // Checks ORDER mode
                 if (game.config.defuseMode == GameLogic::DEFUSE_ORDER) {
                     if (!game.checkOrderWire(i)) {
-                        Serial.println("[WIRE] Ordem errada! DETONANDO...");
+                        Serial.println("[WIRE] Wrong order! DETONATING...");
                         handleDetonation();
                         return;
                     }
                     if (game.getOrderIndex() >= 4) {
-                        Serial.println("[WIRE] Ordem completa! DESARMOU!");
+                        Serial.println("[WIRE] Order complete! DEFUSED!");
                         handleDefuse();
                         return;
                     }
                 }
-                // Verifica DEFUSE wire (modo WIRE)
+                // Checks DEFUSE wire (WIRE mode)
                 if (game.config.defuseMode == GameLogic::DEFUSE_WIRE) {
                     if (game.wires.defuseWire <= 3 && i == game.wires.defuseWire) {
-                        Serial.println("[WIRE] Defuse wire! DESARMOU!");
+                        Serial.println("[WIRE] Defuse wire! DEFUSED!");
                         handleDefuse();
                         return;
                     }
                 }
-                // Verifica SPEEDUP wire
+                // Checks SPEEDUP wire
                 if (game.wires.speedupWire <= 3 && i == game.wires.speedupWire) {
                     game.toggleDoubleSpeed();
                     Serial.printf("[WIRE] Speedup! doubleSpeed=%d\\n", game.isDoubleSpeed());
                     M5StamPLC.tone(3000, 50);
                 }
-                // Verifica PAUSE wire (2s de pausa)
+                // Checks PAUSE wire (2s pause)
                 if (game.wires.pauseWire <= 3 && i == game.wires.pauseWire) {
                     game.setPause(2000);
                     Serial.println("[WIRE] Pause 2s!");
@@ -297,11 +297,11 @@ void scanWires() {
 }
 
 // ============================================================================
-// ATUALIZAÇÃO DO KEYPAD (modo CODE)
+// KEYPAD UPDATE (CODE mode)
 // ============================================================================
 
 void processKeypad() {
-    // Se há verificação pendente, ignora novas teclas
+    // If there is a pending verification, ignores new keys
     if (codePendingVerification) return;
 
     int key = input.getKey();
@@ -319,7 +319,7 @@ void processKeypad() {
                 M5StamPLC.tone(3500, 20);
             }
             if (codeDigitIndex >= 4) {
-                // Mostra o código completo por 1s antes de verificar
+                // Shows the complete code for 1s before verifying
                 M5StamPLC.tone(4500, 30);
                 enteringCode = false;
                 codePendingVerification = true;
@@ -330,7 +330,7 @@ void processKeypad() {
                 verifyCodeAt = millis() + 1000;
             }
         } else if (key == '*' || key == '#') {
-            // Cancela entrada de código
+            // Cancels code entry
             enteringCode = false;
             codeDigitIndex = 0;
             display.clearTimerArea();
@@ -347,20 +347,20 @@ void setup() {
     Serial.begin(115200);
     Serial.println(F("\n=== BombTimer STAMPLC ==="));
 
-    // Inicializa hardware
+    // Initializes hardware
     M5StamPLC.begin();
     Wire.begin(13, 15);  // SDA=G13, SCL=G15
 
-    // I2C bus externo (PORT.A: Grove RED — pinos definidos em M5StamPLC pin_config.h)
+    // External I2C bus (PORT.A: Grove RED — pins defined in M5StamPLC pin_config.h)
     PortA.begin(STAMPLC_PIN_GROVE_RED_SDA, STAMPLC_PIN_GROVE_RED_SCL, 100000);
 
-    // I2C Scan em ambos os barramentos
+    // I2C Scan on both buses
     const char* i2cResult = input.i2cScan();
     configHA.setI2CStatus(i2cResult);
 
     SPIFFS.begin(true);
 
-    // Inicializa módulos
+    // Initializes modules
     display.begin();
     input.begin();
     game.begin();
@@ -371,10 +371,10 @@ void setup() {
     configHA.onStart = haOnStart;
     configHA.onReset = haOnReset;
 
-    // Callback de hot-plug: keypad conectado/desconectado
+    // Hot-plug callback: keypad connected/disconnected
     input.onHardwareChange = haHardwareChange;
 
-    // Tela inicial (usando config carregada da NVS)
+    // Boot screen (using config loaded from NVS)
     int bootCountdown = game.getCountdownSeconds();
     display.drawTimer(bootCountdown / 60, bootCountdown % 60);
     display.drawSecondsSmall(bootCountdown);
@@ -388,31 +388,31 @@ void setup() {
 
     configHA.publishAll();
 
-    Serial.printf("[BOOT] Pronto! Countdown=%ds, Mode=%d, Code=%04d\n",
+    Serial.printf("[BOOT] Ready! Countdown=%ds, Mode=%d, Code=%04d\n",
         bootCountdown, game.config.defuseMode, game.config.defuseCode);
 }
 
 // ============================================================================
-// ATUALIZAÇÃO POR ESTADO
+// UPDATE BY STATE
 // ============================================================================
 
 void updateIdle() {
-    // BTN_START → inicia contagem
+    // BTN_START → starts countdown
     if (input.wasPressed(InputManager::BTN_START)) {
         startGame();
         return;
     }
 
-    // BTN_MENU → menu de configuração
+    // BTN_MENU → configuration menu
     if (input.wasPressed(InputManager::BTN_MENU)) {
         game.currentMenuItem = GameLogic::MENU_COUNTDOWN;
         game.setState(GameLogic::STATE_MENU);
-        Serial.println(F("[MENU] Entrando no menu"));
+        Serial.println(F("[MENU] Entering menu"));
         showMenuLabel(0);
         return;
     }
 
-    // Ajuste de tempo com long press (igual ao original GameTimerPro)
+    // Time adjustment with long press (same as the original GameTimerPro)
     static unsigned long leftPressStart = 0;
     static bool leftWasPressed = false;
     static unsigned long rightPressStart = 0;
@@ -420,7 +420,7 @@ void updateIdle() {
     static unsigned long lastAdjTime = 0;
     unsigned long now = millis();
 
-    // PREV: detecção de curto + longo
+    // PREV: short + long detection
     if (input.wasPressed(InputManager::BTN_PREV) && !leftWasPressed) {
         leftWasPressed = true;
         leftPressStart = now;
@@ -439,7 +439,7 @@ void updateIdle() {
         leftWasPressed = false;
     }
 
-    // NEXT: detecção de curto + longo
+    // NEXT: short + long detection
     if (input.wasPressed(InputManager::BTN_NEXT) && !rightWasPressed) {
         rightWasPressed = true;
         rightPressStart = now;
@@ -462,7 +462,7 @@ void updateIdle() {
 void updateRunning() {
     int rem = game.getRemainingSeconds();
 
-    // Tick sonoro: usa tickDue() do GameLogic — independente do display
+    // Sound tick: uses tickDue() from GameLogic — independent of the display
     if (game.tickDue() && game.isTickEnabled()) {
         if (rem <= 10) {
             M5StamPLC.tone(2500 + rem * 200, 30);
@@ -471,7 +471,7 @@ void updateRunning() {
         }
     }
 
-    // RGB LED: vermelho pulsante (toggle a cada 500ms, mais rápido nos últimos 10s)
+    // RGB LED: pulsing red (toggle every 500ms, faster in the last 10s)
     static unsigned long lastRgbToggle = 0;
     static bool rgbOn = false;
     int interval = (rem <= 10) ? 250 : 500;
@@ -485,24 +485,24 @@ void updateRunning() {
         }
     }
 
-    // Fim do timer
+    // Timer end
     if (rem <= 0) {
         handleDetonation();
         return;
     }
 
-    // Escaneia fios
+    // Scans wires
     if (millis() - lastWireScan > 100) {
         lastWireScan = millis();
         scanWires();
     }
 
-    // Keypad (modo CODE) — só chama getKey() se PCF presente e modo CODE
+    // Keypad (CODE mode) — only calls getKey() if PCF present and CODE mode
     if (game.config.defuseMode == GameLogic::DEFUSE_CODE && input.isKeypadOK()) {
         processKeypad();
     }
 
-    // Verifica código pendente (delay de 1s após digitar 4 dígitos)
+    // Checks pending code (1s delay after typing 4 digits)
     if (codePendingVerification && millis() >= verifyCodeAt) {
         codePendingVerification = false;
         enteringCode = false;
@@ -513,10 +513,10 @@ void updateRunning() {
         } else {
             int attempts = game.getCodeAttempts();
             if (attempts >= game.config.maxCodeAttempts) {
-                Serial.printf("[CODE] %d tentativas excedidas! DETONANDO!\n", attempts);
+                Serial.printf("[CODE] %d attempts exceeded! DETONATING!\n", attempts);
                 handleDetonation();
             } else {
-                Serial.printf("[CODE] Erro! Tentativa %d/%d\n",
+                Serial.printf("[CODE] Error! Attempt %d/%d\n",
                     attempts + 1, game.config.maxCodeAttempts);
                 M5StamPLC.tone(800, 150);
                 display.drawFullScreenMsg("ERROR", "Try again", TFT_RED);
@@ -528,35 +528,35 @@ void updateRunning() {
         }
     }
 
-    // Botão START durante running = detona
+    // START button during running = detonate
     if (input.wasPressed(InputManager::BTN_START)) {
         handleDetonation();
         return;
     }
 
-    // Atualiza display
+    // Updates display
     updateDisplay();
 
-    // Publica HA a cada ~2s
+    // Publishes HA every ~2s
     if (millis() - lastHAPublish > 2000) {
         lastHAPublish = millis();
         configHA.publishAll();
     }
 
-    // RFID durante countdown (se habilitado e chip presente)
+    // RFID during countdown (if enabled and chip present)
     if (game.config.rfidEnabled && input.hasRFID() && millis() - lastRFIDScan > 300) {
         lastRFIDScan = millis();
         char uidHex[15];
         uint8_t uidLen = 0;
         if (input.readRFID(uidHex, &uidLen) && uidLen >= 4) {
-            // Converte UID hex para uint32_t (primeiros 4 bytes)
+            // Converts the hex UID to uint32_t (first 4 bytes)
             uint32_t uid32 = 0;
             for (int i = 0; i < 4 && i * 2 < 14; i++) {
                 unsigned int b;
                 sscanf(uidHex + i * 2, "%02x", &b);
                 uid32 = (uid32 << 8) | (b & 0xFF);
             }
-            // Verifica DEFUSE tags
+            // Checks DEFUSE tags
             bool matched = false;
             for (int i = 0; i < game.config.defuseTagCount; i++) {
                 if (game.config.defuseTags[i] == uid32) {
@@ -567,7 +567,7 @@ void updateRunning() {
                 }
             }
             if (!matched) {
-                // Verifica DETONATE tags
+                // Checks DETONATE tags
                 for (int i = 0; i < game.config.detonateTagCount; i++) {
                     if (game.config.detonateTags[i] == uid32) {
                         Serial.printf("[RFID] DETONATE tag! %s\n", uidHex);
@@ -581,14 +581,14 @@ void updateRunning() {
 }
 
 // ============================================================================
-// MENU DE CONFIGURAÇÃO
+// CONFIGURATION MENU
 // ============================================================================
-// Navegação: PREV/NEXT entre itens, MENU entra no ajuste,
-// PREV/NEXT no ajuste altera valor, MENU confirma, START sai.
-// Timeout 15s sem input → volta ao IDLE.
+// Navigation: PREV/NEXT between items, MENU enters edit,
+// PREV/NEXT in edit changes the value, MENU confirms, START exits.
+// 15s timeout without input → returns to IDLE.
 // ============================================================================
 
-// Descrições curtas para cada item (exibidas no display)
+// Short descriptions for each item (shown on the display)
 static const char* MENU_LABELS[GameLogic::MENU_COUNT] = {
     "COUNTDOWN", "MODE", "CODE", "ORDER",
     "DET WIRE", "SPD WIRE", "PAUSE WIRE",
@@ -604,12 +604,12 @@ void updateMenu() {
 
     unsigned long now = millis();
 
-    // Inicializa lastMenuActivity na primeira chamada
+    // Initializes lastMenuActivity on the first call
     if (lastMenuActivity == 0) {
         lastMenuActivity = now;
     }
 
-    // Timeout: 15s sem input → volta ao IDLE
+    // Timeout: 15s without input → returns to IDLE
     if (now - lastMenuActivity > 15000) {
         Serial.println(F("[MENU] Timeout → IDLE"));
         inEdit = false;
@@ -619,7 +619,7 @@ void updateMenu() {
         return;
     }
 
-    // START → sai do menu
+    // START → exits the menu
     if (input.wasPressed(InputManager::BTN_START)) {
         Serial.println(F("[MENU] START → IDLE"));
         inEdit = false;
@@ -632,7 +632,7 @@ void updateMenu() {
     int item = (int)game.currentMenuItem;
 
     if (!inEdit) {
-        // ─── Navegação entre itens ────────────────────────────────
+        // ─── Navigation between items ──────────────────────────────
         if (input.wasPressed(InputManager::BTN_PREV)) {
             item = (item - 1 + GameLogic::MENU_COUNT) % GameLogic::MENU_COUNT;
             game.currentMenuItem = (GameLogic::MenuItem)item;
@@ -647,7 +647,7 @@ void updateMenu() {
             showMenuLabel(item);
             return;
         }
-        // MENU → entra no modo de ajuste do item atual
+        // MENU → enters the adjustment mode of the current item
         if (input.wasPressed(InputManager::BTN_MENU)) {
             inEdit = true;
             game.inSubEdit = true;
@@ -708,7 +708,7 @@ void updateMenu() {
             return;
         }
     } else {
-        // ─── Ajuste de valor ──────────────────────────────────────
+        // ─── Value adjustment ──────────────────────────────────────
         if (input.wasPressed(InputManager::BTN_PREV)) {
             lastMenuActivity = now;
             adjustMenuItem(item, -1);
@@ -721,7 +721,7 @@ void updateMenu() {
             showMenuValue(item);
             return;
         }
-        // Long press: sustenta PREV por 600ms → acelera
+        // Long press: holds PREV for 600ms → speeds up
         static unsigned long prevEditHeld = 0;
         if (input.isHeld(InputManager::BTN_PREV, 600) && millis() - prevEditHeld > 150) {
             prevEditHeld = millis();
@@ -729,7 +729,7 @@ void updateMenu() {
             adjustMenuItem(item, -1);
             showMenuValue(item);
         }
-        // Long press: sustenta NEXT por 600ms → acelera
+        // Long press: holds NEXT for 600ms → speeds up
         static unsigned long nextEditHeld = 0;
         if (input.isHeld(InputManager::BTN_NEXT, 600) && millis() - nextEditHeld > 150) {
             nextEditHeld = millis();
@@ -737,12 +737,12 @@ void updateMenu() {
             adjustMenuItem(item, 1);
             showMenuValue(item);
         }
-        // MENU → confirma e volta à navegação
+        // MENU → confirms and returns to navigation
         if (input.wasPressed(InputManager::BTN_MENU)) {
             inEdit = false;
             game.inSubEdit = false;
             lastMenuActivity = now;
-            // Salva configuração
+            // Saves configuration
             game.saveConfig();
             showMenuLabel(item);
             return;
@@ -753,7 +753,7 @@ void updateMenu() {
 void showMenuLabel(int item) {
     M5.Lcd.fillScreen(TFT_BLACK);
 
-    // Linha 1: nome do item (CYAN, Font2, size2, centralizado)
+    // Line 1: item name (CYAN, Font2, size2, centered)
     M5.Lcd.setFont(&fonts::Font2);
     M5.Lcd.setTextSize(2);
     M5.Lcd.setTextColor(TFT_CYAN, TFT_BLACK);
@@ -764,7 +764,7 @@ void showMenuLabel(int item) {
     M5.Lcd.setCursor(lx, 20);
     M5.Lcd.print(label);
 
-    // Linha 2: valor atual (GREEN, Font2, size2, centralizado)
+    // Line 2: current value (GREEN, Font2, size2, centered)
     M5.Lcd.setTextColor(TFT_GREEN, TFT_BLACK);
     char valBuf[24];
     getMenuValue(item, valBuf, sizeof(valBuf));
@@ -774,7 +774,7 @@ void showMenuLabel(int item) {
     M5.Lcd.setCursor(vx, 50);
     M5.Lcd.print(valBuf);
 
-    // Rodapé: instruções (Font0, size1, nas extremidades)
+    // Footer: instructions (Font0, size1, at the edges)
     M5.Lcd.setFont(&fonts::Font0);
     M5.Lcd.setTextSize(1);
     M5.Lcd.setTextColor(TFT_DARKGREY, TFT_BLACK);
@@ -837,13 +837,13 @@ void getMenuValue(int item, char* buf, int bufsize) {
 }
 
 void showMenuValue(int item) {
-    // Atualiza apenas o valor (linha 2), sem redesenharlabel/rodapé
+    // Updates only the value (line 2), without redrawing the label/footer
     M5.Lcd.setFont(&fonts::Font2);
     M5.Lcd.setTextSize(2);
     M5.Lcd.setTextColor(TFT_GREEN, TFT_BLACK);
     char valBuf[24];
     getMenuValue(item, valBuf, sizeof(valBuf));
-    // Limpa só a área do valor (y=42 a y=74)
+    // Clears only the value area (y=42 to y=74)
     M5.Lcd.fillRect(0, 42, M5.Lcd.width(), 32, TFT_BLACK);
     int vw = M5.Lcd.textWidth(valBuf);
     int vx = (M5.Lcd.width() - vw) / 2;
@@ -973,17 +973,17 @@ void adjustMenuItem(int item, int dir) {
 }
 
 // ============================================================================
-// INPUT CODE / WIRE ORDER (via keypad, igual ao original)
+// INPUT CODE / WIRE ORDER (via keypad, same as the original)
 // ============================================================================
 
 void inputCode() {
-    // Mostra 4 underscores
+    // Shows 4 underscores
     display.drawCodeEntry("____", 0);
     int pos = 0;
     int tempCode = 0;
 
     while (true) {
-        // Poll manual do keypad (bloqueante, igual ao original)
+        // Manual keypad poll (blocking, same as the original)
         int key = input.getKey();
         if (key >= 0) {
             if (key >= '0' && key <= '9' && pos < 4) {
@@ -1002,7 +1002,7 @@ void inputCode() {
                 break;
             }
         }
-        // START ou * cancela
+        // START or * cancels
         if (input.wasPressed(InputManager::BTN_START) || key == '*' || key == '#') {
             break;
         }
@@ -1013,7 +1013,7 @@ void inputCode() {
 }
 
 void inputWireOrder() {
-    // Mostra 4 underscores
+    // Shows 4 underscores
     display.drawCodeEntry("____", 0);
     int pos = 0;
     int used[4] = {0, 0, 0, 0};
@@ -1052,7 +1052,7 @@ void inputWireOrder() {
 }
 
 // ============================================================================
-// LEARN RFID TAG (DEFUSE ou DETONATE)
+// LEARN RFID TAG (DEFUSE or DETONATE)
 // ============================================================================
 
 void learnRfidTag(bool isDefuse) {
@@ -1061,11 +1061,11 @@ void learnRfidTag(bool isDefuse) {
     delay(1500);
 
     unsigned long started = millis();
-    while (millis() - started < 10000) {  // timeout 10s
+    while (millis() - started < 10000) {  // 10s timeout
         char uidHex[15];
         uint8_t uidLen = 0;
         if (input.readRFID(uidHex, &uidLen) && uidLen >= 4) {
-            // Converte UID hex para uint32_t
+            // Converts the hex UID to uint32_t
             uint32_t uid32 = 0;
             for (int i = 0; i < 4 && i * 2 < 14; i++) {
                 unsigned int b;
@@ -1076,7 +1076,7 @@ void learnRfidTag(bool isDefuse) {
             uint32_t* tags = isDefuse ? game.config.defuseTags : game.config.detonateTags;
             uint8_t& count = isDefuse ? game.config.defuseTagCount : game.config.detonateTagCount;
 
-            // Verifica duplicata
+            // Checks for a duplicate
             bool dup = false;
             for (int i = 0; i < count; i++) {
                 if (tags[i] == uid32) { dup = true; break; }
@@ -1091,7 +1091,7 @@ void learnRfidTag(bool isDefuse) {
                 delay(1000);
                 break;
             }
-            // Adiciona tag
+            // Adds tag
             tags[count++] = uid32;
             game.saveConfig();
             display.drawFullScreenMsg("LEARNED!", uidHex, TFT_GREEN);
@@ -1107,14 +1107,14 @@ void learnRfidTag(bool isDefuse) {
 }
 
 // ============================================================================
-// ESTADOS PÓS-JOGO (DETONATED / DEFUSED)
+// POST-GAME STATES (DETONATED / DEFUSED)
 // ============================================================================
 
 void updateDetonated() {
-    // Mantém relés ativos até o timer de release
+    // Keeps the relays active until the release timer
     game.updateRelays();
 
-    // START → reseta e volta ao IDLE
+    // START → resets and returns to IDLE
     if (input.wasPressed(InputManager::BTN_START)) {
         M5StamPLC.noTone();
         game.clearAllRelays();
@@ -1125,10 +1125,10 @@ void updateDetonated() {
 }
 
 void updateDefused() {
-    // Mantém relés ativos até o timer de release
+    // Keeps the relays active until the release timer
     game.updateRelays();
 
-    // START → reseta e volta ao IDLE
+    // START → resets and returns to IDLE
     if (input.wasPressed(InputManager::BTN_START)) {
         M5StamPLC.noTone();
         game.clearAllRelays();
@@ -1139,14 +1139,14 @@ void updateDefused() {
 }
 
 // ============================================================================
-// ESTADO ALARME
+// ALARM STATE
 // ============================================================================
 
 void updateAlarm() {
     static unsigned long alarmBuzzStart = 0;
     static bool alarmToggle = false;
 
-    // Efeito de alarme: beep intermitente + RGB laranja
+    // Alarm effect: intermittent beep + orange RGB
     if (millis() - alarmBuzzStart > 500) {
         alarmBuzzStart = millis();
         alarmToggle = !alarmToggle;
@@ -1159,7 +1159,7 @@ void updateAlarm() {
         }
     }
 
-    // START → desliga alarme e volta ao IDLE
+    // START → turns off the alarm and returns to IDLE
     if (input.wasPressed(InputManager::BTN_START)) {
         M5StamPLC.noTone();
         game.setState(GameLogic::STATE_IDLE);
@@ -1177,7 +1177,7 @@ void loop() {
         configHA.loopHA();
     }
 
-    // ─── Dispatcher de estados ──────────────────────────────────────
+    // ─── State dispatcher ───────────────────────────────────────────
     switch (game.getState()) {
         case GameLogic::STATE_IDLE:
             updateIdle();
@@ -1251,7 +1251,7 @@ void loop() {
         }
     }
 
-    // ─── Keypad hot-plug: verifica PCF8574 a cada 2s ───────────────
+    // ─── Keypad hot-plug: checks the PCF8574 every 2s ───────────────
     if (millis() - lastKeypadPoll > 2000) {
         lastKeypadPoll = millis();
         input.pollKeypad();

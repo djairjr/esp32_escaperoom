@@ -1,43 +1,43 @@
-# Manual do RadioClock - Sintonizador de Radio
+# RadioClock Manual - Radio Tuner
 
-Guia para donos de sala, game masters e jogadores.
-
----
-
-## 1. Visao Geral
-
-### O que e este dispositivo?
-
-O **RadioClock** e um puzzle de sintonizador de radio. O jogador percorre frequencias em um dial luminoso usando um botao. Em frequencias erradas, o radio toca estatica. Na frequencia correta, um sinal limpo e tocado. O jogador precisa encontrar 3 frequencias diferentes para resolver o puzzle.
-
-### Como funciona no jogo?
-
-- Os jogadores veem um anel de LEDs que representa o dial de um radio
-- Cada posicao no anel e uma frequencia diferente
-- Ao pressionar o botao, o dial avanca para a proxima frequencia
-- O display mostra o numero da frequencia atual
-- Em frequencias erradas: estatica no alto-falante
-- Na frequencia certa: som limpo e o jogador avanca de round
-- Tres frequencias encontradas resolvem o puzzle
+Guide for room owners, game masters and players.
 
 ---
 
-## 2. Componentes do Jogo
+## 1. Overview
 
-| Componente | Descricao |
+### What is this device?
+
+**RadioClock** is a radio tuner puzzle. The player cycles through frequencies on an illuminated dial using a button. On the wrong frequencies, the radio plays static. On the correct frequency, a clean signal is played. The player needs to find 3 different frequencies to solve the puzzle.
+
+### How does it work in the game?
+
+- Players see a ring of LEDs that represents a radio dial
+- Each position on the ring is a different frequency
+- When the button is pressed, the dial advances to the next frequency
+- The display shows the number of the current frequency
+- On wrong frequencies: static on the speaker
+- On the correct frequency: clean sound and the player advances a round
+- Three frequencies found solve the puzzle
+
+---
+
+## 2. Game Components
+
+| Component | Description |
 |------------|-----------|
-| **Anel de LEDs NeoPixel** | Dial do radio - mostra a frequencia atual |
-| **Botao SELECT** | Avanca para a proxima frequencia |
-| **Display 4 digitos** | Mostra "F-3" (frequencia 3) ou feedback |
-| **Alto-falante** | Estatica nas frequencias erradas, sinal nas certas |
+| **NeoPixel LED ring** | Radio dial - shows the current frequency |
+| **SELECT button** | Advances to the next frequency |
+| **4-digit display** | Shows "F-3" (frequency 3) or feedback |
+| **Speaker** | Static on the wrong frequencies, signal on the right ones |
 
 ---
 
-## 3. Configuracao Inicial
+## 3. Initial Setup
 
-### Definindo as frequencias alvo
+### Defining the target frequencies
 
-Edite o arquivo `/radioClock.json`:
+Edit the file `/radioClock.json`:
 
 ```json
 {
@@ -47,130 +47,130 @@ Edite o arquivo `/radioClock.json`:
 }
 ```
 
-| Parametro | O que faz | Sugestao |
+| Parameter | What it does | Suggestion |
 |-----------|-----------|----------|
-| `frequencyCount` | Quantas frequencias no dial | 8-20 |
-| `targetFrequencies` | Array com as 3 frequencias-alvo | Diferentes entre si |
-| `roundsToWin` | Quantas acertar para vencer | 1-5 |
+| `frequencyCount` | How many frequencies on the dial | 8-20 |
+| `targetFrequencies` | Array with the 3 target frequencies | Different from each other |
+| `roundsToWin` | How many to hit to win | 1-5 |
 
-### Exemplos de configuracao
+### Configuration examples
 
-**Facil:** frequencyCount=8, targetFrequencies=[2, 5], roundsToWin=2
-**Medio:** frequencyCount=12, targetFrequencies=[3, 8, 5], roundsToWin=3
-**Dificil:** frequencyCount=20, targetFrequencies=[7, 15, 3], roundsToWin=3
-
----
-
-## 4. Como Jogar
-
-### Para o Game Master
-
-1. Defina as frequencias alvo no JSON
-2. Posicione o anel em local visivel
-3. O display mostra "rAdi" quando pronto
-4. Pressione SELECT para comecar
-
-### Para os jogadores
-
-1. **Pressione SELECT** para avancar para a proxima frequencia
-2. **Escute**: estatica = frequencia errada, sinal limpo = frequencia certa
-3. **Veja** o display: mostra "F-3" (frequencia 3)
-4. **Veja** o dial: a luz branca mostra onde esta no dial
-5. **Ao acertar**: o display mostra "GOOd" e os LEDs ficam verdes
-6. **Continue**: encontre as 3 frequencias alvo para vencer
-
-### Estrategia
-
-- Percorra todas as frequencias em ordem
-- Preste atencao ao som - e a unica dica
-- A frequencia alvo muda a cada round
-- Nao ha penalidade por errar - continue tentando
+**Easy:** frequencyCount=8, targetFrequencies=[2, 5], roundsToWin=2
+**Medium:** frequencyCount=12, targetFrequencies=[3, 8, 5], roundsToWin=3
+**Hard:** frequencyCount=20, targetFrequencies=[7, 15, 3], roundsToWin=3
 
 ---
 
-## 5. O que acontece ao resolver
+## 4. How to Play
 
-1. O som de vitoria toca
-2. Os LEDs fazem efeito rainbow
-3. Display mostra "donE"
-4. A trava e liberada
-5. Apos 8 segundos, o puzzle volta ao estado inicial
+### For the Game Master
+
+1. Set the target frequencies in the JSON
+2. Position the ring in a visible location
+3. The display shows "rAdi" when ready
+4. Press SELECT to begin
+
+### For the players
+
+1. **Press SELECT** to advance to the next frequency
+2. **Listen**: static = wrong frequency, clean signal = right frequency
+3. **Look** at the display: it shows "F-3" (frequency 3)
+4. **Look** at the dial: the white light shows where you are on the dial
+5. **When you hit it**: the display shows "GOOd" and the LEDs turn green
+6. **Continue**: find the 3 target frequencies to win
+
+### Strategy
+
+- Cycle through all the frequencies in order
+- Pay attention to the sound - it is the only hint
+- The target frequency changes each round
+- There is no penalty for a wrong guess - keep trying
 
 ---
 
-## 6. Checklist de Audio
+## 5. What happens when solved
 
-| Arquivo | Quando Toca | Obrigatorio? |
+1. The victory sound plays
+2. The LEDs do a rainbow effect
+3. Display shows "donE"
+4. The lock is released
+5. After 8 seconds, the puzzle returns to the initial state
+
+---
+
+## 6. Audio Checklist
+
+| File | When it plays | Required? |
 |---------|-------------|--------------|
-| `static.mp3` | Frequencia errada (estatica) | Sim |
-| `signal.mp3` | Frequencia certa (sinal limpo) | Sim |
-| `solved.mp3` | Puzzle resolvido | Sim |
-| `select.mp3` | Mudar de frequencia | Recomendado |
+| `static.mp3` | Wrong frequency (static) | Yes |
+| `signal.mp3` | Right frequency (clean signal) | Yes |
+| `solved.mp3` | Puzzle solved | Yes |
+| `select.mp3` | Changing frequency | Recommended |
 
-Formato: MP3, 128kbps, 44.1kHz, stereo, sem ID3 tags.
+Format: MP3, 128kbps, 44.1kHz, stereo, no ID3 tags.
 
-### Dica para os arquivos de audio
+### Tip for the audio files
 
-- **static.mp3**: Pode ser um arquivo de ruido branco ou estatica de radio real
-- **signal.mp3**: Um tom limpo, musica classica ou voz gravada "Voce encontrou a frequencia!"
-- **select.mp3**: Um "click" curto de radio
-
----
-
-## 7. Solucao de Problemas
-
-### O som de estatica nao toca
-
-1. Verifique se /sfx/static.mp3 existe no LittleFS
-2. Teste com `hw.test()` via Serial
-
-### O display mostra caracteres estranhos
-
-1. Verifique o HT16K33 no endereco 0x70
-2. Ajuste o brilho no JSON se necessario
-
-### Nao encontra a frequencia alvo
-
-1. Verifique os valores em targetFrequencies no JSON
-2. Os valores devem ser menores que frequencyCount
-3. Frequencias comecam em 0 (F-0, F-1, etc.)
-
-### O puzzle nao comeca
-
-1. Pressione SELECT para sair do estado idle
-2. O display deve mudar de "rAdi" para "F-0"
+- **static.mp3**: Can be a white noise file or real radio static
+- **signal.mp3**: A clean tone, classical music or recorded voice "You found the frequency!"
+- **select.mp3**: A short radio "click"
 
 ---
 
-## Resumo Rapido
+## 7. Troubleshooting
 
-| Acao | Como Fazer |
+### The static sound does not play
+
+1. Check that /sfx/static.mp3 exists in LittleFS
+2. Test with `hw.test()` via Serial
+
+### The display shows strange characters
+
+1. Check the HT16K33 at address 0x70
+2. Adjust the brightness in the JSON if necessary
+
+### It does not find the target frequency
+
+1. Check the values in targetFrequencies in the JSON
+2. The values must be smaller than frequencyCount
+3. Frequencies start at 0 (F-0, F-1, etc.)
+
+### The puzzle does not start
+
+1. Press SELECT to leave the idle state
+2. The display should change from "rAdi" to "F-0"
+
+---
+
+## Quick Summary
+
+| Action | How to do it |
 |------|------------|
-| Avancar frequencia | Pressione SELECT |
-| Frequencia errada | Estatica no audio |
-| Frequencia certa | Sinal limpo + "GOOd" |
-| Vencer | Encontre as 3 frequencias |
+| Advance frequency | Press SELECT |
+| Wrong frequency | Static in the audio |
+| Right frequency | Clean signal + "GOOd" |
+| Win | Find the 3 frequencies |
 
-### Estados do Display
+### Display States
 
-| Display | Significado |
+| Display | Meaning |
 |---------|-------------|
-| "rAdi" | Pronto, pressione SELECT |
-| "F-3" | Frequencia 3 |
-| "GOOd" | Frequencia certa! |
-| "donE" | Puzzle resolvido! |
+| "rAdi" | Ready, press SELECT |
+| "F-3" | Frequency 3 |
+| "GOOd" | Right frequency! |
+| "donE" | Puzzle solved! |
 
-### Estados dos LEDs
+### LED States
 
-| Cor/Padrao | Significado |
+| Color/Pattern | Meaning |
 |------------|-------------|
-| Azul pulsante | Aguardando inicio |
-| Branco + trail | Navegando frequencias |
-| Verde pulsante | Frequencia certa! |
-| Rainbow | Puzzle resolvido! |
+| Pulsing blue | Waiting to start |
+| White + trail | Navigating frequencies |
+| Pulsing green | Right frequency! |
+| Rainbow | Puzzle solved! |
 
 ---
 
-*Sintonize a frequencia certa e desvende o misterio...*
+*Tune to the right frequency and unravel the mystery...*
 
-*Manual RadioClock - Versao 1.0 para biblioteca PropMaker EscapeRoom*
+*RadioClock Manual - Version 1.0 for the PropMaker EscapeRoom library*

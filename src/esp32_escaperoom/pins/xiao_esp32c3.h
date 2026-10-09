@@ -3,19 +3,19 @@
 /**
  * pins/xiao_esp32c3.h — Seeed XIAO ESP32-C3
  *
- * Placa IoT mini RISC-V. 4MB Flash, sem PSRAM.
- * WiFi 2.4GHz + BLE 5.0. Baixo consumo (44μA deep sleep).
+ * Mini RISC-V IoT board. 4MB Flash, no PSRAM.
+ * WiFi 2.4GHz + BLE 5.0. Low consumption (44μA deep sleep).
  *
- * Periféricos onboard:
+ * Onboard peripherals:
  *   - USB-C (UART + JTAG)
- *   - Bateria LiPo com carregador
- *   - Antena externa U.FL (opcional)
+ *   - LiPo battery with charger
+ *   - External U.FL antenna (optional)
  *
- * Compatível com Expansion Board Base for XIAO (exceto SWD).
+ * Compatible with the Expansion Board Base for XIAO (except SWD).
  *
  * ⚠️ GPIO2(D0), GPIO8(D8), GPIO9(D9): strapping pins.
- * ⚠️ D3 (GPIO5) usa ADC2 — leituras podem ser falsas.
- * ⚠️ Sem NeoPixel, sem microfone, sem PSRAM.
+ * ⚠️ D3 (GPIO5) uses ADC2 — readings may be unreliable.
+ * ⚠️ No NeoPixel, no microphone, no PSRAM.
  *
  * Ref: https://wiki.seeedstudio.com/xiao_esp32c3_getting_started/
  */
@@ -28,12 +28,12 @@ constexpr const char* BOARD_NAME         = "Seeed XIAO ESP32-C3";
 constexpr const char* BOARD_MANUFACTURER = "Seeed Studio";
 constexpr const char* BOARD_CHIP         = "ESP32-C3 (RISC-V)";
 
-// ── Memória ──────────────────────────────────────────────────
+// ── Memory ──────────────────────────────────────────────────
 #define BOARD_FLASH_MB  4
 #define BOARD_PSRAM_MB  0
 #define HAS_PSRAM       0
 
-// ── Periféricos onboard ──────────────────────────────────────
+// ── Onboard peripherals ──────────────────────────────────────
 
 #define HAS_ONBOARD_NEOPIXEL   0
 #define HAS_ONBOARD_BATTERY    1    // LiPo charger
@@ -44,19 +44,19 @@ constexpr int PIN_I2C_SCL = 7;   // D5 (GPIO7)
 
 // ── I2S ──────────────────────────────────────────────────────
 #define HAS_ONBOARD_I2S_AMP     0
-constexpr int PIN_I2S_BCLK = 4;   // D2 (GPIO4) — INMP441 SCK (NeoPixel/SD_CS não usados)
-constexpr int PIN_I2S_WS   = 5;   // D3 (GPIO5) — INMP441 WS (Buzzer não usado)
-constexpr int PIN_I2S_DATA = 6;   // D4 (GPIO6) — INMP441 SD (I2C SDA não usado)
-constexpr bool HAS_I2S     = true;  // I2S via GPIO matrix (doc Espressif)
+constexpr int PIN_I2S_BCLK = 4;   // D2 (GPIO4) — INMP441 SCK (NeoPixel/SD_CS not used)
+constexpr int PIN_I2S_WS   = 5;   // D3 (GPIO5) — INMP441 WS (Buzzer not used)
+constexpr int PIN_I2S_DATA = 6;   // D4 (GPIO6) — INMP441 SD (I2C SDA not used)
+constexpr bool HAS_I2S     = true;  // I2S via GPIO matrix (Espressif doc)
 
 // ── NeoPixel ─────────────────────────────────────────────────
-// Sem NeoPixel onboard. D2 (GPIO4) pode ser usado para externo.
+// No onboard NeoPixel. D2 (GPIO4) can be used for an external one.
 constexpr int PIN_EXTERNAL_NEOPIXEL = 4;   // D2 (GPIO4)
 constexpr int PIN_NEOPIXEL          = PIN_EXTERNAL_NEOPIXEL;
 constexpr int PIN_NEOPIXEL_INTERNAL = 255;
 
 // ── SPI ──────────────────────────────────────────────────────
-// ⚠️ D8(SCK=GPIO8) e D9(MISO=GPIO9) são strapping pins
+// ⚠️ D8(SCK=GPIO8) and D9(MISO=GPIO9) are strapping pins
 constexpr int PIN_SPI_SCK  = 8;   // D8 (⚠️ strapping)
 constexpr int PIN_SPI_MISO = 9;   // D9 (⚠️ strapping)
 constexpr int PIN_SPI_MOSI = 10;  // D10
@@ -66,7 +66,7 @@ constexpr int PIN_SPI_MOSI = 10;  // D10
 constexpr int PIN_SD_CS    = 4;   // D2 (GPIO4)
 #define USE_SD_LIBRARY SD
 
-// ── Atuadores ────────────────────────────────────────────────
+// ── Actuators ────────────────────────────────────────────────
 #define HAS_ONBOARD_RELAY    0
 constexpr int PIN_RELAY      = 2;   // D0 (GPIO2 ⚠️ strapping)
 constexpr int PIN_SERVO_PWM  = 3;   // D1 (GPIO3)
@@ -78,17 +78,17 @@ constexpr uint8_t RTC_I2C_ADDRESS  = 0x51;
 constexpr int PIN_BUZZER = 5;   // D3 (GPIO5 ⚠️ ADC2)
 constexpr int PIN_EXPANSION_BUTTON = 3;  // D1 (GPIO3)
 
-// ── Botões ───────────────────────────────────────────────────
-// ⚠️ BOOT = GPIO9 (strapping!) no C3 — diferente do S3
+// ── Buttons ───────────────────────────────────────────────────
+// ⚠️ BOOT = GPIO9 (strapping!) on the C3 — different from the S3
 constexpr int PIN_BTN = 9;  // BOOT
 
 // ── Power ────────────────────────────────────────────────────
 constexpr int PIN_EXTERNAL_POWER     = 10;
-constexpr int PIN_BATTERY_SENSE      = -1;  // sem monitor de bateria
+constexpr int PIN_BATTERY_SENSE      = -1;  // no battery monitor
 
-// ── Display externo ──────────────────────────────────────────
+// ── External display ──────────────────────────────────────────
 #define HAS_ONBOARD_DISPLAY 0
-// OLED via Expansion Board: OLED_I2C_ADDRESS já definido
+// OLED via Expansion Board: OLED_I2C_ADDRESS already defined
 
 // ── Flags ────────────────────────────────────────────────────
 #define HAS_WIFI            1
@@ -96,7 +96,7 @@ constexpr int PIN_BATTERY_SENSE      = -1;  // sem monitor de bateria
 #define HAS_ONBOARD_LEDS    0
 #define HAS_ONBOARD_BUZZER  0
 
-// ── IO disponíveis ───────────────────────────────────────────
+// ── Available IOs ───────────────────────────────────────────
 constexpr int PIN_IO0  = 2;    // D0  ⚠️ strapping
 constexpr int PIN_IO1  = 3;    // D1
 constexpr int PIN_IO2  = 4;    // D2
@@ -111,15 +111,15 @@ constexpr int PIN_IO10 = 10;   // D10
 constexpr int PIN_IO11 = 255;
 constexpr int PIN_IO12 = 255;
 
-// ── Wake de deep sleep ────────────────────────────────────────
-constexpr int PIN_WAKE_SENSOR = 3;   // D1 (GPIO3) — RTC GPIO, wake ext0 (Servo/Button não usados)
+// ── Deep sleep wake ────────────────────────────────────────
+constexpr int PIN_WAKE_SENSOR = 3;   // D1 (GPIO3) — RTC GPIO, wake ext0 (Servo/Button not used)
 
-// ── Constantes ───────────────────────────────────────────────
+// ── Constants ───────────────────────────────────────────────
 constexpr uint8_t I2C_DEFAULT_ADDRESS = 0x20;
 constexpr unsigned long DOOR_OPEN_MS  = 5000;
 
 inline void boardInit() {
-  // C3 não precisa de init especial
+  // The C3 needs no special init
 }
 
 }  // namespace esp32_escaperoom

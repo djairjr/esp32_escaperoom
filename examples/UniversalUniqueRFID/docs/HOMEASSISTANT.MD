@@ -1,18 +1,18 @@
-# UniversalUniqueRFID — Entidades Home Assistant
+# UniversalUniqueRFID — Home Assistant Entities
 
-## Sensores
-| Nome | ID | Valores |
+## Sensors
+| Name | ID | Values |
 |---|---|---|
-| Estado | `state` | idle, learning, ready, authenticating, solved |
-| Tag Programada | `programmed_tag` | texto (UID hex) |
-| Última Tag Lida | `last_tag` | texto (UID hex) |
+| State | `state` | idle, learning, ready, authenticating, solved |
+| Programmed Tag | `programmed_tag` | text (hex UID) |
+| Last Tag Read | `last_tag` | text (hex UID) |
 
-## Botões
-| Nome | ID |
+## Buttons
+| Name | ID |
 |---|---|
-| Modo Aprender | `learn_mode` |
-| Resetar | `reset` |
-| Limpar Tag | `clear_tag` |
+| Learn Mode | `learn_mode` |
+| Reset | `reset` |
+| Clear Tag | `clear_tag` |
 
 ## AP Mode
-Rede WiFi "UniqueRFID-XXXX" + portal em 192.168.4.1.
+WiFi network "UniqueRFID-XXXX" + portal at 192.168.4.1.

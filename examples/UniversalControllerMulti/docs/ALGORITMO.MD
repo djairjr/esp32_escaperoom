@@ -1,24 +1,24 @@
-# UniversalControllerMulti — Algoritmo do Jogo
+# UniversalControllerMulti — Game Algorithm
 
-## Visão Geral
+## Overview
 
-Múltiplos puzzles UniversalController rodando em uma única placa. Cada puzzle tem seu próprio JSON de configuração. O LogicManager gerencia a orquestração entre eles.
+Multiple UniversalController puzzles running on a single board. Each puzzle has its own JSON configuration file. The LogicManager manages the orchestration between them.
 
-## Configuração
+## Configuration
 
-- **puzzles[]**: array de configurações de puzzles
-- **gameMode**: PARALLEL (todos simultâneos) ou SEQUENTIAL (um após outro)
+- **puzzles[]**: array of puzzle configurations
+- **gameMode**: PARALLEL (all simultaneous) or SEQUENTIAL (one after another)
 
-## Estados
+## States
 
-IDLE → RUNNING → SOLVED (todos completos)
+IDLE → RUNNING → SOLVED (all complete)
 
-## Fluxo
+## Flow
 
-1. PARALLEL: todos puzzles iniciam juntos, resolve quando todos completarem
-2. SEQUENTIAL: puzzle N+1 só inicia após puzzle N resolver
-3. Cada puzzle individual segue a lógica do UniversalController
+1. PARALLEL: all puzzles start together, solves when all complete
+2. SEQUENTIAL: puzzle N+1 only starts after puzzle N solves
+3. Each individual puzzle follows the UniversalController logic
 
 ## AP Mode + WiFi
 
-Configuração de rede via portal web em 192.168.4.1.
+Network configuration via web portal at 192.168.4.1.

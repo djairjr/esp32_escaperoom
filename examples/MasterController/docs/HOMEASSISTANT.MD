@@ -1,33 +1,33 @@
-# MasterController — Entidades Home Assistant
+# MasterController — Home Assistant Entities
 
-## Sensores
-| Nome | ID | Valores |
+## Sensors
+| Name | ID | Values |
 |---|---|---|
-| Estado do Jogo | `game_state` | waiting, running, complete, expired |
-| Tempo Restante | `remaining_time` | 0-7200s |
-| Puzzles Resolvidos | `solved_puzzles` | 0-N |
+| Game State | `game_state` | waiting, running, complete, expired |
+| Remaining Time | `remaining_time` | 0-7200s |
+| Solved Puzzles | `solved_puzzles` | 0-N |
 
-## Binários
-| Nome | ID |
+## Binary Sensors
+| Name | ID |
 |---|---|
-| Porta Principal | `main_door` | locked, unlocked |
-| Luzes | `lights` | on, off |
-| Gerador Fumaça | `smoke_gen` | on, off |
-| Auxiliar 1..4 | `aux_1`..`aux_4` | on, off |
+| Main Door | `main_door` | locked, unlocked |
+| Lights | `lights` | on, off |
+| Smoke Generator | `smoke_gen` | on, off |
+| Auxiliary 1..4 | `aux_1`..`aux_4` | on, off |
 
-## Botões
-| Nome | ID |
+## Buttons
+| Name | ID |
 |---|---|
-| Iniciar Jogo | `start_game` |
-| Pausar Jogo | `pause_game` |
-| Resetar Jogo | `reset_game` |
-| Abrir Todas Portas | `emergency_open` |
+| Start Game | `start_game` |
+| Pause Game | `pause_game` |
+| Reset Game | `reset_game` |
+| Open All Doors | `emergency_open` |
 
-## Números
-| Nome | ID | Range |
+## Numbers
+| Name | ID | Range |
 |---|---|---|
-| Tempo Total | `total_time` | 60-7200s |
-| Puzzles Necessários | `required_puzzles` | 1-32 |
+| Total Time | `total_time` | 60-7200s |
+| Required Puzzles | `required_puzzles` | 1-32 |
 
 ## AP Mode
-Rede WiFi "MasterControl-XXXX" + portal em 192.168.4.1 com dashboard completo.
+WiFi network "MasterControl-XXXX" + portal at 192.168.4.1 with a full dashboard.

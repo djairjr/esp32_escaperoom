@@ -1,390 +1,390 @@
-# Manual do Usuário - Rádio Vintage de Ondas Curtas
+# User Manual - Vintage Shortwave Radio
 
-## Para Donos de Escape Room
+## For Escape Room Owners
 
-**Versão:** 2.0 (PropMaker Edition)  
-**Puzzle:** Rádio Vintage com Sintonia FM e Código Morse  
-**Nível:** Intermediário  
-**Tempo Estimado:** 10-15 minutos
-
----
-
-## Visão Geral do Puzzle
-
-Este é um **rádio de ondas curtas vintage** que os jogadores precisam "consertar" para receber uma mensagem secreta. O funcionamento imita um rádio antigo de válvulas.
-
-### Componentes Físicos
-
-1. **Transformador** (peça principal - conecta primeiro)
-2. **3 Válvulas** (conectam no rádio para ativar o FM)
-3. **1 Válvula Final** (conecta por último para receber a mensagem)
-4. **Knob de Sintonia** (rotary encoder)
-5. **Caixa do Rádio** com LEDs indicadores
-
-### Objetivo do Jogador
-
-1. Ligar o rádio (conectar transformador)
-2. Inserir as 3 válvulas para ativar o sistema de rádio
-3. Explorar as estações de rádio girando o knob
-4. Inserir a válvula final para receber a mensagem em código Morse
-5. Anotar a mensagem e usá-la para sair da sala
+**Version:** 2.0 (PropMaker Edition)  
+**Puzzle:** Vintage Radio with FM Tuning and Morse Code  
+**Level:** Intermediate  
+**Estimated Time:** 10-15 minutes
 
 ---
 
-## Como Funciona (Para o Jogador)
+## Puzzle Overview
 
-### Passo a Passo da Experiência
+This is a **vintage shortwave radio** that players must "repair" to receive a secret message. Its operation imitates an old tube radio.
 
-**1. Ligando o Rádio**
-- O jogador conecta o transformador na caixa
-- O LED branco (Power) acende
-- O rádio está "ligado" mas ainda não funciona
+### Physical Components
 
-**2. Inserindo as Válvulas**
-- Conforme cada válvula é inserida, um LED azul acende
-- O sistema faz sons diferentes para cada uma:
-  - **Válvula 1:** Som curto (beep beep beep)
-  - **Válvula 2:** Som longo (beeeep beeeep beeeep)
-  - **Válvula 3:** O rádio "ganha vida" - agora faz barulho de rádio!
+1. **Transformer** (main part - connects first)
+2. **3 Tubes** (connect to the radio to activate the FM)
+3. **1 Final Tube** (connects last to receive the message)
+4. **Tuning Knob** (rotary encoder)
+5. **Radio Box** with indicator LEDs
 
-**3. Sintonizando o Rádio**
-- Com a 3ª válvula inserida, o knob funciona
-- Girando o knob, o jogador ouve diferentes estações de rádio
-- Cada estação tem um som de interferência/static diferente
-- O volume sobe e desce conforme o knob gira (simulando sintonia)
+### Player Objective
 
-**4. A Solução**
-- O jogador precisa inserir a **4ª válvula (Válvula Final)**
-- Isso para o barulho de rádio e inicia a mensagem em código Morse
-- A mensagem é transmitida em beeps pelo rádio
-- Os jogadores precisam decifrar o código Morse
-
-**5. Decifrando**
-- A mensagem em código Morse é repetida 5 vezes
-- O jogador anota a tradução (vem escrito no alfabeto normal)
-- A mensagem contém a senha ou dica para o próximo passo do jogo
+1. Turn on the radio (connect the transformer)
+2. Insert the 3 tubes to activate the radio system
+3. Explore the radio stations by turning the knob
+4. Insert the final tube to receive the message in Morse code
+5. Write down the message and use it to leave the room
 
 ---
 
-## Configuração Para Você (Operador)
+## How it Works (For the Player)
 
-### Antes da Partida
+### Step by Step of the Experience
 
-#### 1. A Mensagem Secreta (IMPORTANTE!)
+**1. Turning on the Radio**
+- The player connects the transformer to the box
+- The white LED (Power) turns on
+- The radio is "on" but still does not work
 
-Você pode mudar a mensagem que será transmitida em código Morse.
+**2. Inserting the Tubes**
+- As each tube is inserted, a blue LED turns on
+- The system makes different sounds for each one:
+  - **Tube 1:** Short sound (beep beep beep)
+  - **Tube 2:** Long sound (beeeep beeeep beeeep)
+  - **Tube 3:** The radio "comes alive" - it now makes radio noise!
 
-**Como fazer:**
-1. Retire o cartão SD do sistema
-2. Abra o arquivo `mensagem.txt` no computador
-3. Escreva sua mensagem (pode usar acentos e pontuação)
-4. Salve o arquivo
-5. Recoloque o cartão SD no sistema
+**3. Tuning the Radio**
+- With the 3rd tube inserted, the knob works
+- Turning the knob, the player hears different radio stations
+- Each station has a different interference/static sound
+- The volume rises and falls as the knob turns (simulating tuning)
 
-**Exemplos de mensagens:**
+**4. The Solution**
+- The player needs to insert the **4th tube (Final Tube)**
+- This stops the radio noise and starts the message in Morse code
+- The message is transmitted in beeps by the radio
+- The players need to decipher the Morse code
+
+**5. Deciphering**
+- The message in Morse code is repeated 5 times
+- The player writes down the translation (it comes written in the normal alphabet)
+- The message contains the password or hint for the next step of the game
+
+---
+
+## Configuration For You (Operator)
+
+### Before the Game
+
+#### 1. The Secret Message (IMPORTANT!)
+
+You can change the message that will be transmitted in Morse code.
+
+**How to do it:**
+1. Remove the SD card from the system
+2. Open the file `mensagem.txt` on the computer
+3. Write your message (you can use accents and punctuation)
+4. Save the file
+5. Put the SD card back in the system
+
+**Example messages:**
 ```
-PARABENS A SENHA E 4729
+CONGRATULATIONS THE CODE IS 4729
 
-A PORTA ABRE COM O CODIGO VERMELHO
+THE DOOR OPENS WITH THE RED CODE
 
-PROCUREM A CAIXA NO ARMARIO
+LOOK FOR THE BOX IN THE CLOSET
 
-O PROXIMO DIGITO E 7
+THE NEXT DIGIT IS 7
 ```
 
-**Regras:**
-- Use frases curtas (máximo 256 caracteres)
-- Pode usar letras A-Z, números 0-9 e espaços
-- Acentos são aceitos (são convertidos automaticamente)
-- A mensagem é lida do cartão SD primeiro, depois da memória interna
+**Rules:**
+- Use short phrases (maximum 256 characters)
+- You can use letters A-Z, numbers 0-9 and spaces
+- Accents are accepted (they are converted automatically)
+- The message is read from the SD card first, then from internal memory
 
-#### 2. Os Sons das Estações de Rádio
+#### 2. The Radio Station Sounds
 
-O rádio tem **9 estações** que o jogador pode explorar. Cada uma toca um arquivo MP3 diferente.
+The radio has **9 stations** that the player can explore. Each one plays a different MP3 file.
 
-**Arquivos necessários:**
-- `station1.mp3` até `station9.mp3`
+**Required files:**
+- `station1.mp3` through `station9.mp3`
 
-**Onde colocar:**
-- **Opção 1 (recomendada):** Cartão SD na raiz (pasta principal)
-- **Opção 2:** Memória interna (LittleFS)
+**Where to put them:**
+- **Option 1 (recommended):** SD card at the root (main folder)
+- **Option 2:** Internal memory (LittleFS)
 
-**Prioridade:** Se o mesmo arquivo existir no cartão SD e na memória interna, o **cartão SD vence**.
+**Priority:** If the same file exists on the SD card and in internal memory, the **SD card wins**.
 
-**Isso permite:** Você pode ter uma versão padrão na memória interna, e colocar versões especiais no SD para eventos específicos (por exemplo, uma estação com dicas extras ou mensagens personalizadas para grupos diferentes).
+**This allows:** You can have a standard version in internal memory, and put special versions on the SD for specific events (for example, a station with extra hints or customized messages for different groups).
 
-**Que tipo de áudio usar:**
-- Sons de rádio interferindo (estática, chiado)
-- Sons de transmissão de rádio antiga
-- Qualquer MP3 em 128kbps, 44.1kHz, estéreo
-- Duração: pode ser curto (loop automático)
+**What kind of audio to use:**
+- Sounds of interfering radio (static, hiss)
+- Old radio broadcast sounds
+- Any MP3 at 128kbps, 44.1kHz, stereo
+- Duration: can be short (automatic loop)
 
-**Sugestão:** Use sons diferentes para cada estação para criar a sensação de "canais diferentes". Se não souber onde conseguir, pode deixar os arquivos padrão que já vêm no sistema.
+**Suggestion:** Use different sounds for each station to create the feeling of "different channels". If you don't know where to get them, you can leave the default files that already come with the system.
 
-### Teste Antes de Usar
+### Test Before Use
 
-**Procedimento de teste:**
+**Test procedure:**
 
-1. **Reset:** Desconecte todas as peças
-2. **Ligue:** Conecte o transformador
-   - LED Power deve acender (branco)
-3. **Válvula 1:** Conecte a primeira válvula
-   - LED azul acende + som de beep curto
-4. **Válvula 2:** Conecte a segunda válvula
-   - LED azul acende + som de beep longo
-5. **Válvula 3:** Conecte a terceira válvula
-   - LED azul acende + rádio começa a "fazer barulho"
-   - Gire o knob - deve ouvir diferentes estações
-6. **Válvula 4:** Conecte a válvula final
-   - Rádio para de fazer barulho
-   - Começa a transmitir código Morse
-   - A mensagem deve ser clara e repetir 5 vezes
+1. **Reset:** Disconnect all the parts
+2. **Turn on:** Connect the transformer
+   - The Power LED should turn on (white)
+3. **Tube 1:** Connect the first tube
+   - Blue LED turns on + short beep sound
+4. **Tube 2:** Connect the second tube
+   - Blue LED turns on + long beep sound
+5. **Tube 3:** Connect the third tube
+   - Blue LED turns on + radio starts to "make noise"
+   - Turn the knob - you should hear different stations
+6. **Tube 4:** Connect the final tube
+   - The radio stops making noise
+   - It starts transmitting Morse code
+   - The message should be clear and repeat 5 times
 
-**Se algo não funcionar:**
-- Verifique se todas as conexões estão firmes
-- Reinicie desconectando e reconectando o transformador
-- Verifique se o cartão SD está inserido corretamente
-- Troque o cartão SD se necessário
+**If something does not work:**
+- Check that all connections are firm
+- Restart by disconnecting and reconnecting the transformer
+- Check that the SD card is inserted correctly
+- Replace the SD card if necessary
 
 ---
 
-## Resolução de Problemas
+## Troubleshooting
 
-### Problema: O rádio não liga
+### Problem: The radio does not turn on
 
-**Causas possíveis:**
-1. Transformador não conectado corretamente
-2. Problema na conexão elétrica
-3. Sistema travou
+**Possible causes:**
+1. Transformer not connected correctly
+2. Problem in the electrical connection
+3. System locked up
 
-**Soluções:**
-- Desconecte e reconecte o transformador firmemente
-- Verifique se o LED Power acende
-- Se persistir, desligue e ligue o sistema completamente
-- Verifique se o cabo USB está conectado (se usar alimentação USB)
+**Solutions:**
+- Disconnect and reconnect the transformer firmly
+- Check that the Power LED turns on
+- If it persists, turn the system completely off and on
+- Check that the USB cable is connected (if using USB power)
 
-### Problema: As válvulas não funcionam
+### Problem: The tubes do not work
 
-**Causas possíveis:**
-1. As válvulas precisam ser conectadas em ordem
-2. Conexão solta
-3. Sistema não foi resetado
+**Possible causes:**
+1. The tubes need to be connected in order
+2. Loose connection
+3. System was not reset
 
-**Soluções:**
-- Sempre conecte na ordem: Válvula 1 → 2 → 3 → 4
-- Pressione firmemente até ouvir/ver o feedback
-- Cada válvula deve acender seu LED azul
-- Desconecte o transformador e comece de novo
+**Solutions:**
+- Always connect in order: Tube 1 → 2 → 3 → 4
+- Press firmly until you hear/see the feedback
+- Each tube should turn on its blue LED
+- Disconnect the transformer and start again
 
-### Problema: O knob de sintonia não funciona
+### Problem: The tuning knob does not work
 
-**Causas possíveis:**
-1. A 3ª válvula não está conectada
-2. Problema no encoder
+**Possible causes:**
+1. The 3rd tube is not connected
+2. Problem in the encoder
 
-**Soluções:**
-- Verifique se a 3ª válvula está conectada (LED azul aceso)
-- O knob só funciona APÓS a 3ª válvula ser inserida
-- Gire o knob devagar para testar
-- Verifique se o encoder está bem conectado
+**Solutions:**
+- Check that the 3rd tube is connected (blue LED on)
+- The knob only works AFTER the 3rd tube is inserted
+- Turn the knob slowly to test
+- Check that the encoder is well connected
 
-### Problema: Não ouço as estações de rádio
+### Problem: I don't hear the radio stations
 
-**Causas possíveis:**
-1. Arquivos MP3 ausentes ou com formato errado
-2. Volume muito baixo
-3. Problema no cartão SD
-4. Problema no alto-falante
+**Possible causes:**
+1. Missing MP3 files or wrong format
+2. Volume too low
+3. Problem on the SD card
+4. Problem in the speaker
 
-**Soluções:**
-- Verifique se os arquivos `station1.mp3` a `station9.mp3` existem no SD
-- Formato deve ser MP3, 128kbps, 44.1kHz
-- Tente substituir o cartão SD
-- Verifique se o alto-falante está conectado
+**Solutions:**
+- Check that the files `station1.mp3` through `station9.mp3` exist on the SD
+- Format must be MP3, 128kbps, 44.1kHz
+- Try replacing the SD card
+- Check that the speaker is connected
 
-### Problema: A mensagem em Morse não toca
+### Problem: The Morse message does not play
 
-**Causas possíveis:**
-1. Arquivo `mensagem.txt` ausente
-2. Arquivo `mensagem.txt` está em branco
-3. Cartão SD não está sendo lido
+**Possible causes:**
+1. File `mensagem.txt` missing
+2. File `mensagem.txt` is blank
+3. SD card is not being read
 
-**Soluções:**
-- Verifique se `mensagem.txt` existe na raiz do SD
-- Abra o arquivo e confirme que tem texto dentro
-- Se o arquivo estiver ausente, o sistema usa "SOS" como padrão
-- Tente outro cartão SD
+**Solutions:**
+- Check that `mensagem.txt` exists at the root of the SD
+- Open the file and confirm that it has text inside
+- If the file is missing, the system uses "SOS" as default
+- Try another SD card
 
-### Problema: Som com ruído ou distorcido
+### Problem: Sound with noise or distorted
 
-**Causas possíveis:**
-1. Arquivos MP3 com formato inadequado
-2. ID3 tags nos MP3 causando problemas
-3. Cartão SD lento ou corrompido
+**Possible causes:**
+1. MP3 files with inadequate format
+2. ID3 tags in the MP3s causing problems
+3. Slow or corrupted SD card
 
-**Soluções:**
-- Reconverta os MP3 usando o comando ffmpeg:
+**Solutions:**
+- Reconvert the MP3s using the ffmpeg command:
   ```
   ffmpeg -i input.mp3 -acodec libmp3lame -ar 44100 -ac 2 -b:a 128k -map_metadata -1 output.mp3
   ```
-- Isso remove tags ID3 e padroniza o formato
-- Formate o cartão SD em FAT32
+- This removes ID3 tags and standardizes the format
+- Format the SD card in FAT32
 
-### Problema: O rádio trava ou reinicia sozinho
+### Problem: The radio freezes or restarts by itself
 
-**Causas possíveis:**
-1. Fonte de alimentação fraca
-2. Transformador foi removido (HARD RESET intencional)
-3. Sistema precisa de reset
+**Possible causes:**
+1. Weak power supply
+2. Transformer was removed (intentional HARD RESET)
+3. System needs a reset
 
-**Soluções:**
-- Use uma fonte de 5V com pelo menos 2A
-- O HARD RESET é normal quando remove o transformador - reconecte para continuar
-- Se travar, desconecte tudo e reconecte o transformador
-
----
-
-## Cuidados e Manutenção
-
-### Limpeza
-- Limpe as conexões das válvulas com pano seco periodicamente
-- Evite umidade no sistema
-- Mantenha o knob de sintonia limpo
-- Não use produtos químicos diretamente nos conectores
-
-### Armazenamento
-- Guarde as válvulas em local seco quando não estiverem em uso
-- Evite deixar o transformador conectado por longos períodos sem uso
-- Proteja o cartão SD de poeira e umidade
-
-### Backup dos Arquivos
-- Mantenha uma cópia dos arquivos `station*.mp3` e `mensagem.txt` no computador
-- Se o cartão SD corromper, você pode recriar facilmente
-- Teste o sistema semanalmente para garantir funcionamento
+**Solutions:**
+- Use a 5V supply with at least 2A
+- The HARD RESET is normal when you remove the transformer - reconnect to continue
+- If it freezes, disconnect everything and reconnect the transformer
 
 ---
 
-## Dicas Para Seu Jogo
+## Care and Maintenance
 
-### Dificuldade
+### Cleaning
+- Clean the tube connections with a dry cloth periodically
+- Avoid humidity in the system
+- Keep the tuning knob clean
+- Do not use chemical products directly on the connectors
 
-**Fácil:**
-- Coloque a mensagem em Morse escrita em algum lugar da sala
-- Os jogadores só precisam identificar o padrão
-- A 4ª válvula pode estar visível e acessível
+### Storage
+- Store the tubes in a dry place when not in use
+- Avoid leaving the transformer connected for long periods without use
+- Protect the SD card from dust and humidity
 
-**Médio:**
-- Forneça uma tabela de código Morse em outro puzzle
-- Os jogadores precisam decifrar a mensagem
-- A 4ª válvula pode estar escondida ou em outro local
-
-**Difícil:**
-- Sem ajuda externa - os jogadores precisam conhecer ou descobrir código Morse
-- A mensagem pode ser uma pista criptografada
-- A 4ª válvula só aparece depois de resolver outro puzzle
-
-### Tempo
-
-- A transmissão Morse repete **5 vezes**
-- Cada ciclo leva alguns segundos
-- Tempo total: cerca de 1-2 minutos para ouvir tudo
-- Deixe tempo suficiente para os jogadores anotarem
-- O sistema FM pode ficar ligado indefinidamente - não há pressa
-
-### Combine com Outros Puzzles
-
-O código Morse pode ser:
-- Uma senha numérica para um cadeado
-- Coordenadas para encontrar um objeto escondido
-- A primeira parte de uma senha maior
-- Uma pista sobre outro puzzle na sala
-- O código para um cofre eletrônico
+### File Backup
+- Keep a copy of the files `station*.mp3` and `mensagem.txt` on the computer
+- If the SD card gets corrupted, you can recreate them easily
+- Test the system weekly to ensure it works
 
 ---
 
-## Checklist Pré-Jogo
+## Tips For Your Game
 
-Use esta lista antes de cada grupo de jogadores:
+### Difficulty
 
-- [ ] Transformador desconectado (posição inicial)
-- [ ] Todas as válvulas desconectadas
-- [ ] Cartão SD inserido corretamente
-- [ ] Teste rápido: conecte o transformador → LED Power acende?
-- [ ] Teste: válvula 1 → LED azul + som curto?
-- [ ] Teste: válvula 2 → LED azul + som longo?
-- [ ] Teste: válvula 3 → LED azul + barulho de rádio?
-- [ ] Teste: gire o knob → muda de estação?
-- [ ] Teste: válvula 4 → mensagem Morse toca?
-- [ ] Mensagem configurada no arquivo `mensagem.txt` está correta?
-- [ ] Arquivos de áudio disponíveis (station1-9.mp3)
-- [ ] Volume adequado para a sala
+**Easy:**
+- Place the message in Morse written somewhere in the room
+- The players only need to identify the pattern
+- The 4th tube can be visible and accessible
+
+**Medium:**
+- Provide a Morse code table in another puzzle
+- The players need to decipher the message
+- The 4th tube can be hidden or in another location
+
+**Hard:**
+- No external help - the players need to know or discover Morse code
+- The message can be an encrypted clue
+- The 4th tube only appears after solving another puzzle
+
+### Time
+
+- The Morse transmission repeats **5 times**
+- Each cycle takes a few seconds
+- Total time: about 1-2 minutes to hear everything
+- Leave enough time for the players to write it down
+- The FM system can stay on indefinitely - there is no rush
+
+### Combine with Other Puzzles
+
+The Morse code can be:
+- A numeric password for a padlock
+- Coordinates to find a hidden object
+- The first part of a larger password
+- A hint about another puzzle in the room
+- The code for an electronic safe
 
 ---
 
-## Informações Técnicas Básicas
+## Pre-Game Checklist
 
-### Especificações
+Use this list before each group of players:
 
-| Item | Especificação |
+- [ ] Transformer disconnected (initial position)
+- [ ] All tubes disconnected
+- [ ] SD card inserted correctly
+- [ ] Quick test: connect the transformer → Power LED turns on?
+- [ ] Test: tube 1 → blue LED + short sound?
+- [ ] Test: tube 2 → blue LED + long sound?
+- [ ] Test: tube 3 → blue LED + radio noise?
+- [ ] Test: turn the knob → changes station?
+- [ ] Test: tube 4 → Morse message plays?
+- [ ] Message configured in the file `mensagem.txt` is correct?
+- [ ] Audio files available (station1-9.mp3)
+- [ ] Volume suitable for the room
+
+---
+
+## Basic Technical Information
+
+### Specifications
+
+| Item | Specification |
 |------|---------------|
-| Alimentação | 5V DC (via USB ou fonte) |
-| Consumo | ~500mA típico, 1.5A pico |
-| Cartão SD | MicroSD, formato FAT32 |
-| Áudio | MP3, 128kbps, 44.1kHz, estéreo |
-| Conexões | Plugs banana 4mm |
+| Power | 5V DC (via USB or supply) |
+| Consumption | ~500mA typical, 1.5A peak |
+| SD Card | MicroSD, FAT32 format |
+| Audio | MP3, 128kbps, 44.1kHz, stereo |
+| Connections | 4mm banana plugs |
 
-### Pinos do PCF8575 (para referência técnica)
+### PCF8575 Pins (for technical reference)
 
-| Pino | Função |
+| Pin | Function |
 |------|--------|
-| P0 | Transformador |
-| P1 | Válvula 1 |
-| P2 | Válvula 2 |
-| P3 | Válvula 3 |
+| P0 | Transformer |
+| P1 | Tube 1 |
+| P2 | Tube 2 |
+| P3 | Tube 3 |
 | P4 | Encoder A |
 | P5 | Encoder B |
-| P6 | Botão Encoder |
-| P7 | Válvula 4 |
+| P6 | Encoder Button |
+| P7 | Tube 4 |
 
 ---
 
-## Suporte Técnico
+## Technical Support
 
-Se você encontrar problemas que não consegue resolver:
+If you encounter problems that you cannot solve:
 
-1. Verifique se todos os cabos estão conectados corretamente
-2. Teste com um cartão SD diferente
-3. Verifique os logs no monitor serial (se tiver acesso técnico)
-4. Consulte o arquivo `ALGORITMO.MD` para detalhes técnicos completos
-5. Entre em contato com o fabricante
+1. Check that all cables are connected correctly
+2. Test with a different SD card
+3. Check the logs on the serial monitor (if you have technical access)
+4. Consult the file `ALGORITMO.MD` for complete technical details
+5. Contact the manufacturer
 
-### Contato
+### Contact
 
-Para suporte técnico ou dúvidas sobre o puzzle:
+For technical support or questions about the puzzle:
 
 **GitHub:** https://github.com/djairhector/propmaker_escaperoom
 
 ---
 
-## Resumo Rápido
+## Quick Summary
 
-| Componente | Função | Quando Usar |
+| Component | Function | When to Use |
 |------------|--------|-------------|
-| Transformador | Liga o sistema | Sempre primeiro |
-| Válvula 1 | Ativa som curto | Depois do transformador |
-| Válvula 2 | Ativa som longo | Depois da válvula 1 |
-| Válvula 3 | Ativa o rádio FM | Depois da válvula 2 |
-| Knob | Muda estações | Após válvula 3 |
-| Válvula 4 | Recebe mensagem Morse | Última - ativa a solução |
+| Transformer | Turns on the system | Always first |
+| Tube 1 | Activates short sound | After the transformer |
+| Tube 2 | Activates long sound | After tube 1 |
+| Tube 3 | Activates the FM radio | After tube 2 |
+| Knob | Changes stations | After tube 3 |
+| Tube 4 | Receives Morse message | Last - activates the solution |
 
-**Arquivos importantes no SD:**
-- `mensagem.txt` - A mensagem em código Morse
-- `station1.mp3` a `station9.mp3` - Sons das estações
+**Important files on the SD:**
+- `mensagem.txt` - The message in Morse code
+- `station1.mp3` through `station9.mp3` - Station sounds
 
-**Prioridade de arquivos:** Cartão SD > Memória interna
+**File priority:** SD Card > Internal memory
 
 ---
 
-*Manual para Donos de Escape Room*  
-*Sistema PropMaker EscapeRoom - Vintage Radio*  
-*Versão 2.0 - Atualizado com sistema de 4 válvulas e prioridade SD Card*
+*Manual for Escape Room Owners*  
+*PropMaker EscapeRoom System - Vintage Radio*  
+*Version 2.0 - Updated with the 4-tube system and SD Card priority*

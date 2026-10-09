@@ -1,8 +1,8 @@
 {
-  "_comment": "Configuracao do UniversalUniqueRFID - Puzzle RFID Configuravel para Escape Room",
+  "_comment": "UniversalUniqueRFID configuration - Configurable RFID Puzzle for Escape Room",
 
   "controller": {
-    "name": "Leitor RFID Universal",
+    "name": "Universal RFID Reader",
     "id": 2,
     "enabled": true
   },
@@ -10,16 +10,16 @@
   "rfid": {
     "mode": "UNIQUE",
     "tags": [
-      { "uid": "A1B2C3D4", "name": "Tag Vermelha" },
-      { "uid": "E5F6A7B8", "name": "Tag Azul" },
-      { "uid": "9A0B1C2D", "name": "Tag Verde" }
+      { "uid": "A1B2C3D4", "name": "Red Tag" },
+      { "uid": "E5F6A7B8", "name": "Blue Tag" },
+      { "uid": "9A0B1C2D", "name": "Green Tag" }
     ],
     "validTags": [
-      { "uid": "A1B2C3D4", "name": "Tag Vermelha" },
-      { "uid": "E5F6A7B8", "name": "Tag Azul" },
-      { "uid": "9A0B1C2D", "name": "Tag Verde" },
-      { "uid": "11223344", "name": "Tag Amarela" },
-      { "uid": "55667788", "name": "Tag Branca" }
+      { "uid": "A1B2C3D4", "name": "Red Tag" },
+      { "uid": "E5F6A7B8", "name": "Blue Tag" },
+      { "uid": "9A0B1C2D", "name": "Green Tag" },
+      { "uid": "11223344", "name": "Yellow Tag" },
+      { "uid": "55667788", "name": "White Tag" }
     ],
     "sequence": [0, 1, 2],
     "timeoutSeconds": 300,

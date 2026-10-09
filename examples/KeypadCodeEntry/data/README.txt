@@ -1,4 +1,4 @@
-Inclua o arquivo keypad.json no LittleFS:
+Include the keypad.json file in LittleFS:
 
 data/keypad.json:
 {
@@ -18,11 +18,11 @@ data/keypad.json:
   }
 }
 
-Arquivos de audio necessarios na pasta raiz do LittleFS ou SD:
-- /sfx/beep.mp3     (Bip de tecla pressionada)
-- /sfx/error.mp3    (Som de erro/senha incorreta)
-- /sfx/magic.mp3    (Som de acerto/sucesso)
-- /sfx/cancel.mp3   (Som ao limpar a entrada)
+Audio files required in the root folder of LittleFS or SD:
+- /sfx/beep.mp3     (Key press beep)
+- /sfx/error.mp3    (Error/wrong password sound)
+- /sfx/magic.mp3    (Correct/success sound)
+- /sfx/cancel.mp3   (Sound when clearing the entry)
 
-Nota: Se o arquivo keypad.json nao existir, o codigo usa os valores padrao
-embutidos (code=8671, lockPin=20).
+Note: If the keypad.json file does not exist, the code uses the built-in
+default values (code=8671, lockPin=20).

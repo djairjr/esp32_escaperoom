@@ -1,26 +1,26 @@
-# UniversalUniqueRFID — Algoritmo do Jogo
+# UniversalUniqueRFID — Game Algorithm
 
-## Visão Geral
+## Overview
 
-Puzzle RFID de aprendizagem. Qualquer tag RFID pode ser programada como "chave". O GameMaster ou jogador apresenta uma tag, o sistema a memoriza, e a partir daí apenas essa tag resolve o puzzle.
+Learning RFID puzzle. Any RFID tag can be programmed as a "key". The GameMaster or player presents a tag, the system memorizes it, and from then on only that tag solves the puzzle.
 
-## Configuração (JSON: unique_rfid.json)
+## Configuration (JSON: unique_rfid.json)
 
-- **Modos**: LEARN (aprender tag), PLAY (jogar), RESET (limpar)
+- **Modes**: LEARN (learn tag), PLAY (play), RESET (clear)
 - **Hardware**: lockPin, neoCount, volume
 
-## Estados
+## States
 
 IDLE → LEARNING → READY → AUTHENTICATING → SOLVED → IDLE
 
-## Fluxo
+## Flow
 
-1. LEARNING: apresenta tag → sistema memoriza UID → READY
-2. READY: aguardando jogador
-3. AUTHENTICATING: tag apresentada → compara com UID memorizado
+1. LEARNING: presents tag → system memorizes UID → READY
+2. READY: waiting for player
+3. AUTHENTICATING: tag presented → compares with memorized UID
 4. Match → SOLVED
-5. No match → ignora
+5. No match → ignores
 
 ## AP Mode + WiFi
 
-Configuração de rede via portal web em 192.168.4.1.
+Network configuration via web portal at 192.168.4.1.

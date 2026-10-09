@@ -1,245 +1,245 @@
-# Manual do Simon Says - Jogo Genius para Escape Room
+# Simon Says Manual - Genius Game for Escape Room
 
-Um guia completo para donos de sala, game masters e jogadores.
-
----
-
-## 1. Visão Geral
-
-### O que é este dispositivo?
-
-O **Simon Says** é uma versão do clássico jogo Genius adaptada para Escape Rooms. O dispositivo consiste em uma caixa com 4 botões coloridos, cada um com seu próprio anel de LEDs que acendem em sequência. Os jogadores devem memorizar e repetir a sequência de cores para abrir a caixa.
-
-### Como funciona no jogo?
-
-- Os jogadores encontram o dispositivo na sala (geralmente uma caixa trancada)
-- Ao pressionar qualquer botão, o jogo inicia com uma animação de abertura
-- O dispositivo mostra uma sequência de cores nos anéis de LED
-- Os jogadores devem repetir a sequência apertando os botões na mesma ordem
-- Se acertarem, avançam para o próximo nível com uma sequência maior
-- Se errarem, o sistema emite som de erro e repete a mesma sequência (sem punição!)
-- Ao completar todos os níveis, a caixa se abre automaticamente
-
-> **Diferencial**: Este sistema não pune erros! Se os jogadores errarem, ou demorarem mais de 5 segundos para apertar, o sistema simplesmente repete a sequência atual até que acertem.
+A complete guide for room owners, game masters and players.
 
 ---
 
-## 2. Componentes do Jogo
+## 1. Overview
 
-Estes são os elementos que os jogadores interagem durante o jogo:
+### What is this device?
 
-| Componente | Descrição |
+**Simon Says** is a version of the classic Genius game adapted for Escape Rooms. The device consists of a box with 4 colored buttons, each with its own ring of LEDs that light up in sequence. Players must memorize and repeat the color sequence to open the box.
+
+### How does it work in the game?
+
+- Players find the device in the room (usually a locked box)
+- When any button is pressed, the game starts with an opening animation
+- The device shows a color sequence on the LED rings
+- Players must repeat the sequence by pressing the buttons in the same order
+- If they get it right, they advance to the next level with a longer sequence
+- If they get it wrong, the system emits an error sound and repeats the same sequence (no punishment!)
+- On completing all levels, the box opens automatically
+
+> **Differentiator**: This system does not punish mistakes! If players get it wrong, or take longer than 5 seconds to press, the system simply repeats the current sequence until they get it right.
+
+---
+
+## 2. Game Components
+
+These are the elements players interact with during the game:
+
+| Component | Description |
 |------------|-----------|
-| **Botão Vermelho** | Anel de 12 LEDs vermelhos na borda superior/esquerda |
-| **Botão Azul** | Anel de 12 LEDs azuis na borda superior/direita |
-| **Botão Amarelo** | Anel de 12 LEDs amarelos na borda inferior/esquerda |
-| **Botão Verde** | Anel de 12 LEDs verdes na borda inferior/direita |
-| **Fechadura** | Abre automaticamente quando o puzzle é resolvido |
-| **Alto-falante** | Emite sons para cada cor e feedback de acerto/erro |
+| **Red Button** | Ring of 12 red LEDs on the top/left edge |
+| **Blue Button** | Ring of 12 blue LEDs on the top/right edge |
+| **Yellow Button** | Ring of 12 yellow LEDs on the bottom/left edge |
+| **Green Button** | Ring of 12 green LEDs on the bottom/right edge |
+| **Lock** | Opens automatically when the puzzle is solved |
+| **Speaker** | Emits sounds for each color and hit/miss feedback |
 
 ---
 
-## 3. Como Jogar (para os jogadores)
+## 3. How to Play (for the players)
 
-### Iniciando o jogo
+### Starting the game
 
-1. O dispositivo estará no modo de espera, com todos os LEDs apagados
-2. **Pressione qualquer botão** para iniciar
-3. Ouça o som de abertura e veja todos os anéis acenderem na sequência: vermelho → azul → amarelo → verde
+1. The device will be in standby mode, with all LEDs off
+2. **Press any button** to start
+3. Listen for the opening sound and watch all rings light up in sequence: red → blue → yellow → green
 
-### Durante o jogo
+### During the game
 
-1. **Observe a sequência** de cores que o dispositivo mostrar
-2. **Repita a sequência** apertando os botões na mesma ordem
-3. Cada cor pressionada corretamente emitirá seu som característico
-4. Se acertar toda a sequência, ouvirá um som de "acerto" e o próximo nível começará
+1. **Observe the sequence** of colors that the device shows
+2. **Repeat the sequence** by pressing the buttons in the same order
+3. Each correctly pressed color will emit its characteristic sound
+4. If you get the whole sequence right, you will hear a "correct" sound and the next level will begin
 
-### Se errar ou demorar
+### If you make a mistake or take too long
 
-- Não se preocupe! Este sistema **não reinicia o jogo** nem aplica punições
-- Se errar ou demorar mais de 5 segundos, ouvirá um som de erro
-- O dispositivo repetirá a **mesma sequência** novamente
-- Continue tentando até acertar!
+- Don't worry! This system **does not restart the game** and applies no punishments
+- If you get it wrong or take longer than 5 seconds, you will hear an error sound
+- The device will repeat the **same sequence** again
+- Keep trying until you get it right!
 
-### Vencendo o jogo
+### Winning the game
 
-- Complete todos os 7 níveis (sequências cada vez maiores)
-- Ao completar o último nível, ouvirá um som de vitória e verá uma animação arco-íris
-- A caixa se abrirá automaticamente
-- Para resetar o jogo (após remover o conteúdo), pressione e segure qualquer botão por 2 segundos
+- Complete all 7 levels (increasingly longer sequences)
+- On completing the last level, you will hear a victory sound and see a rainbow animation
+- The box will open automatically
+- To reset the game (after removing the contents), press and hold any button for 2 seconds
 
 ---
 
-## 4. Configuração e Manutenção
+## 4. Configuration and Maintenance
 
-### Para o dono da sala / game master
+### For the room owner / game master
 
-#### Regras de progressão
+#### Progression rules
 
-O jogo segue uma progressão de dificuldade automática:
+The game follows an automatic difficulty progression:
 
-| Nível | Velocidade | Descrição |
+| Level | Speed | Description |
 |-------|------------|-----------|
-| 1-2 | 800ms | Lento - início fácil |
-| 3-4 | 600-700ms | Médio - velocidade moderada |
-| 5-6 | 400-500ms | Rápido - desafio aumenta |
-| 7 | 300ms | Muito rápido - nível final |
+| 1-2 | 800ms | Slow - easy start |
+| 3-4 | 600-700ms | Medium - moderate speed |
+| 5-6 | 400-500ms | Fast - the challenge increases |
+| 7 | 300ms | Very fast - final level |
 
-#### Resetando o jogo após uso
+#### Resetting the game after use
 
-1. Após o puzzle ser resolvido e a caixa aberta
-2. Pressione **qualquer botão por 2 segundos** (até ouvir o som de "pronto")
-3. O jogo estará resetado e pronto para a próxima partida
+1. After the puzzle is solved and the box is open
+2. Press **any button for 2 seconds** (until you hear the "ready" sound)
+3. The game will be reset and ready for the next match
 
-> **Dica**: O jogo não reseta automaticamente. Sempre faça o reset após o término da partida para garantir que comece do nível 1.
+> **Tip**: The game does not reset automatically. Always reset after the match ends to ensure it starts from level 1.
 
-#### Verificação de som
+#### Sound check
 
-Se necessário, verifique se os arquivos de áudio estão corretos:
+If necessary, check whether the audio files are correct:
 
-1. Ao ligar, deve tocar o som "ready" (pronto)
-2. Ao iniciar, deve tocar o som "begin" (início)
-3. Cada botão deve tocar seu som respectivo: red, blue, yellow, green
-4. Ao acertar uma sequência completa: som "correct"
-5. Ao errar: som "error"
-6. Ao vencer: som "victory"
-
----
-
-## 5. Solução de Problemas
-
-### O dispositivo não liga
-
-- Verifique se a alimentação está conectada corretamente
-- Verifique se há energia na fonte de alimentação
-
-### LEDs não acendem
-
-- Verifique se há arquivo "ready.mp3" no cartão (a presença de áudio indica funcionamento)
-- Se o áudio funcionar mas LEDs não: pode haver problema na conexão dos NeoPixel
-
-### Som não funciona
-
-- Verifique se há arquivos MP3 na pasta correta (LittleFS ou SD)
-- Verifique se os arquivos estão no formato correto: 44.1kHz, estéreo, 128kbps
-- Tente aumentar o volume na configuração (se disponível no menu)
-
-### A caixa não abre ao vencer
-
-- Verifique a conexão do pino de fechadura (PIN_EXTERNAL_POWER)
-- Teste manualmente acionando a fechadura durante o jogo
-
-### O jogo está muito difícil para os jogadores
-
-- Lembre-se: este sistema **não reinicia** ao errar, apenas repete a mesma sequência
-- Isso permite que jogadores tentem quantas vezes precisarem no mesmo nível
-- Se ainda estiver difícil, ajuste o nível máximo no código (padrão: 7 níveis)
+1. On power-up, the "ready" sound should play
+2. On starting, the "begin" sound should play
+3. Each button should play its respective sound: red, blue, yellow, green
+4. On completing a full sequence: "correct" sound
+5. On a mistake: "error" sound
+6. On winning: "victory" sound
 
 ---
 
-## 6. Especificações Técnicas
+## 5. Troubleshooting
 
-### Hardware necessário
+### The device does not power on
 
-| Componente | Descrição |
+- Check whether the power supply is connected correctly
+- Check whether there is power at the power source
+
+### LEDs do not light up
+
+- Check whether there is a "ready.mp3" file on the card (the presence of audio indicates it is working)
+- If audio works but LEDs do not: there may be a problem with the NeoPixel connection
+
+### Sound does not work
+
+- Check whether there are MP3 files in the correct folder (LittleFS or SD)
+- Check whether the files are in the correct format: 44.1kHz, stereo, 128kbps
+- Try increasing the volume in the configuration (if available in the menu)
+
+### The box does not open on winning
+
+- Check the lock pin connection (PIN_EXTERNAL_POWER)
+- Test manually by triggering the lock during the game
+
+### The game is too difficult for the players
+
+- Remember: this system **does not restart** on a mistake, it only repeats the same sequence
+- This lets players try as many times as they need at the same level
+- If it is still difficult, adjust the maximum level in the code (default: 7 levels)
+
+---
+
+## 6. Technical Specifications
+
+### Required hardware
+
+| Component | Description |
 |------------|-----------|
-| Placa | Adafruit PropMaker Feather RP2040 |
-| Expansor | PCF8575 (I2C endereço 0x20) |
-| LEDs | 48 LEDs NeoPixel (4 anéis de 12 LEDs cada) |
-| Botões | 4 botões momentâneos |
-| Áudio | Saída de áudio I2S integrada à PropMaker |
-| Fechadura | Solenoide ou relê (controle via PIN_EXTERNAL_POWER) |
+| Board | Adafruit PropMaker Feather RP2040 |
+| Expander | PCF8575 (I2C address 0x20) |
+| LEDs | 48 NeoPixel LEDs (4 rings of 12 LEDs each) |
+| Buttons | 4 momentary buttons |
+| Audio | I2S audio output integrated into the PropMaker |
+| Lock | Solenoid or relay (control via PIN_EXTERNAL_POWER) |
 
-### Arquivos de áudio necessários
+### Required audio files
 
-| Arquivo | Função |
+| File | Function |
 |---------|--------|
-| ready.mp3 | Boot do sistema |
-| begin.mp3 | Início do jogo |
-| red.mp3 | Botão vermelho |
-| blue.mp3 | Botão azul |
-| yellow.mp3 | Botão amarelo |
-| green.mp3 | Botão verde |
-| correct.mp3 | Sequência correta |
-| error.mp3 | Erro na sequência |
-| victory.mp3 | Puzzle resolvido |
+| ready.mp3 | System boot |
+| begin.mp3 | Game start |
+| red.mp3 | Red button |
+| blue.mp3 | Blue button |
+| yellow.mp3 | Yellow button |
+| green.mp3 | Green button |
+| correct.mp3 | Correct sequence |
+| error.mp3 | Sequence error |
+| victory.mp3 | Puzzle solved |
 
-**Formato dos arquivos:**
-- Taxa de bits: 128 Kbps
-- Taxa de amostragem: 44.1 kHz
-- Canais: Estéreo (2)
-- Sem metadados ID3
+**File format:**
+- Bit rate: 128 Kbps
+- Sample rate: 44.1 kHz
+- Channels: Stereo (2)
+- No ID3 metadata
 
-Para converter: `ffmpeg -i input.mp3 -acodec libmp3lame -ar 44100 -ac 2 -b:a 128k -map_metadata -1 output.mp3`
+To convert: `ffmpeg -i input.mp3 -acodec libmp3lame -ar 44100 -ac 2 -b:a 128k -map_metadata -1 output.mp3`
 
-### Comunicação (opcional)
+### Communication (optional)
 
-- O dispositivo pode se comunicar com outros puzzles via RS485
-- ID na rede: 20 (configurável no código)
-- Comandos suportados:
-  - `ForceSolve`: Força a resolução imediata (abre a caixa)
-  - `GlobalEvent`: Reseta o jogo para o estado inicial
-
----
-
-## 7. Dicas para Game Masters
-
-### Integração na sala
-
-1. **Narrativa**: O Simon Says pode ser apresentado como:
-   - Um sistema de segurança que precisa ser desativado
-   - Um mecanismo mágico que requer memória e concentração
-   - Um dispositivo científico de teste de padrões
-
-2. **Dificuldade**: Como o sistema não reinicia ao errar:
-   - O desafio está em memorizar sequências cada vez mais longas
-   - A velocidade aumenta a cada nível
-   - Considere dar dicas visuais se necessário
-
-3. **Pós-resolução**:
-   - A animação arco-íris indica sucesso
-   - A caixa abre automaticamente
-   - Lembre-se de resetar o dispositivo antes da próxima partida
-
-### Manutenção preventiva
-
-- Verifique as conexões dos botões periodicamente
-- Teste todos os sons antes de cada dia de operação
-- Mantenha o sistema limpo e protegido da umidade
+- The device can communicate with other puzzles via RS485
+- Network ID: 20 (configurable in the code)
+- Supported commands:
+  - `ForceSolve`: Forces immediate solving (opens the box)
+  - `GlobalEvent`: Resets the game to the initial state
 
 ---
 
-## 8. FAQ (Perguntas Frequentes)
+## 7. Tips for Game Masters
 
-**P: Os jogadores precisam começar do nível 1 toda vez?**
-R: Sim, o jogo sempre começa do nível 1 após reset.
+### Room integration
 
-**P: O que acontece se o tempo de 5 segundos entre botões acabar?**
-R: O sistema considera um erro, toca o som de erro e repete a mesma sequência.
+1. **Narrative**: Simon Says can be presented as:
+   - A security system that needs to be deactivated
+   - A magical mechanism that requires memory and concentration
+   - A scientific pattern-testing device
 
-**P: Posso ajustar a velocidade do jogo?**
-R: Sim, mas requer modificação no código (função calculateSpeed()). Os valores padrão são otimizados para jogadores.
+2. **Difficulty**: Since the system does not restart on a mistake:
+   - The challenge lies in memorizing increasingly long sequences
+   - The speed increases with each level
+   - Consider giving visual hints if necessary
 
-**P: O sistema pode funcionar sem todos os sons?**
-R: Sim, mas a experiência será prejudicada. O jogo funciona sem áudio, mas isso não é recomendado.
+3. **Post-solve**:
+   - The rainbow animation indicates success
+   - The box opens automatically
+   - Remember to reset the device before the next match
 
-**P: Posso mudar o número de níveis?**
-R: Sim, altere a constante MAX_LEVELS no código (padrão: 7 níveis).
+### Preventive maintenance
+
+- Check the button connections periodically
+- Test all sounds before each day of operation
+- Keep the system clean and protected from moisture
 
 ---
 
-## Referência Rápida
+## 8. FAQ (Frequently Asked Questions)
 
-| Situação | Ação |
+**Q: Do players need to start from level 1 every time?**
+A: Yes, the game always starts from level 1 after a reset.
+
+**Q: What happens if the 5-second time between buttons runs out?**
+A: The system considers it a mistake, plays the error sound and repeats the same sequence.
+
+**Q: Can I adjust the game speed?**
+A: Yes, but it requires a code modification (the calculateSpeed() function). The default values are optimized for players.
+
+**Q: Can the system work without all the sounds?**
+A: Yes, but the experience will be impaired. The game works without audio, but this is not recommended.
+
+**Q: Can I change the number of levels?**
+A: Yes, change the MAX_LEVELS constant in the code (default: 7 levels).
+
+---
+
+## Quick Reference
+
+| Situation | Action |
 |----------|------|
-| Iniciar jogo | Pressione qualquer botão |
-| Jogar | Observe a sequência e repita |
-| Errou ou demorou | Sistema repete automaticamente |
-| Venceu | Caixa abre, animação arco-íris |
-| Resetar | Segure qualquer botão por 2 segundos |
-| Problemas | Verifique alimentação e conexões |
+| Start game | Press any button |
+| Play | Observe the sequence and repeat it |
+| Wrong or too slow | System repeats automatically |
+| Won | Box opens, rainbow animation |
+| Reset | Hold any button for 2 seconds |
+| Problems | Check power and connections |
 
 ---
 
-Documentação gerada automaticamente.
-Última atualização: 2026-04-23
+Documentation generated automatically.
+Last updated: 2026-04-23

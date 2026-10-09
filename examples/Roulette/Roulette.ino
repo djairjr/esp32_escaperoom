@@ -1,19 +1,19 @@
 /**
- * EXEMPLO: ROULETTE - ROLETA DE SORTE
+ * EXAMPLE: ROULETTE - WHEEL OF FORTUNE
  * ------------------------------------
- * Roleta luminosa com NeoPixel. Jogador pressiona SELECT para girar.
- * A luz percorre o anel e desacelera ate parar em uma posicao.
- * Se parar no setor vencedor, o puzzle resolve. Se nao, tenta de novo.
+ * Light roulette with NeoPixel. The player presses SELECT to spin.
+ * The light travels around the ring and slows down until it stops at a position.
+ * If it stops on the winning sector, the puzzle is solved. If not, the player tries again.
  *
- * Port do RP2040 PropMaker para ESP32-S3 usando ESP32EscapeRoom
+ * Port from RP2040 PropMaker to ESP32-S3 using ESP32EscapeRoom
  *
  * Hardware:
- *   - NeoPixel externo para o anel da roleta
- *   - Botao SELECT (D3 / GPIO4) para girar
- *   - Audio MP3 via I2S (LittleFS)
- *   - Rele/Trava no D0 (GPIO1)
+ *   - External NeoPixel for the roulette ring
+ *   - SELECT button (D3 / GPIO4) to spin
+ *   - MP3 audio via I2S (LittleFS)
+ *   - Relay/Lock on D0 (GPIO1)
  *
- * Configuracao via /roulette.json no LittleFS.
+ * Configuration via /roulette.json on LittleFS.
  */
 
 #include <ESP32EscapeRoom.h>
@@ -24,7 +24,7 @@
 using namespace esp32_escaperoom;
 
 // ============================================================================
-// HOME ASSISTANT + WIFI (adicionado pelo port ESP32)
+// HOME ASSISTANT + WIFI (added by the ESP32 port)
 // ============================================================================
 ConfigManager netConfig;
 WiFiClient wifiClient;
@@ -39,7 +39,7 @@ void initHA() {
   haDevice.setUniqueId(mac, sizeof(mac));
   haDevice.setName(netConfig.devName());
   haDevice.setSoftwareVersion("1.0.0");
-  haSensorState.setName("Estado");
+  haSensorState.setName("State");
   haSensorState.setIcon("mdi:puzzle");
   haMqtt.begin(netConfig.mqttBroker(), netConfig.mqttUser(), netConfig.mqttPass());
 }
@@ -51,7 +51,7 @@ void loopHA() {
 
 
 // ============================================================================
-// MAPEAMENTO D-PIN -> GPIO
+// D-PIN -> GPIO MAPPING
 // ============================================================================
 #define D0   1
 #define D1   2
@@ -68,10 +68,10 @@ void loopHA() {
 #define D12  41
 
 // ============================================================================
-// CONFIGURACAO JSON
+// JSON CONFIGURATION
 // ============================================================================
 struct RouletteConfig {
-  uint8_t lockPin = D0;          // GPIO1 - Relé da trava
+  uint8_t lockPin = D0;          // GPIO1 - Lock relay
   uint8_t neoCount = 24;
   uint8_t winSectorCount = 1;
   float spinSpeed = 8.0f;
@@ -107,7 +107,7 @@ static void loadConfig() {
 }
 
 // ============================================================================
-// PINOS
+// PINS
 // ============================================================================
 #define BTN_SELECT D3   // GPIO4
 
@@ -145,7 +145,7 @@ public:
     resetSpin();
     chooseWinSector();
     setState(PuzzleState::Idle);
-    Serial.printf("[ROULETTE] SELECT para girar! Setor vencedor oculto\n");
+    Serial.printf("[ROULETTE] SELECT to spin! Winning sector hidden\n");
   }
 
   void update() override {
@@ -185,7 +185,7 @@ private:
     spins_ = 0;
     hw.sound().playOnce(config.sfxSpin);
     setState(PuzzleState::Running);
-    Serial.println(F("[ROULETTE] Girando..."));
+    Serial.println(F("[ROULETTE] Spinning..."));
   }
 
   void updateSpinning() {
@@ -221,7 +221,7 @@ private:
     }
 
     if (won) {
-      Serial.printf("[ROULETTE] GANHOU! Parou em %d (vencedor=%d)\n", ipos, winSector_);
+      Serial.printf("[ROULETTE] WON! Stopped at %d (winner=%d)\n", ipos, winSector_);
       if (spins_ >= SPINS_TO_WIN - 1) {
         solve();
       } else {
@@ -230,7 +230,7 @@ private:
         setState(PuzzleState::Idle);
       }
     } else {
-      Serial.printf("[ROULETTE] Perdeu! Parou em %d (vencedor=%d)\n", ipos, winSector_);
+      Serial.printf("[ROULETTE] Lost! Stopped at %d (winner=%d)\n", ipos, winSector_);
       hw.sound().playOnce(config.sfxLose);
       showResult(false);
       setState(PuzzleState::Idle);
@@ -243,7 +243,7 @@ private:
     solvedAt_ = millis();
     showResult(true);
     setState(PuzzleState::Solved);
-    Serial.println(F("[ROULETTE] RESOLVIDO!"));
+    Serial.println(F("[ROULETTE] SOLVED!"));
   }
 
   void showResult(bool win) {
@@ -327,7 +327,7 @@ void setup() {
     initHA();
   master.begin();
 
-  Serial.println(F("[ROULETTE] Pronto!"));
+  Serial.println(F("[ROULETTE] Ready!"));
 }
 
 void loop() {

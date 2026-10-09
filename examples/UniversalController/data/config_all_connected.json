@@ -1,8 +1,8 @@
 {
-  "_comment": "Exemplo: ALL_CONNECTED - Todas as entradas devem ser ativadas (ordem não importa)",
+  "_comment": "Example: ALL_CONNECTED - All inputs must be activated (order does not matter)",
 
   "controller": {
-    "name": "Puzzle Conexões",
+    "name": "Puzzle Connections",
     "id": 3,
     "enabled": true
   },

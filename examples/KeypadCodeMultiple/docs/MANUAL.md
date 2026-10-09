@@ -1,45 +1,45 @@
-# Manual do KeypadCodeMultiple - Senha Numerica Multipla
+# KeypadCodeMultiple Manual - Multiple Numeric Password
 
-Guia para donos de sala, game masters e jogadores.
-
----
-
-## 1. Visao Geral
-
-### O que e este dispositivo?
-
-O **KeypadCodeMultiple** e um puzzle de senha numerica onde o jogador deve digitar um codigo de 4 digitos no teclado para destravar algo. Diferente de puzzles de senha unica, este aceita **multiplos codigos validos**, permitindo que diferentes pistas na sala levem a diferentes codigos que todos funcionam.
-
-### Como funciona no jogo?
-
-- Os jogadores encontram um teclado numerico
-- Eles devem digitar 4 digitos e confirmar
-- Se o codigo estiver na lista de codigos validos, o puzzle e resolvido
-- Se o codigo estiver errado, o display (se houver) mostra erro e podem tentar de novo
-- Nao ha limite de tentativas
+Guide for room owners, game masters and players.
 
 ---
 
-## 2. Componentes do Jogo
+## 1. Overview
 
-| Componente | Descricao |
+### What is this device?
+
+The **KeypadCodeMultiple** is a numeric password puzzle where the player must enter a 4-digit code on the keypad to unlock something. Unlike single-password puzzles, this one accepts **multiple valid codes**, allowing different clues in the room to lead to different codes that all work.
+
+### How does it work in the game?
+
+- Players find a numeric keypad
+- They must enter 4 digits and confirm
+- If the code is in the list of valid codes, the puzzle is solved
+- If the code is wrong, the display (if present) shows an error and they can try again
+- There is no attempt limit
+
+---
+
+## 2. Game Components
+
+| Component | Description |
 |------------|-----------|
-| **Teclado numerico** | Teclado 4x3 com digitos 0-9, * (limpar) e # (confirmar) |
-| **LEDs NeoPixel** | Indicam estado do puzzle (idle, digitando, resolvido, erro) |
-| **Display HT16K33** | Mostra digitos digitados e feedback (opcional) |
-| **Trava/Rele** | Dispositivo externo que e liberado ao resolver |
+| **Numeric keypad** | 4x3 keypad with digits 0-9, * (clear) and # (confirm) |
+| **NeoPixel LEDs** | Indicate the puzzle state (idle, typing, solved, error) |
+| **HT16K33 display** | Shows the entered digits and feedback (optional) |
+| **Lock/Relay** | External device that is released when solved |
 
 ---
 
-## 3. Configuracao Inicial
+## 3. Initial Configuration
 
-### Codigos padrao
+### Default codes
 
-Por padrao, o puzzle aceita tres codigos: **1234**, **5678** e **0000**.
+By default, the puzzle accepts three codes: **1234**, **5678** and **0000**.
 
-### Como alterar os codigos
+### How to change the codes
 
-Edite o arquivo `/keypadmulti.json` no LittleFS:
+Edit the `/keypadmulti.json` file in LittleFS:
 
 ```json
 {
@@ -47,52 +47,52 @@ Edite o arquivo `/keypadmulti.json` no LittleFS:
 }
 ```
 
-Adicione ou remova codigos conforme necessario. Cada codigo deve ter exatamente 4 digitos.
+Add or remove codes as needed. Each code must have exactly 4 digits.
 
 ### Via Serial
 
-Conecte via USB e use os comandos:
-- `codes add 4321` - Adiciona o codigo 4321
-- `codes list` - Mostra todos os codigos
-- `codes clear` - Remove todos os codigos
+Connect via USB and use the commands:
+- `codes add 4321` - Adds code 4321
+- `codes list` - Shows all codes
+- `codes clear` - Removes all codes
 
 ---
 
-## 4. Como Jogar
+## 4. How to Play
 
-### Para o Game Master
+### For the Game Master
 
-1. Defina os codigos validos antes de comecar a partida
-2. Esconda pistas pela sala que levem a diferentes codigos
-3. O puzzle esta sempre pronto - basta comecar a digitar
+1. Define the valid codes before the game starts
+2. Hide clues around the room that lead to different codes
+3. The puzzle is always ready - just start typing
 
-### Para os jogadores
+### For the players
 
-1. Digite um codigo de 4 digitos
-2. Pressione **#** para confirmar
-3. Se errou, pressione ***** para limpar e comecar de novo
-4. Se o codigo estiver correto, o puzzle resolve
+1. Enter a 4-digit code
+2. Press **#** to confirm
+3. If wrong, press ***** to clear and start over
+4. If the code is correct, the puzzle is solved
 
-### Dicas para criar pistas
+### Tips for creating clues
 
-- **Pista unica**: Esconda um bilhete com o codigo exato
-- **Multiplas pistas**: Cada pista leva a um codigo diferente (todos funcionam)
-- **Charada**: "O ano do descobrimento do Brasil" = 1500
-- **Operacao matematica**: "7+5, 3+4, 9-1, 2+2" = 1284
-- **Relogio**: "Meia-noite e meia" = 0030
-
----
-
-## 5. O que acontece ao resolver
-
-1. O som de sucesso toca
-2. Os LEDs ficam verdes
-3. A trava e liberada (se configurada)
-4. O display mostra mensagem de sucesso
+- **Single clue**: Hide a note with the exact code
+- **Multiple clues**: Each clue leads to a different code (all of them work)
+- **Riddle**: "The year Brazil was discovered" = 1500
+- **Math operation**: "7+5, 3+4, 9-1, 2+2" = 1284
+- **Clock**: "Half past midnight" = 0030
 
 ---
 
-## 6. Parametros do JSON
+## 5. What happens when it is solved
+
+1. The success sound plays
+2. The LEDs turn green
+3. The lock is released (if configured)
+4. The display shows a success message
+
+---
+
+## 6. JSON Parameters
 
 ```json
 {
@@ -113,62 +113,62 @@ Conecte via USB e use os comandos:
 }
 ```
 
-### Ajuste fino
+### Fine tuning
 
-| Parametro | O que faz |
+| Parameter | What it does |
 |-----------|-----------|
-| `lockPin` | Pino fisico da trava (GPIO) |
-| `neopixel.count` | Quantos LEDs estao conectados |
-| `neopixel.colorIdle` | Cor dos LEDs quando aguardando |
-| `neopixel.colorUnlock` | Cor dos LEDs ao acertar |
-| `neopixel.colorDenied` | Cor dos LEDs ao errar |
+| `lockPin` | Physical pin of the lock (GPIO) |
+| `neopixel.count` | How many LEDs are connected |
+| `neopixel.colorIdle` | LED color when waiting |
+| `neopixel.colorUnlock` | LED color when correct |
+| `neopixel.colorDenied` | LED color when wrong |
 
 ---
 
-## 7. Checklist de Audio
+## 7. Audio Checklist
 
-| Arquivo | Quando Toca | Obrigatorio? |
+| File | When It Plays | Required? |
 |---------|-------------|--------------|
-| `beep.mp3` | Ao pressionar tecla | Sim |
-| `magic.mp3` | Codigo correto | Sim |
-| `error.mp3` | Codigo errado | Nao |
-| `cancel.mp3` | Cancelar entrada | Nao |
+| `beep.mp3` | When a key is pressed | Yes |
+| `magic.mp3` | Correct code | Yes |
+| `error.mp3` | Wrong code | No |
+| `cancel.mp3` | Cancel entry | No |
 
-Formato: MP3, 128kbps, 44.1kHz, stereo, sem ID3 tags.
-
----
-
-## 8. Solucao de Problemas
-
-### Teclado nao responde
-
-1. Verifique o PCF8575 no endereco 0x20
-2. Teste com `hw.test()` via Serial
-3. Verifique a solda dos cabos do teclado
-
-### Codigo valido nao resolve
-
-1. Verifique se o codigo esta na lista do JSON
-2. Reinicie o dispositivo apos alterar o JSON
-3. Use `codes list` via Serial para conferir
-
-### Trava nao libera
-
-1. Verifique o pino do lockPin no JSON
-2. Teste o rele com `hw.test()`
-3. Verifique a alimentacao da trava
+Format: MP3, 128kbps, 44.1kHz, stereo, no ID3 tags.
 
 ---
 
-## Resumo Rapido
+## 8. Troubleshooting
 
-| Acao | Como Fazer |
+### Keypad does not respond
+
+1. Check the PCF8575 at address 0x20
+2. Test with `hw.test()` via Serial
+3. Check the soldering of the keypad cables
+
+### Valid code does not solve
+
+1. Check that the code is in the JSON list
+2. Restart the device after changing the JSON
+3. Use `codes list` via Serial to verify
+
+### Lock does not release
+
+1. Check the lockPin pin in the JSON
+2. Test the relay with `hw.test()`
+3. Check the power supply of the lock
+
+---
+
+## Quick Summary
+
+| Action | How To Do It |
 |------|------------|
-| Digitar codigo | Teclas 0-9 |
-| Confirmar | Tecla # |
-| Limpar | Tecla * |
-| Resolver puzzle | Digite um codigo valido e confirme |
+| Enter code | Keys 0-9 |
+| Confirm | # key |
+| Clear | * key |
+| Solve puzzle | Enter a valid code and confirm |
 
 ---
 
-*Manual KeypadCodeMultiple - Versao 1.0 para biblioteca PropMaker EscapeRoom*
+*KeypadCodeMultiple Manual - Version 1.0 for the PropMaker EscapeRoom library*

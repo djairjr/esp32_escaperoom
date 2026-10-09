@@ -5,64 +5,64 @@
 namespace esp32_escaperoom {
 
 /**
- * Wrapper para biblioteca RotaryDial unificada (disco rotativo de telefone).
- * Prove interface simples para leitura de digitos discados.
+ * Wrapper for the unified RotaryDial library (telephone rotary dial).
+ * Provides a simple interface for reading dialed digits.
  *
- * Modos suportados (definidos na biblioteca):
- *   ROTARYDIAL_MECHANICAL (default) — contatos metalicos
- *   ROTARYDIAL_OPTICAL            — encoder otico
+ * Supported modes (defined in the library):
+ *   ROTARYDIAL_MECHANICAL (default) — metallic contacts
+ *   ROTARYDIAL_OPTICAL            — optical encoder
  *
- * Dependencia externa:
- *   Biblioteca RotaryDial v1.0.0+ em Documents/Arduino/libraries/RotaryDial
+ * External dependency:
+ *   RotaryDial library v1.0.0+ in Documents/Arduino/libraries/RotaryDial
  *
  * Hardware wiring:
- *   - Conecte o terminal NC (Normal Closed) do disco ao pino GPIO
- *   - Conecte o outro terminal ao GND
- *   - Use INPUT_PULLUP ou INPUT (dependendo do modelo de telefone)
+ *   - Connect the NC (Normal Closed) terminal of the dial to the GPIO pin
+ *   - Connect the other terminal to GND
+ *   - Use INPUT_PULLUP or INPUT (depending on the telephone model)
  */
 class RotaryDialReader {
  public:
   RotaryDialReader() : initialized_(false), lastPin_(0) {}
 
   /**
-   * Inicializa o leitor de disco rotativo no modo padrao (MECHANICAL).
-   * @param pin Pino GPIO conectado ao terminal NC do disco
-   * @return true se inicializado com sucesso
+   * Initializes the rotary dial reader in the default mode (MECHANICAL).
+   * @param pin GPIO pin connected to the NC terminal of the dial
+   * @return true if initialized successfully
    */
   bool begin(uint8_t pin);
 
   /**
-   * Inicializa o leitor no modo optico, com timings calibrados.
-   * @param pin       Pino GPIO conectado ao sensor otico
-   * @param debounce  Piso (ms) — filtra ruido e pulsos da volta (ex: 50)
-   * @param maxgap    Teto (ms) — 0 = sem teto (recomendado para disco Djair)
-   * @param digitend  Timeout (ms) para fechar o digito (ex: 800)
-   * @return true se inicializado com sucesso
+   * Initializes the reader in optical mode, with calibrated timings.
+   * @param pin       GPIO pin connected to the optical sensor
+   * @param debounce  Floor (ms) — filters noise and return pulses (e.g. 50)
+   * @param maxgap    Ceiling (ms) — 0 = no ceiling (recommended for the Djair dial)
+   * @param digitend  Timeout (ms) to close the digit (e.g. 800)
+   * @return true if initialized successfully
    */
   bool beginOptical(uint8_t pin, unsigned long debounce, unsigned long maxgap, unsigned long digitend);
 
   /**
-   * Verifica se ha um digito disponivel para leitura.
-   * @return true se digito foi discado e esta pronto
+   * Checks whether a digit is available for reading.
+   * @return true if a digit was dialed and is ready
    */
   bool available();
 
   /**
-   * Le o digito discado.
-   * @return Digito discado (0-9), ou -1 se nao disponivel
+   * Reads the dialed digit.
+   * @return Dialed digit (0-9), or -1 if not available
    */
   int read();
 
-  /** Zera buffer interno do RotaryDial (pulseCount, firstPulse, etc). */
+  /** Clears the internal RotaryDial buffer (pulseCount, firstPulse, etc). */
   void reset();
 
   /**
-   * Verifica se foi inicializado.
+   * Checks whether it was initialized.
    */
   bool isInitialized() const { return initialized_; }
 
   /**
-   * Retorna o pino configurado.
+   * Returns the configured pin.
    */
   uint8_t getPin() const { return lastPin_; }
 

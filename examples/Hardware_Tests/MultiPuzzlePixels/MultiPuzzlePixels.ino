@@ -1,16 +1,16 @@
 /**
- * EXEMPLO: MULTI PUZZLE PIXELS
+ * EXAMPLE: MULTI PUZZLE PIXELS
  * ------------------------------------------------------
- * Demonstra o uso de múltiplos puzzles na mesma placa PropMaker,
- * cada um com sua faixa de endereços NeoPixel definida.
+ * Demonstrates the use of multiple puzzles on the same PropMaker board,
+ * each one with its own defined NeoPixel address range.
  *
- * Configuração:
- * - Puzzle 1 (PuzzleOne): LEDs 0-9 (10 LEDs) - Efeito fade arco-íris
- * - Puzzle 2 (PuzzleTwo): LEDs 11-18 (8 LEDs) - Efeito chase sequencial
- * - Puzzle 3 (PuzzleThree): LEDs 20-25 (6 LEDs) - Efeito breathing
+ * Configuration:
+ * - Puzzle 1 (PuzzleOne): LEDs 0-9 (10 LEDs) - Rainbow fade effect
+ * - Puzzle 2 (PuzzleTwo): LEDs 11-18 (8 LEDs) - Sequential chase effect
+ * - Puzzle 3 (PuzzleThree): LEDs 20-25 (6 LEDs) - Breathing effect
  *
- * Os ranges são contíguos: (0,10), (11,8), (20,6)
- * Sem sobreposição, cada puzzle controla apenas sua faixa.
+ * The ranges are contiguous: (0,10), (11,8), (20,6)
+ * No overlap, each puzzle controls only its own range.
  */
 
 #include <ESP32EscapeRoom.h>
@@ -21,7 +21,7 @@
 using namespace esp32_escaperoom;
 
 // ============================================================================
-// HOME ASSISTANT + WIFI (adicionado pelo port ESP32)
+// HOME ASSISTANT + WIFI (added by the ESP32 port)
 // ============================================================================
 ConfigManager netConfig;
 WiFiClient wifiClient;
@@ -36,7 +36,7 @@ void initHA() {
   haDevice.setUniqueId(mac, sizeof(mac));
   haDevice.setName(netConfig.devName());
   haDevice.setSoftwareVersion("1.0.0");
-  haSensorState.setName("Estado");
+  haSensorState.setName("State");
   haSensorState.setIcon("mdi:puzzle");
   haMqtt.begin(netConfig.mqttBroker(), netConfig.mqttUser(), netConfig.mqttPass());
 }
@@ -48,7 +48,7 @@ void loopHA() {
 
 
 // ============================================================================
-// PUZZLE 1: Efeito Fade Arco-íris
+// PUZZLE 1: Rainbow Fade Effect
 // ============================================================================
 class PuzzleOne : public PuzzleBase {
     uint8_t hue_ = 0;
@@ -56,7 +56,7 @@ class PuzzleOne : public PuzzleBase {
 
 public:
     PuzzleOne() : PuzzleBase(1) {  // ID 1
-        // Define faixa de pixels no construtor
+        // Defines the pixel range in the constructor
         setPixelRange(0, 10);  // LEDs 0-9
     }
 
@@ -66,24 +66,24 @@ public:
     }
 
     void update() override {
-        // Chama apenas se estiver Running
+        // Only runs if it is Running
         if (getState() != PuzzleState::Running) return;
 
-        // Atualiza a cada 50ms
+        // Updates every 50ms
         if (millis() - lastUpdate_ < 50) return;
         lastUpdate_ = millis();
 
-        // Efeito arco-íris rotativo usando índices LOCAIS (0-9)
+        // Rotating rainbow effect using LOCAL indices (0-9)
         for (uint8_t i = 0; i < pixels()->count(); i++) {
-            uint8_t pixelHue = hue_ + (i * 25);  // Offset de cor por pixel
+            uint8_t pixelHue = hue_ + (i * 25);  // Color offset per pixel
             pixels()->setPixel(i, wheel(pixelHue));
         }
         pixels()->show();
 
-        hue_++;  // Avança matiz
+        hue_++;  // Advances the hue
     }
 
-    // Helper para gerar cores do arco-íris
+    // Helper to generate rainbow colors
     uint32_t wheel(uint8_t wheelPos) {
         wheelPos = 255 - wheelPos;
         if (wheelPos < 85) {
@@ -99,7 +99,7 @@ public:
 };
 
 // ============================================================================
-// PUZZLE 2: Efeito Chase Sequencial
+// PUZZLE 2: Sequential Chase Effect
 // ============================================================================
 class PuzzleTwo : public PuzzleBase {
     uint8_t position_ = 0;
@@ -108,17 +108,17 @@ class PuzzleTwo : public PuzzleBase {
 
 public:
     PuzzleTwo() : PuzzleBase(2) {  // ID 2
-        // Define faixa de pixels - contígua ao Puzzle 1
+        // Defines the pixel range - contiguous with Puzzle 1
         setPixelRange(11, 8);  // LEDs 11-18
     }
 
     void setupHardware() override {
         Serial.println(F("[PUZZLE 2] Setup - Chase Sequence"));
 
-        // Cores para o efeito chase
-        colors_[0] = pixels()->Color(255, 0, 0);    // Vermelho
-        colors_[1] = pixels()->Color(0, 255, 0);    // Verde
-        colors_[2] = pixels()->Color(0, 0, 255);    // Azul
+        // Colors for the chase effect
+        colors_[0] = pixels()->Color(255, 0, 0);    // Red
+        colors_[1] = pixels()->Color(0, 255, 0);    // Green
+        colors_[2] = pixels()->Color(0, 0, 255);    // Blue
 
         setState(PuzzleState::Idle);
     }
@@ -126,11 +126,11 @@ public:
     void update() override {
         if (getState() != PuzzleState::Running) return;
 
-        // Atualiza a cada 100ms
+        // Updates every 100ms
         if (millis() - lastUpdate_ < 100) return;
         lastUpdate_ = millis();
 
-        // Efeito chase: acende 3 pixels por vez, deslocando
+        // Chase effect: lights 3 pixels at a time, shifting along
         pixels()->clear();
 
         for (uint8_t i = 0; i < 3; i++) {
@@ -144,7 +144,7 @@ public:
 };
 
 // ============================================================================
-// PUZZLE 3: Efeito Breathing
+// PUZZLE 3: Breathing Effect
 // ============================================================================
 class PuzzleThree : public PuzzleBase {
     uint8_t brightness_ = 0;
@@ -154,14 +154,14 @@ class PuzzleThree : public PuzzleBase {
 
 public:
     PuzzleThree() : PuzzleBase(3) {  // ID 3
-        // Define faixa de pixels - contígua aos anteriores
+        // Defines the pixel range - contiguous with the previous ones
         setPixelRange(20, 6);  // LEDs 20-25
     }
 
     void setupHardware() override {
         Serial.println(F("[PUZZLE 3] Setup - Breathing Effect"));
 
-        // Cor âmbar para o breathing
+        // Amber color for the breathing
         breatheColor_ = pixels()->Color(255, 100, 0);
 
         setState(PuzzleState::Idle);
@@ -170,27 +170,27 @@ public:
     void update() override {
         if (getState() != PuzzleState::Running) return;
 
-        // Atualiza a cada 30ms para suavidade
+        // Updates every 30ms for smoothness
         if (millis() - lastUpdate_ < 30) return;
         lastUpdate_ = millis();
 
-        // Calcula brilho com curva senoidal
+        // Computes brightness with a sine curve
         float phase = (float)brightness_ / 255.0f * PI;
         uint8_t intensity = (uint8_t)(sin(phase) * 255);
 
-        // Preenche todos os pixels com intensidade calculada
+        // Fills all pixels with the computed intensity
         uint32_t dimmedColor = dimColor(breatheColor_, intensity);
         pixels()->setAll(dimmedColor);
         pixels()->show();
 
-        // Atualiza brightness para próximo frame
+        // Updates brightness for the next frame
         brightness_ += direction_ * 5;
         if (brightness_ >= 255 || brightness_ == 0) {
-            direction_ *= -1;  // Inverte direção
+            direction_ *= -1;  // Reverses direction
         }
     }
 
-    // Diminui intensidade de uma cor
+    // Dims the intensity of a color
     uint32_t dimColor(uint32_t color, uint8_t intensity) {
         uint8_t r = (uint8_t)(color >> 16);
         uint8_t g = (uint8_t)(color >> 8);
@@ -208,12 +208,12 @@ public:
 // MAIN
 // ============================================================================
 
-// Instâncias dos puzzles
+// Puzzle instances
 PuzzleOne puzzle1;
 PuzzleTwo puzzle2;
 PuzzleThree puzzle3;
 
-// LogicManager coordena múltiplos puzzles (sem RS485 neste exemplo)
+// LogicManager coordinates multiple puzzles (no RS485 in this example)
 LogicManager master(0, false);
 
 void setup() {
@@ -225,18 +225,18 @@ void setup() {
     Serial.println(F("   Multi Puzzle Pixels Demo"));
     Serial.println(F("========================================"));
 
-    // Inicializa hardware
+    // Initializes hardware
     hw.begin();
 
-    // Adiciona PCF8575 (se houver)
+    // Adds PCF8575 (if present)
     // hw.addPcf8575(0x20);
 
-    // Registra puzzles no LogicManager
+    // Registers puzzles with the LogicManager
     master.addPuzzle(&puzzle1);
     master.addPuzzle(&puzzle2);
     master.addPuzzle(&puzzle3);
 
-    Serial.println(F("\nConfiguracao de Pixels:"));
+    Serial.println(F("\nPixel Configuration:"));
     Serial.printf("  Puzzle 1: offset=%d, count=%d (LEDs %d-%d)\n",
                   puzzle1.pixelOffset(), puzzle1.pixelCount(),
                   puzzle1.pixelOffset(), puzzle1.pixelOffset() + puzzle1.pixelCount() - 1);
@@ -247,23 +247,23 @@ void setup() {
                   puzzle3.pixelOffset(), puzzle3.pixelCount(),
                   puzzle3.pixelOffset(), puzzle3.pixelOffset() + puzzle3.pixelCount() - 1);
 
-    // Inicializa LogicManager (chama begin() em cada puzzle)
+    // Initializes the LogicManager (calls begin() on each puzzle)
     master.begin();
 
-    // Inicia todos os puzzles automaticamente
+    // Starts all puzzles automatically
     puzzle1.run();
     puzzle2.run();
     puzzle3.run();
 
-    Serial.println(F("\nPuzzles iniciados - Efeitos rodando!"));
-    Serial.println(F("Cada puzzle controla sua faixa isolada de LEDs."));
+    Serial.println(F("\nPuzzles started - Effects running!"));
+    Serial.println(F("Each puzzle controls its own isolated range of LEDs."));
 }
 
 void loop() {
   loopHA();
-    // Atualiza todos os puzzles via LogicManager
+    // Updates all puzzles via LogicManager
     master.update();
 
-    // Pequeno delay para não saturar
+    // Small delay to avoid saturation
     delay(1);
 }

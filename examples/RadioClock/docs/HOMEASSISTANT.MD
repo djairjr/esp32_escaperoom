@@ -1,25 +1,25 @@
-# RadioClock — Entidades Home Assistant
+# RadioClock — Home Assistant Entities
 
-## Sensores
-| Nome | ID | Valores |
+## Sensors
+| Name | ID | Values |
 |---|---|---|
-| Estado | `state` | idle, running, solved |
-| Frequência Atual | `frequency` | 0-frequencyCount |
-| Round Atual | `round` | 1-roundsToWin |
-| Frequência Alvo | `target_freq` | 0-frequencyCount |
+| State | `state` | idle, running, solved |
+| Current Frequency | `frequency` | 0-frequencyCount |
+| Current Round | `round` | 1-roundsToWin |
+| Target Frequency | `target_freq` | 0-frequencyCount |
 
-## Botões
-| Nome | ID |
+## Buttons
+| Name | ID |
 |---|---|
-| Iniciar | `start` |
-| Resetar | `reset` |
-| Próxima Frequência | `next_freq` |
+| Start | `start` |
+| Reset | `reset` |
+| Next Frequency | `next_freq` |
 
-## Números
-| Nome | ID | Range |
+## Numbers
+| Name | ID | Range |
 |---|---|---|
-| Frequências no Dial | `freq_count` | 4-24 |
-| Rounds para Vencer | `rounds_to_win` | 1-10 |
+| Frequencies on Dial | `freq_count` | 4-24 |
+| Rounds to Win | `rounds_to_win` | 1-10 |
 
 ## AP Mode
-Rede WiFi "RadioClock-XXXX" + portal em 192.168.4.1.
+WiFi network "RadioClock-XXXX" + portal at 192.168.4.1.

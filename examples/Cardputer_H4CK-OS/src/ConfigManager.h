@@ -6,7 +6,7 @@
 #include "Config.h"
 
 // ============================================================================
-// CONFIG MANAGER — carrega/salva config.json no LittleFS
+// CONFIG MANAGER — loads/saves config.json in LittleFS
 // ============================================================================
 
 struct LoginCfg {
@@ -83,7 +83,7 @@ public:
         ha.user[0] = '\0';
         ha.pass[0] = '\0';
         targetCount = 0;
-        // Wordlist padrão
+        // Default wordlist
         const char* defaults[] = {"kali", "toor", "root", "h4ck3r", "device", "disable"};
         wordlist.count = 6;
         for (int i = 0; i < 6 && i < MAX_WORDLIST; i++) {
@@ -133,7 +133,7 @@ public:
         strlcpy(ha.user, doc["ha"]["user"] | "", sizeof(ha.user));
         strlcpy(ha.pass, doc["ha"]["pass"] | "", sizeof(ha.pass));
 
-        // Targets (dispositivos hackeáveis)
+        // Targets (hackable devices)
         targetCount = 0;
         JsonArray tgts = doc["targets"].as<JsonArray>();
         for (JsonVariant v : tgts) {

@@ -1,8 +1,8 @@
 {
-  "_comment": "Puzzle B: ALL_CONNECTED com 3 entradas no PCF 0x21",
+  "_comment": "Puzzle B: ALL_CONNECTED with 3 inputs on PCF 0x21",
 
   "controller": {
-    "name": "Puzzle B - Porta 2",
+    "name": "Puzzle B - Door 2",
     "id": 2,
     "enabled": true
   },

@@ -6,31 +6,31 @@
 namespace esp32_escaperoom {
 
 /**
- * @brief View de uma faixa de NeoPixels para um puzzle específico.
+ * @brief View of a NeoPixel strip range for a specific puzzle.
  *
- * Atua como uma "janela" sobre o strip físico de NeoPixels,
- * permitindo que cada puzzle trabalhe com índices locais (0 a count-1)
- * que são mapeados para posições absolutas no strip físico.
+ * Acts as a "window" over the physical NeoPixel strip,
+ * allowing each puzzle to work with local indices (0 to count-1)
+ * that are mapped to absolute positions on the physical strip.
  *
- * Exemplo: PuzzlePixelView(strip, 11, 8) → mapeia índices 0-7
- * para LEDs 11-18 do strip físico.
+ * Example: PuzzlePixelView(strip, 11, 8) → maps indices 0-7
+ * to LEDs 11-18 of the physical strip.
  */
 class PuzzlePixelView {
  public:
   /**
-   * @brief Construtor
-   * @param strip Referência ao objeto Adafruit_NeoPixel físico
-   * @param offset Índice inicial no strip físico (0-based)
-   * @param count Número de LEDs na faixa deste puzzle
+   * @brief Constructor
+   * @param strip Reference to the physical Adafruit_NeoPixel object
+   * @param offset Starting index in the physical strip (0-based)
+   * @param count Number of LEDs in this puzzle's range
    */
   PuzzlePixelView(Adafruit_NeoPixel* strip, uint8_t offset, uint8_t count)
       : strip_(strip), offset_(offset), count_(count) {}
 
   /**
-   * @brief Define a cor de um LED específico (índice local)
-   * @param localIndex Índice local do LED (0 a count-1)
-   * @param color Cor no formato NeoPixel (Color(r, g, b))
-   * @return true se o índice é válido, false caso contrário
+   * @brief Sets the color of a specific LED (local index)
+   * @param localIndex Local index of the LED (0 to count-1)
+   * @param color Color in NeoPixel format (Color(r, g, b))
+   * @return true if the index is valid, false otherwise
    */
   bool setPixel(uint8_t localIndex, uint32_t color) {
     if (!strip_ || localIndex >= count_) return false;
@@ -39,8 +39,8 @@ class PuzzlePixelView {
   }
 
   /**
-   * @brief Preenche toda a faixa do puzzle com uma cor
-   * @param color Cor no formato NeoPixel
+   * @brief Fills the entire puzzle range with a color
+   * @param color Color in NeoPixel format
    */
   void setAll(uint32_t color) {
     if (!strip_) return;
@@ -50,13 +50,13 @@ class PuzzlePixelView {
   }
 
   /**
-   * @brief Apaga todos os LEDs da faixa (preto)
+   * @brief Turns off all LEDs in the range (black)
    */
   void clear() { setAll(0); }
 
   /**
-   * @brief Envia os dados para o strip físico (chama show() no strip)
-   * @return true se strip existe, false caso contrário
+   * @brief Sends the data to the physical strip (calls show() on the strip)
+   * @return true if the strip exists, false otherwise
    */
   bool show() {
     if (!strip_) return false;
@@ -65,10 +65,10 @@ class PuzzlePixelView {
   }
 
   /**
-   * @brief Define cor e chama show() em uma operação
-   * @param localIndex Índice local do LED
-   * @param color Cor no formato NeoPixel
-   * @return true se sucesso, false se índice inválido
+   * @brief Sets the color and calls show() in a single operation
+   * @param localIndex Local index of the LED
+   * @param color Color in NeoPixel format
+   * @return true on success, false on an invalid index
    */
   bool setPixelAndShow(uint8_t localIndex, uint32_t color) {
     if (!setPixel(localIndex, color)) return false;
@@ -76,8 +76,8 @@ class PuzzlePixelView {
   }
 
   /**
-   * @brief Preenche faixa e chama show()
-   * @param color Cor no formato NeoPixel
+   * @brief Fills the range and calls show()
+   * @param color Color in NeoPixel format
    */
   void setAllAndShow(uint32_t color) {
     setAll(color);
@@ -85,45 +85,45 @@ class PuzzlePixelView {
   }
 
   /**
-   * @brief Retorna o número de LEDs nesta faixa
+   * @brief Returns the number of LEDs in this range
    */
   uint8_t count() const { return count_; }
 
   /**
-   * @brief Retorna o offset inicial no strip físico
+   * @brief Returns the starting offset in the physical strip
    */
   uint8_t offset() const { return offset_; }
 
   /**
-   * @brief Verifica se um índice local é válido
+   * @brief Checks whether a local index is valid
    */
   bool isValidIndex(uint8_t localIndex) const { return localIndex < count_; }
 
   /**
-   * @brief Retorna acesso ao strip físico subjacente
-   * Útil para operações avançadas não cobertas por esta classe
+   * @brief Returns access to the underlying physical strip
+   * Useful for advanced operations not covered by this class
    */
   Adafruit_NeoPixel* strip() { return strip_; }
 
   /**
-   * @brief Configura o brilho global do strip (afeta todos os puzzles!)
-   * @param brightness Brilho de 0 a 255
+   * @brief Sets the global brightness of the strip (affects all puzzles!)
+   * @param brightness Brightness from 0 to 255
    */
   void setBrightness(uint8_t brightness) {
     if (strip_) strip_->setBrightness(brightness);
   }
 
   /**
-   * @brief Cria uma cor a partir de componentes RGB
-   * @return Cor no formato NeoPixel
+   * @brief Creates a color from RGB components
+   * @return Color in NeoPixel format
    */
   static uint32_t Color(uint8_t r, uint8_t g, uint8_t b) {
     return ((uint32_t)r << 16) | ((uint32_t)g << 8) | b;
   }
 
   /**
-   * @brief Cria uma cor a partir de componentes RGBW
-   * @return Cor no formato NeoPixel
+   * @brief Creates a color from RGBW components
+   * @return Color in NeoPixel format
    */
   static uint32_t Color(uint8_t r, uint8_t g, uint8_t b, uint8_t w) {
     return ((uint32_t)w << 24) | ((uint32_t)r << 16) | ((uint32_t)g << 8) | b;

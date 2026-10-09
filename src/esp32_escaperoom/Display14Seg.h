@@ -26,7 +26,7 @@ class Display14Seg {
 
  private:
   Adafruit_AlphaNum4 display14x4_;
-  uint16_t digits_[4];  // Buffer interno para manter estado dos dígitos
+  uint16_t digits_[4];  // Internal buffer to keep digit state
   bool initialized_;
 };
 

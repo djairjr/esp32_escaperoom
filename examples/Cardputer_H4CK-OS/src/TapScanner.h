@@ -124,7 +124,7 @@ private:
         fs::FS& fs = files_[idx].onSD ? (fs::FS&)SD : (fs::FS&)LittleFS;
         File file = fs.open(path, FILE_READ);
 
-        // Fallback se não abriu
+        // Fallback if it didn't open
         if (!file) {
             File dir = fs.open("/");
             if (dir) {
@@ -182,7 +182,7 @@ private:
         cfg.sample_rate = 44100;
         AudioToolsLogger.begin(Serial, AudioToolsLogLevel::Warning);
         if (!i2s_.begin(cfg)) { Serial.println("[TAP] I2S init FAILED"); return false; }
-        // NÃO chamar volume_.begin() — PropMaker funciona sem isso
+        // Do NOT call volume_.begin() — PropMaker works without it
         volume_.setVolume(0.08f);
         i2sReady_ = true;
         return true;

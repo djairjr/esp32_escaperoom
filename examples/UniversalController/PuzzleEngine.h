@@ -36,7 +36,7 @@ public:
     bool isSolved() const { return state_ == EngineState::SOLVED; }
     bool hasError() const { return state_ == EngineState::ERROR; }
 
-    // Injeta o MicInput (modo MUSICAL_SEQUENCE). Construtor NÃO muda.
+    // Injects the MicInput (MUSICAL_SEQUENCE mode). Constructor does NOT change.
     void setMicInput(esp32_escaperoom::MicInput* mic) { mic_ = mic; }
 
 private:
@@ -44,7 +44,7 @@ private:
     esp32_escaperoom::MicInput* mic_ = nullptr;
     EngineState state_ = EngineState::IDLE;
 
-    // Sequência
+    // Sequence
     uint8_t sequence_[16];
     uint8_t sequenceLength_ = 0;
     uint8_t currentStep_ = 0;
@@ -56,11 +56,11 @@ private:
     unsigned long puzzleStartTime_ = 0;
     unsigned long lastInputTime_ = 0;
 
-    // Estados de input
+    // Input states
     uint8_t lastInputStates_[16];
     unsigned long debounceTimes_[16];
 
-    // Métodos de processamento por modo
+    // Processing methods per mode
     void processCustomSequence();
     void processLinearSequence();
     void processAllConnected();
@@ -85,11 +85,11 @@ private:
     void playErrorSound();
     void playResetSound();
 
-    // Geração de sequências
+    // Sequence generation
     void generateLinearSequence();
     void generateRandomSequence();
 
-    // Visualização
+    // Visualization
     void showIdleEffect();
     void showRunningEffect();
     void showCorrectEffect();

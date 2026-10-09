@@ -1,12 +1,12 @@
 #pragma once
 /**
- * LVGL_Terminal.h — Terminal LVGL com input manual (ScrollBuffer original)
+ * LVGL_Terminal.h — LVGL terminal with manual input (original ScrollBuffer)
  *
- * Inspirado no GeminiPuter: LVGL só renderiza, teclado lido manualmente.
- * O input (digitação) fica num buffer C++ e é exibido num label LVGL.
- * O output usa labels LVGL com scroll nativo.
+ * Inspired by GeminiPuter: LVGL only renders, keyboard read manually.
+ * The input (typing) lives in a C++ buffer and is shown in an LVGL label.
+ * The output uses LVGL labels with native scroll.
  *
- * API compatível com ScrollBuffer original:
+ * API compatible with the original ScrollBuffer:
  *   result(), error(), hack(), success()
  *   drawPrompt(), appendChar(), backspace(), getCmdLine(), clear()
  *   scrollUp(), scrollDown()
@@ -28,7 +28,7 @@ public:
         lv_obj_t* scr = lv_scr_act();
         lv_obj_set_style_bg_color(scr, lv_color_black(), 0);
 
-        // ─── Container de output (scrollável) ───
+        // ─── Output container (scrollable) ───
         outCont_ = lv_obj_create(scr);
         lv_obj_set_size(outCont_, 240, 118);
         lv_obj_set_pos(outCont_, 0, 0);
@@ -39,7 +39,7 @@ public:
         lv_obj_set_flex_flow(outCont_, LV_FLEX_FLOW_COLUMN);
         lv_obj_set_flex_align(outCont_, LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_START);
 
-        // ─── Input label (prompt + digitação) ───
+        // ─── Input label (prompt + typing) ───
         inputLabel_ = lv_label_create(scr);
         lv_obj_set_pos(inputLabel_, 2, 120);
         lv_obj_set_style_text_color(inputLabel_, lv_color_white(), 0);
@@ -49,7 +49,7 @@ public:
         clear();
     }
 
-    // ─── API de saída ───
+    // ─── Output API ───
     void result(const char* t)  { addLine(t, lv_color_make(0, 255, 0)); }
     void error(const char* t)   { addLine(t, lv_color_make(255, 255, 0)); }
     void hack(const char* t)    { addLine(t, lv_color_make(0, 255, 255)); }
@@ -121,7 +121,7 @@ private:
 
     void addLine(const char* text, lv_color_t color) {
         if (lineCount_ >= MAX_LINES) {
-            // Remove primeira linha
+            // Remove the first line
             lv_obj_t* first = lv_obj_get_child(outCont_, 0);
             if (first) lv_obj_del(first);
             lineCount_--;
@@ -129,14 +129,14 @@ private:
 
         lineCount_++;
 
-        // Adiciona label LVGL
+        // Add LVGL label
         lv_obj_t* label = lv_label_create(outCont_);
         lv_label_set_text(label, text);
         lv_obj_set_style_text_color(label, color, 0);
         lv_obj_set_width(label, 230);
         lv_obj_set_style_text_font(label, &nerd_icons_10, 0);
         lv_label_set_long_mode(label, LV_LABEL_LONG_WRAP);
-        // Scroll para o fim
+        // Scroll to the end
         lv_obj_scroll_to_y(outCont_, 32767, LV_ANIM_OFF);
     }
 };

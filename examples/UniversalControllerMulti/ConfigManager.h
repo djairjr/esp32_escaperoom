@@ -6,22 +6,22 @@
 
 namespace universal_controller {
 
-// Enum dos modos de puzzle
+// Puzzle modes enum
 enum class PuzzleMode {
-    CUSTOM_SEQUENCE,   // Sequência customizada definida no JSON
-    LINEAR_SEQUENCE,   // Ordem linear (0,1,2,3...)
-    ALL_CONNECTED,     // Todas entradas ativadas, ordem não importa
-    RANDOM             // Sequência aleatória gerada no boot
+    CUSTOM_SEQUENCE,   // Custom sequence defined in JSON
+    LINEAR_SEQUENCE,   // Linear order (0,1,2,3...)
+    ALL_CONNECTED,     // All inputs activated, order does not matter
+    RANDOM             // Random sequence generated at boot
 };
 
-// Configuração do controlador
+// Controller configuration
 struct ControllerConfig {
     char name[32];
     uint8_t id;
     bool enabled;
 };
 
-// Configuração de entradas
+// Input configuration
 struct InputConfig {
     uint8_t count;
     uint8_t pcfAddress;
@@ -29,7 +29,7 @@ struct InputConfig {
     uint16_t debounceMs;
 };
 
-// Configuração da lógica do puzzle
+// Puzzle logic configuration
 struct LogicConfig {
     PuzzleMode mode;
     uint8_t sequence[16];
@@ -39,7 +39,7 @@ struct LogicConfig {
     bool allowRepeat;
 };
 
-// Configuração de PWM
+// PWM configuration
 struct PwmConfig {
     bool enabled;
     uint8_t channel;
@@ -48,17 +48,17 @@ struct PwmConfig {
     uint8_t steps;
 };
 
-// Configuração de áudio
+// Audio configuration
 struct AudioConfig {
     bool enabled;
-    char inputSounds[16][32];  // Até 16 sons de input
+    char inputSounds[16][32];  // Up to 16 input sounds
     uint8_t inputSoundCount;
     char unlockSound[32];
     char errorSound[32];
     char resetSound[32];
 };
 
-// Configuração de cores NeoPixel
+// NeoPixel color configuration
 struct NeoPixelConfig {
     bool enabled;
     uint8_t count;
@@ -70,14 +70,14 @@ struct NeoPixelConfig {
     uint32_t colorProgress;
 };
 
-// Configuração RS485
+// RS485 configuration
 struct Rs485Config {
     bool enabled;
     uint8_t address;
     uint32_t baudRate;
 };
 
-// Configuração de saída
+// Output configuration
 struct OutputConfig {
     uint8_t lockPin;
     bool activeHigh;
@@ -86,7 +86,7 @@ struct OutputConfig {
 class ConfigManager {
 public:
     ConfigManager();                          // path = "/config.json"
-    ConfigManager(const char* path);          // path customizado
+    ConfigManager(const char* path);          // custom path
 
     const char* configPath() const { return configPath_; }
 

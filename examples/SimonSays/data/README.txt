@@ -1,72 +1,72 @@
-ARQUIVOS DE ÁUDIO NECESSÁRIOS
+REQUIRED AUDIO FILES
 =============================
 
-Coloque os seguintes arquivos MP3 nesta pasta para upload no LittleFS ou SD Card:
+Place the following MP3 files in this folder for upload to LittleFS or the SD Card:
 
-FORMATO OBRIGATÓRIO:
+MANDATORY FORMAT:
 --------------------
-- Taxa de bits: 128 Kbps
-- Taxa de amostragem: 44.1 kHz
-- Canais: Estéreo
-- Formato: MP3 sem tags ID3
+- Bit rate: 128 Kbps
+- Sample rate: 44.1 kHz
+- Channels: Stereo
+- Format: MP3 without ID3 tags
 
-Para converter com ffmpeg:
+To convert with ffmpeg:
 ffmpeg -y -i input.mp3 -acodec libmp3lame -ar 44100 -ac 2 -b:a 128k -map_metadata -1 output.mp3
 
-ARQUIVOS NECESSÁRIOS:
+REQUIRED FILES:
 ---------------------
 
 1. ready.mp3
-   - Som de sistema pronto
-   - Tocado no boot
+   - System ready sound
+   - Played on boot
 
 2. begin.mp3
-   - Som de início do jogo
-   - Tocado na animação de abertura
+   - Game start sound
+   - Played during the opening animation
 
 3. red.mp3
-   - Som do botão vermelho
-   - Tocado quando o anel vermelho acende
+   - Red button sound
+   - Played when the red ring lights up
 
 4. blue.mp3
-   - Som do botão azul
-   - Tocado quando o anel azul acende
+   - Blue button sound
+   - Played when the blue ring lights up
 
 5. yellow.mp3
-   - Som do botão amarelo
-   - Tocado quando o anel amarelo acende
+   - Yellow button sound
+   - Played when the yellow ring lights up
 
 6. green.mp3
-   - Som do botão verde
-   - Tocado quando o anel verde acende
+   - Green button sound
+   - Played when the green ring lights up
 
 7. correct.mp3
-   - Som de acerto
-   - Tocado ao completar uma sequência
+   - Correct sound
+   - Played when a sequence is completed
 
 8. error.mp3
-   - Som de erro
-   - Tocado quando o jogador erra
+   - Error sound
+   - Played when the player makes a mistake
 
 9. victory.mp3
-   - Som de vitória
-   - Tocado quando o puzzle é resolvido
+   - Victory sound
+   - Played when the puzzle is solved
 
-DICA: Os sons das cores podem ser notas musicais diferentes
-      (ex: Dó, Ré, Mi, Fá) ou efeitos sonoros distintos.
+TIP: The color sounds can be different musical notes
+      (e.g. Do, Re, Mi, Fa) or distinct sound effects.
 
-Upload para LittleFS:
-- Use o plugin "Arduino ESP32 LittleFS Uploader" na IDE Arduino
-- Ou use a ferramenta de linha de comando littlefs-python
+Upload to LittleFS:
+- Use the "Arduino ESP32 LittleFS Uploader" plugin in the Arduino IDE
+- Or use the littlefs-python command-line tool
 
-NOTA SOBRE ARQUIVOS *_sfx.mp3:
+NOTE ABOUT *_sfx.mp3 FILES:
 --------------------------------
-Os arquivos com sufixo "_sfx.mp3" são os originais em formato incorreto
-(24kHz mono 48Kbps). Eles foram mantidos apenas como backup.
-Para o funcionamento correto, use APENAS os arquivos convertidos
-(.mp3 sem sufixo _sfx) que estão no formato 44.1kHz estéreo 128Kbps.
+Files with the "_sfx.mp3" suffix are the originals in the incorrect format
+(24kHz mono 48Kbps). They were kept only as a backup.
+For correct operation, use ONLY the converted files
+(.mp3 without the _sfx suffix) that are in 44.1kHz stereo 128Kbps format.
 
-ARQUIVOS CONVERTIDOS (use estes):
+CONVERTED FILES (use these):
 - ready.mp3, begin.mp3, victory.mp3
 - red.mp3, blue.mp3, yellow.mp3, green.mp3
 - correct.mp3, error.mp3

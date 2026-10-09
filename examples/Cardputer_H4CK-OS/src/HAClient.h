@@ -12,7 +12,7 @@
 #include "ConfigManager.h"
 
 // ============================================================================
-// DEBUG SERIAL PARA MQTT/HA — descomente abaixo para ativar
+// DEBUG SERIAL FOR MQTT/HA — uncomment below to enable
 // ============================================================================
 // #define HA_DEBUG_SERIAL
 
@@ -57,7 +57,7 @@ public:
                strlen(configManager.ha.pass)>0?"***":"(none)", (int)strlen(configManager.ha.pass));
 
         if (strlen(configManager.ha.wifiSsid) == 0) {
-            HA_ERR("WiFi SSID vazio — iniciando AP mode");
+            HA_ERR("Empty WiFi SSID — starting AP mode");
             Serial.println("[WIFI] No SSID — starting AP mode");
             startAP();
             return;
@@ -74,7 +74,7 @@ public:
             att++;
         }
         Serial.println();
-        HA_DBG("WiFi loop terminou status=%d tentativas=%d", WiFi.status(), att);
+        HA_DBG("WiFi loop ended status=%d attempts=%d", WiFi.status(), att);
 
         if (WiFi.status() == WL_CONNECTED) {
             Serial.printf(" IP:%s\n", WiFi.localIP().toString().c_str());
@@ -85,7 +85,7 @@ public:
             beginMQTT();
             beginHA();
         } else {
-            HA_ERR("WiFi falhou (status=%d) — iniciando AP mode", WiFi.status());
+            HA_ERR("WiFi failed (status=%d) — starting AP mode", WiFi.status());
             Serial.println(" FAIL — starting AP mode");
             startAP();
         }
@@ -99,7 +99,7 @@ public:
             static unsigned long lastRaw = 0;
             if (millis() - lastRaw > 5000) {
                 lastRaw = millis();
-                HA_DBG("loopHA: MQTT RAW não conectado — beginMQTT()");
+                HA_DBG("loopHA: MQTT RAW not connected - beginMQTT()");
                 beginMQTT();
             }
         } else {
@@ -107,7 +107,7 @@ public:
             static unsigned long lastRawReconnect = 0;
             if (!mqttClient_.connected() && millis() - lastRawReconnect > 10000) {
                 lastRawReconnect = millis();
-                HA_DBG("loopHA: MQTT RAW caiu — reconnectMQTT()");
+                HA_DBG("loopHA: MQTT RAW dropped - reconnectMQTT()");
                 reconnectMQTT();
             }
         }
@@ -116,7 +116,7 @@ public:
             static unsigned long lastHaStart = 0;
             if (millis() - lastHaStart > 5000) {
                 lastHaStart = millis();
-                HA_DBG("loopHA: ArduinoHA não iniciado — beginHA()");
+                HA_DBG("loopHA: ArduinoHA not started - beginHA()");
                 beginHA();
             }
         } else {
@@ -127,13 +127,13 @@ public:
                    nowConnected?"true":"false", lastHaConnected?"true":"false");
             if (nowConnected && !lastHaConnected) {
                 lastHaConnected = true;
-                HA_INF("HA MQTT conectou — publicando estado completo");
+                HA_INF("HA MQTT connected — publishing full state");
                 publishAll();
                 Serial.println(F("[HA] MQTT reconnected — full state published"));
             }
             if (!nowConnected && lastHaConnected) {
                 lastHaConnected = false;
-                HA_ERR("HA MQTT desconectou!");
+                HA_ERR("HA MQTT disconnected!");
             }
         }
 
@@ -153,10 +153,10 @@ public:
     bool isMQTTOK() { return mqttOK_; }
     bool isAPMode() { return apSrv_ != nullptr; }
 
-    // ─── invade: envia TOGGLE no tópico MQTT do target ─────────
+    // ─── invade: publishes TOGGLE on the target's MQTT topic ─────────
     bool invadeTarget(const char* targetName) {
         if (!mqttOK_) {
-            HA_ERR("invadeTarget('%s'): MQTT não OK", targetName);
+            HA_ERR("invadeTarget('%s'): MQTT not OK", targetName);
             return false;
         }
         for (int i = 0; i < configManager.targetCount; i++) {
@@ -168,16 +168,16 @@ public:
                 return true;
             }
         }
-        HA_ERR("invadeTarget('%s'): target não encontrado", targetName);
+        HA_ERR("invadeTarget('%s'): target not found", targetName);
         return false;
     }
 
     void publishAll() {
         if (!haOK_) { HA_ERR("publishAll(): haOK_=false"); return; }
         if (!haMqtt_.isConnected()) {
-            HA_ERR("publishAll(): HA MQTT desconectado"); return;
+            HA_ERR("publishAll(): HA MQTT disconnected"); return;
         }
-        HA_DBG("publishAll() — publicando entidades");
+        HA_DBG("publishAll() — publishing entities");
         haSensorEstado_.setValue(lastStatus_);
         haSensorLogin_.setValue(configManager.login.pass);
         haSensorSniffIp_.setValue(configManager.sniff.ip);
@@ -185,7 +185,7 @@ public:
         haNumSniffChannel_.setState((int8_t)(configManager.sniff.channel - 1));
         haSelectStage_.setState((int8_t)configManager.stages.current);
         haSwitchRF433_.setState(rf433Enabled_);
-        HA_INF("publishAll() — estado completo publicado");
+        HA_INF("publishAll() — full state published");
     }
 
     void publishStatus(const char* s) {
@@ -232,16 +232,16 @@ private:
 
     // ─── Switch ──────────────────────────────────────────────────
     HASwitch haSwitchRF433_;
-    char invadeSlotBuf_[3][96];  // cache: "nome=topic" por slot
+    char invadeSlotBuf_[3][96];  // cache: "name=topic" per slot
 
     // ================================================================
-    // MQTT RAW (para targets + comandos do GM)
+    // MQTT RAW (for targets + GM commands)
     // ================================================================
     void beginMQTT() {
-        if (mqttOK_) { HA_DBG("beginMQTT(): já conectado"); return; }
-        if (!wifiOK_) { HA_ERR("beginMQTT(): WiFi não OK"); return; }
+        if (mqttOK_) { HA_DBG("beginMQTT(): already connected"); return; }
+        if (!wifiOK_) { HA_ERR("beginMQTT(): WiFi not OK"); return; }
         if (strlen(configManager.ha.broker) == 0) {
-            HA_ERR("beginMQTT(): broker vazio"); return;
+            HA_ERR("beginMQTT(): empty broker"); return;
         }
 
         HA_INF("beginMQTT() — broker=%s port=%d", configManager.ha.broker, (int)configManager.ha.port);
@@ -250,9 +250,9 @@ private:
     }
 
     void reconnectMQTT() {
-        if (!wifiOK_) { HA_ERR("reconnectMQTT(): WiFi não OK"); return; }
+        if (!wifiOK_) { HA_ERR("reconnectMQTT(): WiFi not OK"); return; }
         if (strlen(configManager.ha.broker) == 0) {
-            HA_ERR("reconnectMQTT(): broker vazio"); return;
+            HA_ERR("reconnectMQTT(): empty broker"); return;
         }
 
         char clientId[32];
@@ -269,23 +269,23 @@ private:
 
         if (ok) {
             mqttOK_ = true;
-            // Subscreve tópicos de comando do GM para invade targets
+            // Subscribes to the GM command topics for invade targets
             mqttClient_.subscribe("h4ckos/cmd/invade1");
             mqttClient_.subscribe("h4ckos/cmd/invade2");
             mqttClient_.subscribe("h4ckos/cmd/invade3");
-            HA_INF("reconnectMQTT() — SUCESSO, subscribed to h4ckos/cmd/invade#");
+            HA_INF("reconnectMQTT() — SUCCESS, subscribed to h4ckos/cmd/invade#");
             Serial.println("[MQTT] Connected! Subscribed to h4ckos/cmd/invade#");
         } else {
             mqttOK_ = false;
             int rc = mqttClient_.state();
-            HA_ERR("reconnectMQTT() — FALHA rc=%d (%s)", rc,
+            HA_ERR("reconnectMQTT() — FAILURE rc=%d (%s)", rc,
                    rc==-4?"TIMEOUT":rc==-3?"LOST":rc==-2?"CONN_FAIL":rc==-1?"DISC":rc==1?"BAD_PROTO":rc==2?"BAD_CID":rc==3?"UNAVAIL":rc==4?"BAD_CREDS":rc==5?"UNAUTH":"???");
             Serial.printf("[MQTT] Failed (rc=%d)\n", rc);
         }
     }
 
     void mqttCallback(char* topic, byte* payload, unsigned int len) {
-        // Processa comandos do GM via MQTT
+        // Processes GM commands via MQTT
         char val[96];
         unsigned int copyLen = (len < sizeof(val)-1) ? len : sizeof(val)-1;
         memcpy(val, payload, copyLen);
@@ -293,23 +293,23 @@ private:
 
         HA_INF("mqttCallback: topic=%s payload='%s'", topic, val);
 
-        // Determina slot pelo tópico
+        // Determines the slot from the topic
         int slot = -1;
         if (strstr(topic, "invade1")) slot = 0;
         else if (strstr(topic, "invade2")) slot = 1;
         else if (strstr(topic, "invade3")) slot = 2;
 
         if (slot < 0) {
-            HA_ERR("mqttCallback: tópico desconhecido '%s'", topic);
+            HA_ERR("mqttCallback: unknown topic '%s'", topic);
             return;
         }
 
-        // Processa comando: "nome=topic" ou vazio para remover
+        // Processes the command: "name=topic" or empty to remove
         if (strlen(val) == 0) {
-            // Remove target deste slot
+            // Removes the target from this slot
             int removeIdx = -1;
-            // Mapeia slot para índice real no array de targets
-            // Usamos slot como índice fixo: slot 0 = targets[0], slot 1 = targets[1], etc.
+            // Maps slot to the real index in the targets array
+            // We use the slot as a fixed index: slot 0 = targets[0], slot 1 = targets[1], etc.
             if (slot < configManager.targetCount) {
                 removeIdx = slot;
                 for (int i = removeIdx; i < configManager.targetCount - 1; i++)
@@ -318,15 +318,15 @@ private:
                 Serial.printf("[HA] invade slot %d cleared\n", slot);
             }
         } else {
-            // Formato: nome=topic (ex: "luz_sala=cmnd/luz_sala/POWER")
+            // Format: name=topic (e.g. "luz_sala=cmnd/luz_sala/POWER")
             const char* eq = strchr(val, '=');
             if (eq != nullptr) {
                 size_t nameLen = eq - val;
                 if (nameLen > 0 && nameLen < 24) {
-                    // Expande array se necessário para caber este slot
-                    // Slot é posição fixa: queremos que slot 0 sempre seja targets[0], etc.
-                    // Se o slot atual está vazio (targetCount <= slot), precisamos
-                    // garantir que o array tenha tamanho suficiente
+                    // Expands the array if needed to fit this slot
+                    // Slot is a fixed position: we want slot 0 to always be targets[0], etc.
+                    // If the current slot is empty (targetCount <= slot), we need
+                    // to ensure the array is large enough
                     while (configManager.targetCount <= slot && configManager.targetCount < MAX_TARGETS) {
                         configManager.targets[configManager.targetCount].name[0] = '\0';
                         configManager.targets[configManager.targetCount].topic[0] = '\0';
@@ -352,13 +352,13 @@ private:
     // HA SETUP (ArduinoHA)
     // ================================================================
     void beginHA() {
-        if (haOK_) { HA_DBG("beginHA(): já iniciado"); return; }
-        if (!wifiOK_) { HA_ERR("beginHA(): WiFi não conectado"); return; }
+        if (haOK_) { HA_DBG("beginHA(): already started"); return; }
+        if (!wifiOK_) { HA_ERR("beginHA(): WiFi not connected"); return; }
         if (strlen(configManager.ha.broker) == 0) {
-            HA_ERR("beginHA(): broker vazio"); return;
+            HA_ERR("beginHA(): empty broker"); return;
         }
 
-        HA_INF("beginHA() — configurando dispositivo");
+        HA_INF("beginHA() — configuring device");
         byte mac[6];
         WiFi.macAddress(mac);
         HA_DBG("  MAC=%02X:%02X:%02X:%02X:%02X:%02X",mac[0],mac[1],mac[2],mac[3],mac[4],mac[5]);
@@ -369,16 +369,16 @@ private:
         haDevice_.setManufacturer("EscapeRoom");
         haDevice_.setModel("Cardputer");
 
-        haSensorEstado_.setName("Status Atual");
+        haSensorEstado_.setName("Current Status");
         haSensorEstado_.setIcon("mdi:console");
         haSensorLogin_.setName("Login Password");
         haSensorLogin_.setIcon("mdi:form-textbox-password");
-        haSensorSniffIp_.setName("IP da Bomba");
+        haSensorSniffIp_.setName("Bomb IP");
         haSensorSniffIp_.setIcon("mdi:ip-network");
-        haSensorLastPayload_.setName("Hack Sala");
+        haSensorLastPayload_.setName("Room Hack");
         haSensorLastPayload_.setIcon("mdi:rocket-launch");
 
-        haNumDefuseCode_.setName("Codigo Desarme");
+        haNumDefuseCode_.setName("Defuse Code");
         haNumDefuseCode_.setIcon("mdi:lock");
         haNumDefuseCode_.setMin(0);
         haNumDefuseCode_.setMax(9999);
@@ -397,7 +397,7 @@ private:
         haSelectStage_.setOptions("SCAN;HYDRA;EXPLOIT;RF433");
         haSelectStage_.onCommand(haStageCb);
 
-        haSwitchRF433_.setName("Controle Remoto RF");
+        haSwitchRF433_.setName("RF Remote Control");
         haSwitchRF433_.setIcon("mdi:antenna");
         haSwitchRF433_.onCommand(haRFEnableCb);
 
@@ -414,17 +414,17 @@ private:
         );
 
         haOK_ = true;
-        HA_INF("ArduinoHA inicializado em %s:%d", configManager.ha.broker, (int)configManager.ha.port);
+        HA_INF("ArduinoHA initialized at %s:%d", configManager.ha.broker, (int)configManager.ha.port);
         if (haMqtt_.isConnected()) {
-            HA_INF("HA MQTT já conectado — publishAll()");
+            HA_INF("HA MQTT already connected — publishAll()");
             publishAll();
         } else {
-            HA_DBG("HA MQTT ainda não conectado — aguardando loopHA()");
+            HA_DBG("HA MQTT not connected yet — waiting for loopHA()");
         }
     }
 
     // ================================================================
-    // CALLBACKS HA
+    // HA CALLBACKS
     // ================================================================
     static void haDefuseCodeCb(HANumeric val, HANumber*) {
         HA_DBG("haDefuseCodeCb(%ld)", (long)val.toInt32());
@@ -461,7 +461,7 @@ private:
         Serial.printf("[HA] rf433=%d\n", state);
     }
 
-    // ─── Helpers invade ──────────────────────────────────────────
+    // ─── invade helpers ──────────────────────────────────────────
     const char* getInvadeSlot(int slot) {
         if (slot < 0 || slot >= 3) return "";
         return invadeSlotBuf_[slot];
@@ -482,7 +482,7 @@ private:
         WiFi.mode(WIFI_AP);
         WiFi.softAP("H4CK-OS-Config");
         apSrv_ = new WebServer(80);
-        HA_INF("AP 'H4CK-OS-Config' iniciado em %s", WiFi.softAPIP().toString().c_str());
+        HA_INF("AP 'H4CK-OS-Config' started at %s", WiFi.softAPIP().toString().c_str());
         Serial.printf("[AP] H4CK-OS-Config http://%s\n", WiFi.softAPIP().toString().c_str());
 
         apSrv_->on("/", HTTP_GET, [this]() { handleRoot(); });
@@ -518,9 +518,9 @@ button{margin-top:20px;padding:10px 20px;background:#0f0;color:#000;border:none;
         html += "<label>Port: <input name=mp value=" + htmlEscape(String(configManager.ha.port)) + "></label>";
         html += "<label>User: <input name=mu value='" + htmlEscape(configManager.ha.user) + "'></label>";
         html += "<label>Pass: <input name=mpw type=password></label>";
-        html += "<div class=sm>Necessário para entidades HA e controle remoto.</div></div>";
+        html += "<div class=sm>Required for HA entities and remote control.</div></div>";
 
-        html += "<button type=submit>Salvar e Reiniciar</button></form></body></html>";
+        html += "<button type=submit>Save and Reboot</button></form></body></html>";
         apSrv_->send(200, "text/html", html);
     }
 
@@ -540,7 +540,7 @@ button{margin-top:20px;padding:10px 20px;background:#0f0;color:#000;border:none;
 
         configManager.save();
         apSrv_->send(200, "text/html",
-            "<html><body><h2>Salvo! Reiniciando...</h2></body></html>");
+            "<html><body><h2>Saved! Rebooting...</h2></body></html>");
         delay(1000);
         ESP.restart();
     }

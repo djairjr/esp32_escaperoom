@@ -1,21 +1,21 @@
-# KeypadCodeEntry — Entidades Home Assistant
+# KeypadCodeEntry — Home Assistant Entities
 
-## Sensores
-| Nome | ID | Valores |
+## Sensors
+| Name | ID | Values |
 |---|---|---|
-| Estado | `state` | idle, entering, checking, solved, error |
-| Tentativas | `attempts` | 0-max |
+| State | `state` | idle, entering, checking, solved, error |
+| Attempts | `attempts` | 0-max |
 
-## Botões
-| Nome | ID |
+## Buttons
+| Name | ID |
 |---|---|
-| Resetar | `reset` |
+| Reset | `reset` |
 
-## Números
-| Nome | ID | Range |
+## Numbers
+| Name | ID | Range |
 |---|---|---|
-| Código | `code` | 0-9999 |
-| Máx Tentativas | `max_attempts` | 1-9 |
+| Code | `code` | 0-9999 |
+| Max Attempts | `max_attempts` | 1-9 |
 
 ## AP Mode
-Rede WiFi "KeypadCode-XXXX" + portal em 192.168.4.1.
+WiFi network "KeypadCode-XXXX" + portal at 192.168.4.1.

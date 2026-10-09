@@ -1,8 +1,8 @@
 {
-  "_comment": "Puzzle A: sequencia linear de 4 entradas no PCF 0x20",
+  "_comment": "Puzzle A: linear sequence of 4 inputs on PCF 0x20",
 
   "controller": {
-    "name": "Puzzle A - Porta 1",
+    "name": "Puzzle A - Door 1",
     "id": 1,
     "enabled": true
   },

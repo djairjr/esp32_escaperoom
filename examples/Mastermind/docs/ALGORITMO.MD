@@ -1,39 +1,39 @@
-# Mastermind — Algoritmo do Jogo
+# Mastermind — Game Algorithm
 
-## Visão Geral
+## Overview
 
-Jogo de adivinhação de cores. O sistema gera uma sequência secreta de N cores (1-6). O jogador faz tentativas inserindo cores via teclado. A cada tentativa, o sistema informa quantas cores estão na posição correta (P) e quantas cores existem mas em posição errada (E).
+Color guessing game. The system generates a secret sequence of N colors (1-6). The player makes attempts by entering colors via the keypad. For each attempt, the system reports how many colors are in the correct position (P) and how many colors are present but in the wrong position (E).
 
-## Configuração (JSON: mastermind.json)
+## Configuration (JSON: mastermind.json)
 
-- **codeLength**: tamanho da sequência (2-8)
-- **maxColors**: cores disponíveis (2-6)
-- **maxAttempts**: tentativas máximas
-- **Cores**: Vermelho(1), Azul(2), Verde(3), Amarelo(4), Magenta(5), Ciano(6)
+- **codeLength**: length of the sequence (2-8)
+- **maxColors**: available colors (2-6)
+- **maxAttempts**: maximum attempts
+- **Colors**: Red(1), Blue(2), Green(3), Yellow(4), Magenta(5), Cyan(6)
 
-## Estados
+## States
 
 IDLE → RUNNING → SOLVED / GAMEOVER
 
-## Fluxo
+## Flow
 
-1. Sistema gera sequência secreta aleatória
-2. Jogador insere N cores via teclado (1-6)
-3. `#` envia tentativa, `*` limpa
-4. Sistema calcula:
-   - P (exact): cores na posição correta
-   - E (color): cores presentes mas em posição errada
-5. Feedback no display: "P=E=" e NeoPixel
+1. System generates a random secret sequence
+2. Player enters N colors via the keypad (1-6)
+3. `#` submits the attempt, `*` clears
+4. System computes:
+   - P (exact): colors in the correct position
+   - E (color): colors present but in the wrong position
+5. Feedback on the display: "P=E=" and NeoPixel
 6. P == N → SOLVED
-7. Tentativas == maxAttempts → GAMEOVER
+7. Attempts == maxAttempts → GAMEOVER
 
-## Algoritmo de Feedback
+## Feedback Algorithm
 
-1. Marca posições exatas (cor e posição corretas)
-2. Remove essas posições da comparação
-3. Para cada cor restante no palpite, verifica se existe no segredo (em posição diferente)
-4. Incrementa contagem de "cor presente"
+1. Marks exact positions (correct color and position)
+2. Removes those positions from the comparison
+3. For each remaining color in the guess, checks whether it exists in the secret (in a different position)
+4. Increments the "color present" count
 
 ## AP Mode + WiFi
 
-Configuração de rede via portal web em 192.168.4.1.
+Network configuration via web portal at 192.168.4.1.

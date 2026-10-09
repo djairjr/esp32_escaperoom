@@ -1,45 +1,45 @@
-# BallMaze — Algoritmo do Jogo
+# BallMaze — Game Algorithm
 
-## Visão Geral
+## Overview
 
-Labirinto físico onde o jogador inclina uma caixa com acelerômetro LIS3DH para mover uma bola virtual por um plano 2D. A bola deve visitar N zonas-alvo distribuídas pelo labirinto. Resolve quando todos os alvos forem atingidos.
+Physical maze where the player tilts a box with a LIS3DH accelerometer to move a virtual ball across a 2D plane. The ball must visit N target zones distributed across the maze. It is solved when all targets are reached.
 
-## Configuração (JSON: ballmaze.json)
+## Configuration (JSON: ballmaze.json)
 
-- **Física**: accelScale (sensibilidade), damping (amortecimento), bounce (restituição), maxSpeed (velocidade terminal), deadZone (zona morta)
-- **Labirinto**: mazeW/H (dimensões), startX/Y (posição inicial)
-- **Alvos**: targetCount (2-8), targetRadius, requireOrder (sequencial ou livre)
+- **Physics**: accelScale (sensitivity), damping, bounce (restitution), maxSpeed (terminal velocity), deadZone (dead zone)
+- **Maze**: mazeW/H (dimensions), startX/Y (starting position)
+- **Targets**: targetCount (2-8), targetRadius, requireOrder (sequential or free)
 - **Hardware**: lockPin, neoCount, volume
-- **Áudio**: sfxTargetHit, sfxSolved, sfxStart
+- **Audio**: sfxTargetHit, sfxSolved, sfxStart
 
-## Estados
+## States
 
 IDLE → RUNNING → SOLVED → IDLE (auto-reset 10s)
 
-## Física (Euler integration)
+## Physics (Euler integration)
 
-1. Lê tilt do acelerômetro (X, Y) calibrado
-2. Aplica zona morta (ignora inclinações mínimas)
-3. Converte tilt em aceleração (ax, ay)
-4. Integra velocidade: v += a * dt
-5. Aplica damping: v *= (1 - damping * dt)
-6. Limita velocidade terminal
-7. Integra posição: pos += v * dt
-8. Colisão com paredes: bounce (inverte velocidade com restituição)
-9. Detecta se bola está sobre alvo (distância < radius)
+1. Reads the calibrated accelerometer tilt (X, Y)
+2. Applies the dead zone (ignores minimal tilts)
+3. Converts tilt into acceleration (ax, ay)
+4. Integrates velocity: v += a * dt
+5. Applies damping: v *= (1 - damping * dt)
+6. Clamps to terminal velocity
+7. Integrates position: pos += v * dt
+8. Wall collision: bounce (inverts velocity with restitution)
+9. Detects whether the ball is over a target (distance < radius)
 
-## Detecção de Alvos
+## Target Detection
 
-- Se requireOrder=true: alvos devem ser visitados na ordem do array
-- Se requireOrder=false: qualquer ordem
-- Ao atingir todos → SOLVED (destrava lockPin)
+- If requireOrder=true: targets must be visited in array order
+- If requireOrder=false: any order
+- On reaching all → SOLVED (releases lockPin)
 
 ## Feedback
 
-- NeoPixel: mapeamento 2D (bola=branco, alvos=amarelo, atingidos=verde)
-- Áudio: som ao atingir alvo, som de vitória
-- Display HT16K33: número de alvos restantes
+- NeoPixel: 2D mapping (ball=white, targets=yellow, hit=green)
+- Audio: sound when hitting a target, victory sound
+- HT16K33 display: number of remaining targets
 
 ## AP Mode + WiFi
 
-Configuração de rede via portal web em 192.168.4.1 (SSID, senha, MQTT broker, nome do dispositivo).
+Network configuration via web portal at 192.168.4.1 (SSID, password, MQTT broker, device name).

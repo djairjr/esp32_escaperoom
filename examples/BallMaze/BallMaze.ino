@@ -1,19 +1,19 @@
 /**
- * EXEMPLO: BALL MAZE - LABIRINTO COM ACELEROMETRO LIS3DH
- * --------------------------------------------------------
- * Puzzle de labirinto fisico onde o jogador inclina uma caixa
- * para mover uma bola virtual por um plano 2D. O acelerometro
- * LIS3DH embutido na PropMaker detecta a inclinacao e o software
- * integra a posicao da bola. A bola deve visitar N zonas-alvo
- * para resolver o puzzle.
+ * EXAMPLE: BALL MAZE - MAZE WITH LIS3DH ACCELEROMETER
+ * ----------------------------------------------------
+ * Physical maze puzzle where the player tilts a box
+ * to move a virtual ball across a 2D plane. The LIS3DH
+ * accelerometer built into the PropMaker detects the tilt and the software
+ * integrates the ball's position. The ball must visit N target zones
+ * to solve the puzzle.
  *
  * Hardware:
- *   - LIS3DH Accelerometer (I2C, embutido na Feather)
- *   - NeoPixel externo para feedback visual (mapeamento 2D)
- *   - Audio MP3 via I2S (LittleFS)
- *   - Rele/Trava no pino configurado (lockPin)
+ *   - LIS3DH Accelerometer (I2C, built into the Feather)
+ *   - External NeoPixel for visual feedback (2D mapping)
+ *   - MP3 audio via I2S (LittleFS)
+ *   - Relay/Lock on the configured pin (lockPin)
  *
- * Configuracao via /ballmaze.json no LittleFS.
+ * Configuration via /ballmaze.json on LittleFS.
  */
 
 #include <ESP32EscapeRoom.h>
@@ -24,7 +24,7 @@
 using namespace esp32_escaperoom;
 
 // ============================================================================
-// HOME ASSISTANT + WIFI (adicionado pelo port ESP32)
+// HOME ASSISTANT + WIFI (added by the ESP32 port)
 // ============================================================================
 ConfigManager netConfig;
 WiFiClient wifiClient;
@@ -39,7 +39,7 @@ void initHA() {
   haDevice.setUniqueId(mac, sizeof(mac));
   haDevice.setName(netConfig.devName());
   haDevice.setSoftwareVersion("1.0.0");
-  haSensorState.setName("Estado");
+  haSensorState.setName("State");
   haSensorState.setIcon("mdi:puzzle");
   haMqtt.begin(netConfig.mqttBroker(), netConfig.mqttUser(), netConfig.mqttPass());
 }
@@ -51,7 +51,7 @@ void loopHA() {
 
 
 // ============================================================================
-// CONSTANTES FISICAS
+// PHYSICAL CONSTANTS
 // ============================================================================
 #define GRAVITY_MS2 9.81f
 #define MAX_TARGETS 8
@@ -59,29 +59,29 @@ void loopHA() {
 #define IDLE_CHIME_INTERVAL 15000
 
 // ============================================================================
-// CONFIGURACAO JSON
+// JSON CONFIGURATION
 // ============================================================================
 struct TargetZone {
-  float cx, cy;   // centro
-  float radius;   // raio de deteccao
-  bool hit;       // ja foi visitado
+  float cx, cy;   // center
+  float radius;   // detection radius
+  bool hit;       // already visited
 };
 
 struct BallMazeConfig {
-  // Fisica
-  float accelScale = 600.0f;   // sensibilidade (tilt -> aceleracao)
-  float damping   = 3.5f;      // amortecimento da velocidade
-  float bounce    = 0.3f;      // restituicao das paredes
-  float maxSpeed  = 250.0f;    // velocidade terminal
-  float deadZone  = 0.25f;     // zona morta do tilt (normalizado)
+  // Physics
+  float accelScale = 600.0f;   // sensitivity (tilt -> acceleration)
+  float damping   = 3.5f;      // velocity damping
+  float bounce    = 0.3f;      // wall restitution
+  float maxSpeed  = 250.0f;    // terminal velocity
+  float deadZone  = 0.25f;     // tilt dead zone (normalized)
 
-  // Labirinto
+  // Maze
   float mazeW = 200.0f;
   float mazeH = 200.0f;
   float startX = 100.0f;
   float startY = 100.0f;
 
-  // Alvos
+  // Targets
   TargetZone targets[MAX_TARGETS];
   uint8_t targetCount = 3;
   float targetRadius = 12.0f;
@@ -124,7 +124,7 @@ static void generateDefaultTargets() {
 
 static void loadConfig() {
   if (!LittleFS.exists("/ballmaze.json")) {
-    Serial.println(F("[CONFIG] /ballmaze.json nao encontrado, usando padrao"));
+    Serial.println(F("[CONFIG] /ballmaze.json not found, using default"));
     generateDefaultTargets();
     return;
   }
@@ -133,25 +133,25 @@ static void loadConfig() {
   DeserializationError err = deserializeJson(doc, f);
   f.close();
   if (err) {
-    Serial.printf("[CONFIG] Erro JSON: %s\n", err.c_str());
+    Serial.printf("[CONFIG] JSON error: %s\n", err.c_str());
     generateDefaultTargets();
     return;
   }
 
-  // Fisica
+  // Physics
   config.accelScale = doc["phys"]["accel"] | config.accelScale;
   config.damping    = doc["phys"]["damp"]  | config.damping;
   config.bounce     = doc["phys"]["bounce"] | config.bounce;
   config.maxSpeed   = doc["phys"]["maxSpd"] | config.maxSpeed;
   config.deadZone   = doc["phys"]["deadZ"]  | config.deadZone;
 
-  // Labirinto
+  // Maze
   config.mazeW = doc["maze"]["w"] | config.mazeW;
   config.mazeH = doc["maze"]["h"] | config.mazeH;
   config.startX = doc["startX"] | config.startX;
   config.startY = doc["startY"] | config.startY;
 
-  // Alvos
+  // Targets
   config.requireOrder = doc["requireOrder"] | config.requireOrder;
   config.targetRadius = doc["targetRadius"] | config.targetRadius;
 
@@ -185,7 +185,7 @@ static void loadConfig() {
 }
 
 // ============================================================================
-// CALIBRACAO ACELEROMETRO
+// ACCELEROMETER CALIBRATION
 // ============================================================================
 struct AccelCalibration {
   float offsetX = 0.0f;
@@ -260,22 +260,22 @@ public:
     display.printString("BALL");
     hw.setLightAll(pixels()->Color(0, 0, 20));
 
-    // Inicializa fisica
+    // Initialize physics
     resetBall();
 
-    // Calibra acelerometro
+    // Calibrate accelerometer
     if (hw.hasAccelerometer()) {
       calibrateAccelerometer();
-      Serial.println(F("[BALLMAZE] Acelerometro calibrado"));
+      Serial.println(F("[BALLMAZE] Accelerometer calibrated"));
     } else {
-      Serial.println(F("[BALLMAZE] ERRO: Acelerometro nao detectado"));
+      Serial.println(F("[BALLMAZE] ERROR: Accelerometer not detected"));
       setState(PuzzleState::Error);
       return;
     }
 
     geraAlvos();
 
-    Serial.printf("[BALLMAZE] Pronto! Incline para mover a bola (%d alvos)\n", config.targetCount);
+    Serial.printf("[BALLMAZE] Ready! Tilt to move the ball (%d targets)\n", config.targetCount);
   }
 
   void update() override {
@@ -302,7 +302,7 @@ public:
 
 private:
   // =======================================================================
-  // ESTADO DA BOLA
+  // BALL STATE
   // =======================================================================
   float ballX_, ballY_;
   float velX_, velY_;
@@ -310,12 +310,12 @@ private:
   bool audioStarted_ = false;
 
   // =======================================================================
-  // ESTADO DO SOLVED
+  // SOLVED STATE
   // =======================================================================
   unsigned long solvedAt_ = 0;
 
   // =======================================================================
-  // ESTADO DO IDLE (chime periodico)
+  // IDLE STATE (periodic chime)
   // =======================================================================
   unsigned long lastIdleChime_ = 0;
 
@@ -346,7 +346,7 @@ private:
   }
 
   // =======================================================================
-  // LEITURA DO ACELEROMETRO
+  // ACCELEROMETER READING
   // =======================================================================
   void readTilt(float& tx, float& ty) {
     sensors_event_t ev;
@@ -355,24 +355,24 @@ private:
     float ax = ev.acceleration.x - cal.offsetX;
     float ay = ev.acceleration.y - cal.offsetY;
 
-    // Zona morta
+    // Dead zone
     if (fabs(ax) < config.deadZone) ax = 0;
     if (fabs(ay) < config.deadZone) ay = 0;
 
-    // Normaliza para -1..1 (considerando que max = 9.81 num eixo a 90°)
+    // Normalize to -1..1 (considering that max = 9.81 on an axis at 90°)
     tx = constrain(ax / GRAVITY_MS2, -1.0f, 1.0f);
     ty = constrain(ay / GRAVITY_MS2, -1.0f, 1.0f);
   }
 
   // =======================================================================
-  // FISICA (Euler)
+  // PHYSICS (Euler)
   // =======================================================================
   void updatePhysics(float dt, float tiltX, float tiltY) {
-    // Aceleracao do tilt
+    // Acceleration from the tilt
     float ax = tiltX * config.accelScale;
     float ay = tiltY * config.accelScale;
 
-    // Integra velocidade
+    // Integrate velocity
     velX_ += ax * dt;
     velY_ += ay * dt;
 
@@ -380,32 +380,32 @@ private:
     velX_ *= (1.0f - config.damping * dt);
     velY_ *= (1.0f - config.damping * dt);
 
-    // Velocidade terminal
+    // Terminal velocity
     float spd = sqrt(velX_ * velX_ + velY_ * velY_);
     if (spd > config.maxSpeed) {
       velX_ = (velX_ / spd) * config.maxSpeed;
       velY_ = (velY_ / spd) * config.maxSpeed;
     }
 
-    // Detecta se esta se movendo
+    // Detect whether it is moving
     ballMoving_ = (spd > 5.0f);
 
-    // Integra posicao
+    // Integrate position
     ballX_ += velX_ * dt;
     ballY_ += velY_ * dt;
 
-    // Colisao com paredes (com bounce)
+    // Collision with walls (with bounce)
     if (ballX_ < 0) { ballX_ = 0; velX_ = -velX_ * config.bounce; }
     if (ballX_ > config.mazeW) { ballX_ = config.mazeW; velX_ = -velX_ * config.bounce; }
     if (ballY_ < 0) { ballY_ = 0; velY_ = -velY_ * config.bounce; }
     if (ballY_ > config.mazeH) { ballY_ = config.mazeH; velY_ = -velY_ * config.bounce; }
 
-    // Seguranca contra NaN
+    // Safety against NaN
     if (isnan(ballX_) || isnan(ballY_)) resetBall();
   }
 
   // =======================================================================
-  // DETECCAO DE ALVOS
+  // TARGET DETECTION
   // =======================================================================
   void checkTargets() {
     for (uint8_t i = 0; i < config.targetCount; i++) {
@@ -414,19 +414,19 @@ private:
       float dy = ballY_ - config.targets[i].cy;
       if (sqrt(dx * dx + dy * dy) < config.targets[i].radius) {
         onTargetHit(i);
-        return;  // so um alvo por tick
+        return;  // only one target per tick
       }
     }
   }
 
   void onTargetHit(uint8_t idx) {
     config.targets[idx].hit = true;
-    Serial.printf("[BALLMAZE] ALVO %d atingido! (%d/%d)\n",
+    Serial.printf("[BALLMAZE] TARGET %d hit! (%d/%d)\n",
                   idx, countHits(), config.targetCount);
     hw.sound().playOnce(config.sfxTargetHit);
 
     if (countHits() >= config.targetCount) {
-      Serial.println(F("[BALLMAZE] TODOS OS ALVOS! Puzzle resolvido!"));
+      Serial.println(F("[BALLMAZE] ALL TARGETS! Puzzle solved!"));
       setState(PuzzleState::Solved);
       solvedAt_ = millis();
       hw.digitalWrite(config.lockPin, LOW);
@@ -444,19 +444,19 @@ private:
   }
 
   // =======================================================================
-  // MAPEAMENTO 2D -> LED STRIP
+  // 2D -> LED STRIP MAPPING
   // =======================================================================
   uint8_t posToLed(float x, float y) {
     uint8_t cols = pixels()->count() / 2;
     if (cols < 1) cols = 1;
     uint8_t c = (uint8_t)map(x, 0, config.mazeW, 0, cols - 1);
-    if (y > config.mazeH / 2.0f) c += cols;  // segunda linha
+    if (y > config.mazeH / 2.0f) c += cols;  // second row
     if (c >= pixels()->count()) c = pixels()->count() - 1;
     return c;
   }
 
   // =======================================================================
-  // RENDERIZACAO NEOPIXEL
+  // NEOPIXEL RENDERING
   // =======================================================================
   void renderNeoPixels() {
     auto* px = pixels();
@@ -466,13 +466,13 @@ private:
     uint32_t cTarget = px->Color(20, 20, 0);
     uint32_t cTargetHit = px->Color(0, 10, 0);
 
-    // Alvos nao atingidos
+    // Targets not hit
     for (uint8_t i = 0; i < config.targetCount; i++) {
       if (config.targets[i].hit) continue;
       uint8_t idx = posToLed(config.targets[i].cx, config.targets[i].cy);
       px->setPixel(idx, cTarget);
 
-      // Glow de proximidade
+      // Proximity glow
       float dx = ballX_ - config.targets[i].cx;
       float dy = ballY_ - config.targets[i].cy;
       float dist = sqrt(dx * dx + dy * dy);
@@ -483,20 +483,20 @@ private:
       }
     }
 
-    // Alvos ja atingidos (verde dim)
+    // Targets already hit (dim green)
     for (uint8_t i = 0; i < config.targetCount; i++) {
       if (!config.targets[i].hit) continue;
       px->setPixel(posToLed(config.targets[i].cx, config.targets[i].cy), cTargetHit);
     }
 
-    // Bola (branco)
+    // Ball (white)
     px->setPixel(posToLed(ballX_, ballY_), cBall);
 
     px->show();
   }
 
   // =======================================================================
-  // ANIMACAO SOLVED (rainbow chase)
+  // SOLVED ANIMATION (rainbow chase)
   // =======================================================================
   void renderSolvedAnimation() {
     auto* px = pixels();
@@ -521,21 +521,21 @@ private:
     lastPhysicsUs_ = now;
     if (dt > 0.05f) dt = PHYSICS_DT;
 
-    // Le tilt e atualiza fisica (mostra bola mesmo em Idle)
+    // Read tilt and update physics (shows the ball even in Idle)
     float tx, ty;
     readTilt(tx, ty);
     updatePhysics(dt, tx, ty);
 
     renderNeoPixels();
 
-    // Chime periodico no Idle
+    // Periodic chime in Idle
     if (now - lastIdleChime_ > IDLE_CHIME_INTERVAL) {
       lastIdleChime_ = now;
     }
 
-    // Shake inicia o puzzle
+    // Shake starts the puzzle
     if (hw.isShaking(15.0f)) {
-      Serial.println(F("[BALLMAZE] Shake detectado -> iniciando"));
+      Serial.println(F("[BALLMAZE] Shake detected -> starting"));
       startGame();
     }
   }
@@ -561,29 +561,29 @@ private:
     lastPhysicsUs_ = now;
     if (dt > 0.05f) dt = PHYSICS_DT;
 
-    // Le tilt
+    // Read tilt
     float tx, ty;
     readTilt(tx, ty);
 
-    // Atualiza fisica
+    // Update physics
     updatePhysics(dt, tx, ty);
 
-    // Checa alvos
+    // Check targets
     checkTargets();
 
-    // Renderiza
+    // Render
     renderNeoPixels();
 
-    // Debug periodico
+    // Periodic debug
     static unsigned long lastDbg = 0;
     if (now - lastDbg > 500) {
       lastDbg = now;
-      Serial.printf("[BALLMAZE] Ball: (%.0f, %.0f) vel=(%.0f, %.0f) tilt=(%.2f, %.2f) alvos=%d/%d\n",
+      Serial.printf("[BALLMAZE] Ball: (%.0f, %.0f) vel=(%.0f, %.0f) tilt=(%.2f, %.2f) targets=%d/%d\n",
                     ballX_, ballY_, velX_, velY_, tx, ty,
                     countHits(), config.targetCount);
     }
 
-    // Atualiza display com progresso
+    // Update display with progress
     static uint8_t lastHits = 0;
     uint8_t hits = countHits();
     if (hits != lastHits) {
@@ -615,7 +615,7 @@ private:
   // UPDATE ERROR
   // =======================================================================
   void updateError() {
-    // Pisca vermelho
+    // Blink red
     unsigned long now = millis();
     if ((now / 500) % 2 == 0) {
       hw.setLightAll(pixels()->Color(50, 0, 0));

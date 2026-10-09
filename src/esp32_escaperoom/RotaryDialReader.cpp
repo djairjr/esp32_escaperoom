@@ -7,7 +7,7 @@ bool RotaryDialReader::begin(uint8_t pin) {
     RotaryDial::begin(pin, ROTARYDIAL_MECHANICAL);   // Unified library (default = MECHANICAL)
     lastPin_ = pin;
     initialized_ = true;
-    Serial.printf("[ROTARY] Inicializado no pino %d (MECHANICAL)\n", pin);
+    Serial.printf("[ROTARY] Initialized at pin %d (MECHANICAL)\n", pin);
     Serial.printf("[ROTARY]   Debounce=15ms  MaxGap=0  DigitEnd=600ms\n");
     return true;
 }
@@ -20,7 +20,7 @@ bool RotaryDialReader::beginOptical(uint8_t pin, unsigned long debounce, unsigne
 
     lastPin_ = pin;
     initialized_ = true;
-    Serial.printf("[ROTARY] Inicializado no pino %d (OPTICAL)\n", pin);
+    Serial.printf("[ROTARY] Initialized at pin %d (OPTICAL)\n", pin);
     Serial.printf("[ROTARY]   Debounce=%lums  MaxGap=%lu  DigitEnd=%lums\n", debounce, maxgap, digitend);
     return true;
 }

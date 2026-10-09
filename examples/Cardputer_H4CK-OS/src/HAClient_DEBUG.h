@@ -12,29 +12,29 @@
 #include "ConfigManager.h"
 
 // ============================================================================
-// HA CLIENT — DEBUG VERSION — logging extensivo para diagnosticar MQTT
+// HA CLIENT — DEBUG VERSION — extensive logging to diagnose MQTT
 // ============================================================================
-// Use este arquivo no lugar de HAClient.h para debug.
-// Substituição drop-in: mesma classe HAClient, mesma API pública.
+// Use this file in place of HAClient.h for debugging.
+// Drop-in replacement: same HAClient class, same public API.
 //
-// Comandos ArduinoHA usados neste arquivo:
-//   HADevice::setUniqueId(mac,n)         — define ID único do dispositivo
-//   HADevice::setName(s)                   — nome do dispositivo HA
-//   HADevice::setSoftwareVersion(s)        — versão do firmware
-//   HAMqtt::begin(broker,port,user,pass)   — inicia conexão MQTT com credenciais
-//   HAMqtt::loop()                         — mantém alive + publica discovery
-//   HAMqtt::isConnected()                  — retorna true se MQTT conectado
-//   HASensor::setValue(s)                  — atualiza valor do sensor
-//   HANumber::setState(v)                  — atualiza estado do number
-//   HASelect::setState(idx)                — atualiza índice do select
-//   HASwitch::setState(on)                 — atualiza estado do switch
-//   Entity::setName(s)                     — nome da entidade HA
-//   Entity::setIcon(s)                     — ícone Material Design
-//   Entity::onCommand(cb)                  — registra callback para comandos
+// ArduinoHA commands used in this file:
+//   HADevice::setUniqueId(mac,n)         — sets the device unique ID
+//   HADevice::setName(s)                   — HA device name
+//   HADevice::setSoftwareVersion(s)        — firmware version
+//   HAMqtt::begin(broker,port,user,pass)   — starts the MQTT connection with credentials
+//   HAMqtt::loop()                         — keeps alive + publishes discovery
+//   HAMqtt::isConnected()                  — returns true if MQTT is connected
+//   HASensor::setValue(s)                  — updates the sensor value
+//   HANumber::setState(v)                  — updates the number state
+//   HASelect::setState(idx)                — updates the select index
+//   HASwitch::setState(on)                 — updates the switch state
+//   Entity::setName(s)                     — HA entity name
+//   Entity::setIcon(s)                     — Material Design icon
+//   Entity::onCommand(cb)                  — registers a callback for commands
 // ============================================================================
 
-// ─── NÍVEL DE DEBUG ──────────────────────────────────────────────────────────
-// Descomente a linha abaixo para ativar logs detalhados no Serial:
+// ─── DEBUG LEVEL ──────────────────────────────────────────────────────────
+// Uncomment the line below to enable detailed logs on Serial:
 // #define HA_DEBUG_LEVEL 3   // 0=none, 1=errors, 2=info, 3=verbose
 
 #ifndef HA_DEBUG_LEVEL
@@ -76,14 +76,14 @@ public:
           haSelectStage_("h4ckos_stage"),
           haSwitchRF433_("h4ckos_rf433_enable")
     {
-        HA_DBG("HAClient construtor — entidades criadas");
+        HA_DBG("HAClient constructor — entities created");
         mqttClient_.setCallback([this](char* topic, byte* payload, unsigned int len) {
             mqttCallback(topic, payload, len);
         });
     }
 
     void begin() {
-        HA_DBG("begin() iniciado");
+        HA_DBG("begin() started");
         HA_DBG("  WiFi SSID: '%s' (len=%d)", configManager.ha.wifiSsid, strlen(configManager.ha.wifiSsid));
         HA_DBG("  Broker: '%s' (len=%d)", configManager.ha.broker, strlen(configManager.ha.broker));
         HA_DBG("  Port: %d", (int)configManager.ha.port);
@@ -91,7 +91,7 @@ public:
         HA_DBG("  Pass: '%s' (len=%d)", configManager.ha.pass, strlen(configManager.ha.pass));
 
         if (strlen(configManager.ha.wifiSsid) == 0) {
-            HA_INF("WiFi SSID vazio — iniciando AP mode");
+            HA_INF("Empty WiFi SSID — starting AP mode");
             startAP();
             return;
         }
@@ -108,7 +108,7 @@ public:
         }
         Serial.println(); // flush dots
 
-        HA_DBG("WiFi conexão loop terminou — status=%d tentativas=%d", WiFi.status(), att);
+        HA_DBG("WiFi connection loop ended — status=%d attempts=%d", WiFi.status(), att);
 
         if (WiFi.status() == WL_CONNECTED) {
             HA_INF("WiFi OK — IP:%s MAC:%s RSSI:%d",
@@ -119,7 +119,7 @@ public:
             beginMQTT();
             beginHA();
         } else {
-            HA_ERR("WiFi falhou (status=%d) — iniciando AP mode", WiFi.status());
+            HA_ERR("WiFi failed (status=%d) — starting AP mode", WiFi.status());
             startAP();
         }
     }
@@ -139,7 +139,7 @@ public:
             static unsigned long lastRawAttempt = 0;
             if (millis() - lastRawAttempt > 5000) {
                 lastRawAttempt = millis();
-                HA_DBG("MQTT RAW não conectado — tentando beginMQTT()");
+                HA_DBG("MQTT RAW not connected — trying beginMQTT()");
                 beginMQTT();
             }
         } else {
@@ -147,7 +147,7 @@ public:
             static unsigned long lastRawReconnect = 0;
             if (!mqttClient_.connected() && millis() - lastRawReconnect > 10000) {
                 lastRawReconnect = millis();
-                HA_DBG("MQTT RAW desconectado — tentando reconnectMQTT()");
+                HA_DBG("MQTT RAW disconnected — trying reconnectMQTT()");
                 reconnectMQTT();
             }
         }
@@ -157,7 +157,7 @@ public:
             static unsigned long lastHaAttempt = 0;
             if (millis() - lastHaAttempt > 5000) {
                 lastHaAttempt = millis();
-                HA_DBG("ArduinoHA não iniciado — tentando beginHA()");
+                HA_DBG("ArduinoHA not started — trying beginHA()");
                 beginHA();
             }
         } else {
@@ -172,22 +172,22 @@ public:
 
             if (nowConnected && !lastHaConnected) {
                 lastHaConnected = true;
-                HA_INF("ArduinoHA MQTT conectado — publicando estado completo");
+                HA_INF("ArduinoHA MQTT connected — publishing full state");
                 publishAll();
             }
             if (!nowConnected) {
                 if (lastHaConnected) {
-                    HA_ERR("ArduinoHA MQTT desconectou!");
+                    HA_ERR("ArduinoHA MQTT disconnected!");
                 }
                 lastHaConnected = false;
             }
         }
 
-        // ─── Diagnóstico periódico ─────────────────────────────────────
+        // ─── Periodic diagnostics ─────────────────────────────────────
         static unsigned long lastDiag = 0;
         if (millis() - lastDiag > 30000) {
             lastDiag = millis();
-            HA_INF("DIAGNOSTICO | WiFi=%s MQTT=%s HA=%s heap=%d uptime=%lus",
+            HA_INF("DIAGNOSTICS | WiFi=%s MQTT=%s HA=%s heap=%d uptime=%lus",
                    wifiOK_ ? "OK" : "FAIL",
                    mqttOK_ ? "OK" : (wifiOK_ ? "FAIL" : "N/A"),
                    haOK_ ? (haMqtt_.isConnected() ? "CONN" : "INIT") : "FAIL",
@@ -200,10 +200,10 @@ public:
     bool isMQTTOK() { return mqttOK_; }
     bool isAPMode() { return apSrv_ != nullptr; }
 
-    // ─── invade: envia TOGGLE no tópico MQTT do target ───────────────
+    // ─── invade: publishes TOGGLE on the target's MQTT topic ───────────────
     bool invadeTarget(const char* targetName) {
         if (!mqttOK_) {
-            HA_ERR("invadeTarget('%s'): MQTT não conectado", targetName);
+            HA_ERR("invadeTarget('%s'): MQTT not connected", targetName);
             return false;
         }
         for (int i = 0; i < configManager.targetCount; i++) {
@@ -214,20 +214,20 @@ public:
                 return true;
             }
         }
-        HA_ERR("invadeTarget('%s'): target não encontrado", targetName);
+        HA_ERR("invadeTarget('%s'): target not found", targetName);
         return false;
     }
 
     void publishAll() {
         if (!haOK_) {
-            HA_ERR("publishAll(): ArduinoHA não iniciado");
+            HA_ERR("publishAll(): ArduinoHA not started");
             return;
         }
         if (!haMqtt_.isConnected()) {
-            HA_ERR("publishAll(): ArduinoHA MQTT desconectado — publishAll() abortado");
+            HA_ERR("publishAll(): ArduinoHA MQTT disconnected — publishAll() aborted");
             return;
         }
-        HA_DBG("publishAll() — publicando %d entidades", 9);
+        HA_DBG("publishAll() — publishing %d entities", 9);
 
         haSensorEstado_.setValue(lastStatus_);
         haSensorLogin_.setValue(configManager.login.pass);
@@ -237,7 +237,7 @@ public:
         haSelectStage_.setState((int8_t)configManager.stages.current);
         haSwitchRF433_.setState(rf433Enabled_);
 
-        HA_INF("publishAll() — estado completo publicado");
+        HA_INF("publishAll() — full state published");
     }
 
     void publishStatus(const char* s) {
@@ -284,15 +284,15 @@ private:
     // ─── MQTT RAW ────────────────────────────────────────────────────
     void beginMQTT() {
         if (mqttOK_) {
-            HA_DBG("beginMQTT() — já conectado, pulando");
+            HA_DBG("beginMQTT() — already connected, skipping");
             return;
         }
         if (!wifiOK_) {
-            HA_ERR("beginMQTT() — WiFi não conectado");
+            HA_ERR("beginMQTT() — WiFi not connected");
             return;
         }
         if (strlen(configManager.ha.broker) == 0) {
-            HA_ERR("beginMQTT() — broker vazio");
+            HA_ERR("beginMQTT() — empty broker");
             return;
         }
 
@@ -303,11 +303,11 @@ private:
 
     void reconnectMQTT() {
         if (!wifiOK_) {
-            HA_ERR("reconnectMQTT() — WiFi não conectado");
+            HA_ERR("reconnectMQTT() — WiFi not connected");
             return;
         }
         if (strlen(configManager.ha.broker) == 0) {
-            HA_ERR("reconnectMQTT() — broker vazio");
+            HA_ERR("reconnectMQTT() — empty broker");
             return;
         }
 
@@ -326,33 +326,33 @@ private:
 
         if (ok) {
             mqttOK_ = true;
-            HA_INF("reconnectMQTT() — SUCESSO (clientId=%s)", clientId);
+            HA_INF("reconnectMQTT() — SUCCESS (clientId=%s)", clientId);
         } else {
             mqttOK_ = false;
-            HA_ERR("reconnectMQTT() — FALHA (rc=%d clientId=%s)", mqttClient_.state(), clientId);
+            HA_ERR("reconnectMQTT() — FAILURE (rc=%d clientId=%s)", mqttClient_.state(), clientId);
         }
     }
 
     static void mqttCallback(char* topic, byte* payload, unsigned int len) {
-        // Não esperamos mensagens de volta
+        // We don't expect any messages back
     }
 
     // ─── ArduinoHA SETUP ─────────────────────────────────────────────
     void beginHA() {
         if (haOK_) {
-            HA_DBG("beginHA() — já iniciado, pulando");
+            HA_DBG("beginHA() — already started, skipping");
             return;
         }
         if (!wifiOK_) {
-            HA_ERR("beginHA() — WiFi não conectado");
+            HA_ERR("beginHA() — WiFi not connected");
             return;
         }
         if (strlen(configManager.ha.broker) == 0) {
-            HA_ERR("beginHA() — broker vazio");
+            HA_ERR("beginHA() — empty broker");
             return;
         }
 
-        HA_INF("beginHA() — configurando dispositivo ArduinoHA");
+        HA_INF("beginHA() — configuring ArduinoHA device");
 
         byte mac[6];
         WiFi.macAddress(mac);
@@ -398,17 +398,17 @@ private:
         haSwitchRF433_.setIcon("mdi:antenna");
         haSwitchRF433_.onCommand(haRFEnableCb);
 
-        HA_INF("beginHA() — entidades configuradas (%d)", 9);
-        HA_DBG("beginHA() — chamando haMqtt_.begin(broker=%s, port=%d, user='%s', pass='%s')",
+        HA_INF("beginHA() — entities configured (%d)", 9);
+        HA_DBG("beginHA() — calling haMqtt_.begin(broker=%s, port=%d, user='%s', pass='%s')",
                configManager.ha.broker,
                (int)configManager.ha.port,
-               strlen(configManager.ha.user) > 0 ? "***" : "(nenhum)",
-               strlen(configManager.ha.pass) > 0 ? "***" : "(nenhum)");
+               strlen(configManager.ha.user) > 0 ? "***" : "(none)",
+               strlen(configManager.ha.pass) > 0 ? "***" : "(none)");
 
-        // NOTA: ArduinoHA HAMqtt::begin() pode ter assinaturas diferentes.
-        // Verifique se haMqtt_.begin() ACEITA a porta como argumento.
-        // Se a assinatura for apenas begin(broker,user,pass), a porta default é 1883.
-        // Se precisar de porta diferente, verifique a biblioteca ArduinoHA.
+        // NOTE: ArduinoHA HAMqtt::begin() may have different signatures.
+        // Check whether haMqtt_.begin() ACCEPTS the port as an argument.
+        // If the signature is only begin(broker,user,pass), the default port is 1883.
+        // If you need a different port, check the ArduinoHA library.
         haMqtt_.begin(
             configManager.ha.broker,
             configManager.ha.port,
@@ -417,31 +417,31 @@ private:
         );
 
         haOK_ = true;
-        HA_INF("beginHA() — ArduinoHA inicializado em %s:%d",
+        HA_INF("beginHA() — ArduinoHA initialized at %s:%d",
                configManager.ha.broker, (int)configManager.ha.port);
 
-        // Primeira publicação — pode falhar se MQTT ainda não conectou
+        // First publish — may fail if MQTT hasn't connected yet
         if (haMqtt_.isConnected()) {
-            HA_INF("beginHA() — MQTT já conectado, publicando estado");
+            HA_INF("beginHA() — MQTT already connected, publishing state");
             publishAll();
         } else {
-            HA_DBG("beginHA() — MQTT ainda não conectado, publishAll() adiado para loopHA()");
+            HA_DBG("beginHA() — MQTT not connected yet, publishAll() deferred to loopHA()");
         }
     }
 
-    // ─── CALLBACKS HA ────────────────────────────────────────────────
+    // ─── HA CALLBACKS ────────────────────────────────────────────────
     static void haDefuseCodeCb(HANumeric val, HANumber*) {
         HA_DBG("haDefuseCodeCb(%ld)", (long)val.toInt32());
         configManager.sniff.defuseCode = constrain(val.toInt32(), 0, 9999);
         configManager.save();
-        HA_INF("Auth token alterado para %d", configManager.sniff.defuseCode);
+        HA_INF("Auth token changed to %d", configManager.sniff.defuseCode);
     }
 
     static void haSniffChannelCb(HANumeric val, HANumber*) {
         HA_DBG("haSniffChannelCb(%ld)", (long)val.toInt32());
         configManager.sniff.channel = constrain(val.toInt32(), 1, 4);
         configManager.save();
-        HA_INF("Sniff channel alterado para %d", configManager.sniff.channel);
+        HA_INF("Sniff channel changed to %d", configManager.sniff.channel);
     }
 
     static void haStageCb(int8_t idx, HASelect*) {
@@ -453,7 +453,7 @@ private:
         configManager.stages.exploitEnabled = (idx >= 2);
         configManager.stages.rf433Enabled = (idx >= 3);
         configManager.save();
-        HA_INF("Stage alterado para %d", configManager.stages.current);
+        HA_INF("Stage changed to %d", configManager.stages.current);
     }
 
     static void haRFEnableCb(bool state, HASwitch*) {
@@ -462,7 +462,7 @@ private:
         haClient.setRF433Enabled(state);
         configManager.stages.rf433Enabled = state;
         configManager.save();
-        HA_INF("RF433 %s", state ? "ativado" : "desativado");
+        HA_INF("RF433 %s", state ? "enabled" : "disabled");
     }
 
     // ─── AP MODE + WEBSERVER ───────────────────────────────────────────
@@ -470,7 +470,7 @@ private:
         WiFi.mode(WIFI_AP);
         WiFi.softAP("H4CK-OS-Config");
         apSrv_ = new WebServer(80);
-        HA_INF("[AP] H4CK-OS-Config iniciado em %s", WiFi.softAPIP().toString().c_str());
+        HA_INF("[AP] H4CK-OS-Config started at %s", WiFi.softAPIP().toString().c_str());
 
         apSrv_->on("/", HTTP_GET, [this]() { handleRoot(); });
         apSrv_->on("/save", HTTP_POST, [this]() { handleSave(); });
@@ -479,8 +479,8 @@ private:
     }
 
     void handleRoot() {
-        // (mesmo código do original — removido por brevidade)
-        String html = "<html><body><h2>H4CK-OS Config</h2><p>Use o POST /save</p></body></html>";
+        // (same code as the original — removed for brevity)
+        String html = "<html><body><h2>H4CK-OS Config</h2><p>Use the POST /save</p></body></html>";
         apSrv_->send(200, "text/html", html);
     }
 
@@ -497,7 +497,7 @@ private:
         if (apSrv_->hasArg("mpw"))
             strlcpy(configManager.ha.pass, apSrv_->arg("mpw").c_str(), sizeof(configManager.ha.pass));
         configManager.save();
-        apSrv_->send(200, "text/html", "<html><body><h2>Salvo! Reiniciando...</h2></body></html>");
+        apSrv_->send(200, "text/html", "<html><body><h2>Saved! Rebooting...</h2></body></html>");
         delay(1000);
         ESP.restart();
     }

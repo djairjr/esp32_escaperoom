@@ -1,9 +1,9 @@
 // ============================================================================
-// HAClient.h — INCREMENTAL PATCH para debug MQTT/ArduinoHA
+// HAClient.h — INCREMENTAL PATCH for MQTT/ArduinoHA debugging
 // ============================================================================
-// Aplique estas alterações no HAClient.h original.
+// Apply these changes to the original HAClient.h.
 //
-// PASSO 1: Adicione DEBUG MACROS após #pragma once (linha 2):
+// STEP 1: Add the DEBUG MACROS after #pragma once (line 2):
 //
 //   #define HA_DEBUG_LEVEL 3   // 0=none, 1=errors, 2=info, 3=verbose
 //   
@@ -25,16 +25,16 @@
 //     #define HA_DBG(...) do{}while(0)
 //   #endif
 //
-// PASSO 2: Substitua void begin() { ... } (linhas 55-82 aprox):
+// STEP 2: Replace void begin() { ... } (lines 55-82 approx):
 //
 //   void begin() {
-//       HA_DBG("begin() iniciado");
+//       HA_DBG("begin() started");
 //       HA_DBG("  SSID='%s' (len=%d)", configManager.ha.wifiSsid, strlen(configManager.ha.wifiSsid));
 //       HA_DBG("  Broker='%s' Port=%d", configManager.ha.broker, (int)configManager.ha.port);
 //       HA_DBG("  User='%s' Pass='%s'", configManager.ha.user, configManager.ha.pass);
 //
 //       if (strlen(configManager.ha.wifiSsid) == 0) {
-//           HA_INF("WiFi SSID vazio — iniciando AP");
+//           HA_INF("Empty WiFi SSID — starting AP");
 //           Serial.println("[WIFI] No SSID — starting AP mode");
 //           startAP(); return;
 //       }
@@ -47,7 +47,7 @@
 //           delay(500); Serial.print("."); att++;
 //       }
 //       Serial.println();
-//       HA_DBG("WiFi loop terminou status=%d tentativas=%d", WiFi.status(), att);
+//       HA_DBG("WiFi loop ended status=%d attempts=%d", WiFi.status(), att);
 //
 //       if (WiFi.status() == WL_CONNECTED) {
 //           HA_INF("WiFi OK IP=%s MAC=%s RSSI=%d",
@@ -57,13 +57,13 @@
 //           beginMQTT();
 //           beginHA();
 //       } else {
-//           HA_ERR("WiFi falhou status=%d", WiFi.status());
+//           HA_ERR("WiFi failed status=%d", WiFi.status());
 //           Serial.println(" FAIL — starting AP mode");
 //           startAP();
 //       }
 //   }
 //
-// PASSO 3: Substitua void loopHA() (linhas 84-109 aprox):
+// STEP 3: Replace void loopHA() (lines 84-109 approx):
 //
 //   void loopHA() {
 //       if (apSrv_) apSrv_->handleClient();
@@ -74,7 +74,7 @@
 //           static unsigned long lastRawAttempt = 0;
 //           if (millis() - lastRawAttempt > 5000) {
 //               lastRawAttempt = millis();
-//               HA_DBG("MQTT RAW desconectado — tentando beginMQTT()");
+//               HA_DBG("MQTT RAW disconnected — trying beginMQTT()");
 //               beginMQTT();
 //           }
 //       } else {
@@ -82,7 +82,7 @@
 //           static unsigned long lastRawReconnect = 0;
 //           if (!mqttClient_.connected() && millis() - lastRawReconnect > 10000) {
 //               lastRawReconnect = millis();
-//               HA_DBG("MQTT RAW caiu — reconnectMQTT()");
+//               HA_DBG("MQTT RAW dropped — reconnectMQTT()");
 //               reconnectMQTT();
 //           }
 //       }
@@ -92,7 +92,7 @@
 //           static unsigned long lastHaAttempt = 0;
 //           if (millis() - lastHaAttempt > 5000) {
 //               lastHaAttempt = millis();
-//               HA_DBG("ArduinoHA não iniciado — beginHA()");
+//               HA_DBG("ArduinoHA not started — beginHA()");
 //               beginHA();
 //           }
 //       } else {
@@ -104,16 +104,16 @@
 //                  lastHaConnected ? "true" : "false");
 //           if (nowConnected && !lastHaConnected) {
 //               lastHaConnected = true;
-//               HA_INF("HA MQTT conectou — publishAll()");
+//               HA_INF("HA MQTT connected — publishAll()");
 //               publishAll();
 //           }
 //           if (!nowConnected && lastHaConnected) {
 //               lastHaConnected = false;
-//               HA_ERR("HA MQTT desconectou!");
+//               HA_ERR("HA MQTT disconnected!");
 //           }
 //       }
 //
-//       // Diagnóstico periódico a cada 30s
+//       // Periodic diagnostics every 30s
 //       static unsigned long lastDiag = 0;
 //       if (millis() - lastDiag > 30000) {
 //           lastDiag = millis();
@@ -126,15 +126,15 @@
 //       }
 //   }
 //
-// PASSO 4: Substitua void beginHA() (linhas 225-274 aprox) — O MAIS IMPORTANTE:
+// STEP 4: Replace void beginHA() (lines 225-274 approx) — THE MOST IMPORTANT:
 //
 //   void beginHA() {
-//       if (haOK_) { HA_DBG("beginHA() já iniciado"); return; }
-//       if (!wifiOK_) { HA_ERR("beginHA(): WiFi não OK"); return; }
+//       if (haOK_) { HA_DBG("beginHA() already started"); return; }
+//       if (!wifiOK_) { HA_ERR("beginHA(): WiFi not OK"); return; }
 //       if (strlen(configManager.ha.broker) == 0) {
-//           HA_ERR("beginHA(): broker vazio"); return; }
+//           HA_ERR("beginHA(): empty broker"); return; }
 //
-//       HA_INF("beginHA() — configurando HADevice + entidades");
+//       HA_INF("beginHA() — configuring HADevice + entities");
 //       byte mac[6]; WiFi.macAddress(mac);
 //       haDevice_.setUniqueId(mac, sizeof(mac));
 //       haDevice_.setName("H4CK-OS");
@@ -143,48 +143,48 @@
 //       haDevice_.setModel("Cardputer");
 //       HA_DBG("Device ID=%02X%02X%02X%02X%02X%02X", mac[0],mac[1],mac[2],mac[3],mac[4],mac[5]);
 //
-//       // ... configuração das entidades mantida igual ...
-//       // (copie as linhas originais 236-266)
+//       // ... entity configuration kept the same ...
+//       // (copy the original lines 236-266)
 //
 //       HA_INF("haMqtt_.begin(broker=%s, port=%d)",
 //              configManager.ha.broker, (int)configManager.ha.port);
 //       HA_DBG("  user='%s' pass='%s' (lens=%d/%d)",
-//              strlen(configManager.ha.user) > 0 ? "***" : "(nenh)",
-//              strlen(configManager.ha.pass) > 0 ? "***" : "(nenh)",
+//              strlen(configManager.ha.user) > 0 ? "***" : "(none)",
+//              strlen(configManager.ha.pass) > 0 ? "***" : "(none)",
 //              strlen(configManager.ha.user), strlen(configManager.ha.pass));
 //
-//       // *** CORREÇÃO CRÍTICA #1 ***
-//       // Verifique a assinatura de haMqtt_.begin() na ArduinoHA.h:
-//       //   Se for: begin(const char* broker, uint16_t port, const char* user, const char* pass)
+//       // *** CRITICAL FIX #1 ***
+//       // Check the signature of haMqtt_.begin() in ArduinoHA.h:
+//       //   If it is: begin(const char* broker, uint16_t port, const char* user, const char* pass)
 //       //   USE: haMqtt_.begin(configManager.ha.broker, configManager.ha.port, user, pass);
-//       //   Se for: begin(const char* broker, const char* user, const char* pass)
-//       //   USE: haMqtt_.begin(configManager.ha.broker, user, pass); // porta sempre 1883
+//       //   If it is: begin(const char* broker, const char* user, const char* pass)
+//       //   USE: haMqtt_.begin(configManager.ha.broker, user, pass); // port always 1883
 //       //
-//       // O código original NÃO passa a porta! Se broker usa porta != 1883, HA falha.
+//       // The original code does NOT pass the port! If the broker uses a port != 1883, HA fails.
 //       haMqtt_.begin(
 //           configManager.ha.broker,
-//           configManager.ha.port,     // <-- ADICIONAR ESTA LINHA se a API suportar
+//           configManager.ha.port,     // <-- ADD THIS LINE if the API supports it
 //           strlen(configManager.ha.user) > 0 ? configManager.ha.user : nullptr,
 //           strlen(configManager.ha.pass) > 0 ? configManager.ha.pass : nullptr
 //       );
 //
 //       haOK_ = true;
-//       HA_INF("ArduinoHA inicializado em %s:%d", configManager.ha.broker, (int)configManager.ha.port);
+//       HA_INF("ArduinoHA initialized at %s:%d", configManager.ha.broker, (int)configManager.ha.port);
 //       if (haMqtt_.isConnected()) {
-//           HA_INF("MQTT já conectado — publishAll()");
+//           HA_INF("MQTT already connected — publishAll()");
 //           publishAll();
 //       } else {
-//           HA_DBG("MQTT ainda não conectado — aguardando loopHA()");
+//           HA_DBG("MQTT not connected yet — waiting for loopHA()");
 //       }
 //   }
 //
-// PASSO 5: Adicione debug às funções publishAll / publishStatus / lastPayload:
+// STEP 5: Add debug to the publishAll / publishStatus / lastPayload functions:
 //
 //   void publishAll() {
 //       if (!haOK_) { HA_ERR("publishAll(): haOK_=false"); return; }
 //       if (!haMqtt_.isConnected()) {
-//           HA_ERR("publishAll(): HA MQTT desconectado"); return; }
-//       HA_DBG("publishAll() — publicando 9 entidades");
+//           HA_ERR("publishAll(): HA MQTT disconnected"); return; }
+//       HA_DBG("publishAll() — publishing 9 entities");
 //       haSensorEstado_.setValue(lastStatus_);
 //       haSensorLogin_.setValue(configManager.login.pass);
 //       haSensorSniffIp_.setValue(configManager.sniff.ip);
@@ -192,7 +192,7 @@
 //       haNumSniffChannel_.setState((int8_t)(configManager.sniff.channel - 1));
 //       haSelectStage_.setState((int8_t)configManager.stages.current);
 //       haSwitchRF433_.setState(rf433Enabled_);
-//       HA_INF("publishAll() completo");
+//       HA_INF("publishAll() complete");
 //   }
 //
 //   void publishStatus(const char* s) {
@@ -207,59 +207,59 @@
 //   }
 //
 // ============================================================================
-// POSSÍVEL CAUSA RAIZ DO PROBLEMA HA
+// POSSIBLE ROOT CAUSE OF THE HA PROBLEM
 // ============================================================================
-// O código original chama:
+// The original code calls:
 //      haMqtt_.begin(configManager.ha.broker, user, pass);
 //
-// Essa assinatura NÃO passa a porta explícita. A ArduinoHA pode usar
-// porta default 1883. Se o broker usa porta diferente (ex: 1883 com TLS,
-// ou Mosquitto em outra porta), a conexão falhará silenciosamente.
+// That signature does NOT pass the port explicitly. ArduinoHA may use
+// default port 1883. If the broker uses a different port (e.g. 1883 with TLS,
+// or Mosquitto on another port), the connection will fail silently.
 //
-// Verifique em ArduinoHA/src/utils/HAMqtt.h a assinatura de begin().
-// Se existir begin(broker, port, user, pass), USE ESSA assinatura.
+// Check the signature of begin() in ArduinoHA/src/utils/HAMqtt.h.
+// If begin(broker, port, user, pass) exists, USE THAT signature.
 //
-// OUTRA CAUSA: beginHA() seta haOK_=true IMEDIATAMENTE após begin(),
-// mesmo se MQTT não conectou. Isso faz publishAll() ser chamado em
-// loopHA() antes de haMqtt_.isConnected() voltar true, resultando
-// em publishes perdidos. A correção do publishAll() acima já resolve.
+// ANOTHER CAUSE: beginHA() sets haOK_=true IMMEDIATELY after begin(),
+// even if MQTT hasn't connected. This causes publishAll() to be called in
+// loopHA() before haMqtt_.isConnected() returns true, resulting
+// in lost publishes. The publishAll() fix above already solves it.
 //
-// OUTRA CAUSA: loopHA() não verifica heap. Se LittleFS ou LVGL consome
-// muita RAM, o WiFiClient pode falhar em conectar. Adicione:
-//      if (ESP.getFreeHeap() < 20000) { HA_ERR("heap baixo=%d", ESP.getFreeHeap()); }
+// ANOTHER CAUSE: loopHA() doesn't check the heap. If LittleFS or LVGL consumes
+// too much RAM, the WiFiClient may fail to connect. Add:
+//      if (ESP.getFreeHeap() < 20000) { HA_ERR("low heap=%d", ESP.getFreeHeap()); }
 //
 // ============================================================================
-// VERIFICAÇÃO NA SERIAL DEPOIS DE GRAVAR:
+// SERIAL VERIFICATION AFTER FLASHING:
 // ============================================================================
-// Descomente #define HA_DEBUG_LEVEL 3 no .ino (antes de #include "HAClient.h")
-// ou adicione globalmente:
+// Uncomment #define HA_DEBUG_LEVEL 3 in the .ino (before #include "HAClient.h")
+// or add it globally:
 //      #define HA_DEBUG_LEVEL 3
 //
-// Abra monitor serial a 115200. Deve ver (em ordem):
-//   [HA-DBG] begin() iniciado
-//   [HA-DBG]   SSID='SUA_REDE' (len=N)
+// Open the serial monitor at 115200. You should see (in order):
+//   [HA-DBG] begin() started
+//   [HA-DBG]   SSID='YOUR_NETWORK' (len=N)
 //   [HA-DBG]   Broker='192.168.x.x' Port=1883
-//   [HA-DBG]   User='seuuser' Pass='seupass'
-//   [HA-INF] Connecting to WiFi 'SUA_REDE'...
+//   [HA-DBG]   User='youruser' Pass='yourpass'
+//   [HA-INF] Connecting to WiFi 'YOUR_NETWORK'...
 //   ..........
 //   [HA-INF] WiFi OK IP=192.168.x.x MAC=xx:xx:xx:xx:xx:xx RSSI=-45
 //   [HA-INF] beginMQTT() — broker=192.168.x.x port=1883
 //   [HA-INF] reconnectMQTT() — clientId=H4CKOS_xxxxxxxxx broker=192.168.x.x port=1883
-//   [HA-INF] reconnectMQTT() — SUCESSO
-//   [HA-INF] beginHA() — configurando HADevice + entidades
+//   [HA-INF] reconnectMQTT() — SUCCESS
+//   [HA-INF] beginHA() — configuring HADevice + entities
 //   [HA-DBG] Device ID=xxxxx
 //   [HA-INF] haMqtt_.begin(broker=192.168.x.x, port=1883)
-//   [HA-INF] ArduinoHA inicializado em 192.168.x.x:1883
-//   [HA-DBG] MQTT ainda não conectado — aguardando loopHA()
+//   [HA-INF] ArduinoHA initialized at 192.168.x.x:1883
+//   [HA-DBG] MQTT not connected yet — waiting for loopHA()
 //   [HA-DBG] haMqtt_.isConnected()=true last=false
-//   [HA-INF] HA MQTT conectou — publishAll()
-//   [HA-INF] publishAll() completo
+//   [HA-INF] HA MQTT connected — publishAll()
+//   [HA-INF] publishAll() complete
 //
-// Se você NÃO vê "HA MQTT conectou", o problema está na conexão MQTT.
-// Códigos de erro PubSubClient::state():
+// If you do NOT see "HA MQTT connected", the problem is in the MQTT connection.
+// PubSubClient::state() error codes:
 //   -4 = MQTT_CONNECTION_TIMEOUT
 //   -3 = MQTT_CONNECTION_LOST
-//   -2 = MQTT_CONNECT_FAILED (rede OK mas broker recusou)
+//   -2 = MQTT_CONNECT_FAILED (network OK but broker refused)
 //   -1 = MQTT_DISCONNECTED
 //    0 = MQTT_CONNECTED
 //    1 = MQTT_CONNECT_BAD_PROTOCOL
@@ -269,7 +269,7 @@
 //    5 = MQTT_CONNECT_UNAUTHORIZED
 //
 // ============================================================================
-// ARQUIVOS CRIADOS:
-//   HAClient_DEBUG.h       — drop-in replacement completo (já criado)
-//   HAClient_PATCH.md       — este arquivo (patch incremental com instruções)
+// FILES CREATED:
+//   HAClient_DEBUG.h       — full drop-in replacement (already created)
+//   HAClient_PATCH.md       — this file (incremental patch with instructions)
 // ============================================================================

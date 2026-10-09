@@ -1,28 +1,28 @@
 /**
- * EXEMPLO: SIMON SAYS - JOGO GENIUS
+ * EXAMPLE: SIMON SAYS - GENIUS GAME
  * ------------------------------------------------------
- * Implementação do jogo clássico Simon Says (Genius) para Escape Room.
- * 4 botões coloridos com anéis NeoPixel, cada um com som distinto.
+ * Implementation of the classic Simon Says (Genius) game for Escape Room.
+ * 4 colored buttons with NeoPixel rings, each with a distinct sound.
  *
- * CARACTERÍSTICA PRINCIPAL: Sem punição por erro!
- * Se o jogador errar, a mesma sequência é repetida até acertar.
+ * MAIN FEATURE: No punishment for mistakes!
+ * If the player makes a mistake, the same sequence is repeated until it is correct.
  *
  * HARDWARE: Adafruit PropMaker Feather RP2040 + PCF8574
- * - PCF8574 endereço I2C: 0x20
- * - Botões: P0-P3 (ativos em LOW, INPUT_PULLUP)
- * - NeoPixel: 48 LEDs (4 anéis de 12 LEDs cada)
- * - Fechadura: PIN_EXTERNAL_POWER
+ * - PCF8574 I2C address: 0x20
+ * - Buttons: P0-P3 (active LOW, INPUT_PULLUP)
+ * - NeoPixel: 48 LEDs (4 rings of 12 LEDs each)
+ * - Lock: PIN_EXTERNAL_POWER
  *
- * ÁUDIOS NECESSÁRIOS (LittleFS ou SD):
- * - ready.mp3    : Sistema pronto
- * - begin.mp3    : Início do jogo
- * - red.mp3      : Som do botão vermelho
- * - blue.mp3     : Som do botão azul
- * - yellow.mp3   : Som do botão amarelo
- * - green.mp3    : Som do botão verde
- * - correct.mp3  : Sequência correta
- * - error.mp3    : Erro na sequência
- * - victory.mp3  : Vitória (puzzle resolvido)
+ * REQUIRED AUDIO (LittleFS or SD):
+ * - ready.mp3    : System ready
+ * - begin.mp3    : Game start
+ * - red.mp3      : Red button sound
+ * - blue.mp3     : Blue button sound
+ * - yellow.mp3   : Yellow button sound
+ * - green.mp3    : Green button sound
+ * - correct.mp3  : Correct sequence
+ * - error.mp3    : Sequence error
+ * - victory.mp3  : Victory (puzzle solved)
  */
 
 #include <ESP32EscapeRoom.h>
@@ -35,7 +35,7 @@
 using namespace esp32_escaperoom;
 
 // ============================================================================
-// HOME ASSISTANT + WIFI (adicionado pelo port ESP32)
+// HOME ASSISTANT + WIFI (added by the ESP32 port)
 // ============================================================================
 ConfigManager netConfig;
 WiFiClient wifiClient;
@@ -50,7 +50,7 @@ void initHA() {
   haDevice.setUniqueId(mac, sizeof(mac));
   haDevice.setName(netConfig.devName());
   haDevice.setSoftwareVersion("1.0.0");
-  haSensorState.setName("Estado");
+  haSensorState.setName("State");
   haSensorState.setIcon("mdi:puzzle");
   haMqtt.begin(netConfig.mqttBroker(), netConfig.mqttUser(), netConfig.mqttPass());
 }
@@ -62,17 +62,17 @@ void loopHA() {
 
 
 // ============================================================================
-// CONFIGURAÇÃO
+// CONFIGURATION
 // ============================================================================
 #define PCF_ADDRESS         0x20
 
-// Botões (P0-P3 no PCF8574)
+// Buttons (P0-P3 on the PCF8574)
 #define BUTTON_RED_PIN      0
 #define BUTTON_BLUE_PIN     1
 #define BUTTON_YELLOW_PIN   2
 #define BUTTON_GREEN_PIN    3
 
-// Constantes do jogo
+// Game constants
 #define BUTTONS             4
 #define NUM_LEDS_PER_RING   12
 #define TOTAL_LEDS          (NUM_LEDS_PER_RING * BUTTONS)
@@ -84,21 +84,21 @@ void loopHA() {
 #define RESET_HOLD_TIME     2000UL
 #define RAINBOW_SPEED       15
 
-// Cores RGB
+// RGB colors
 const uint32_t COLORS[BUTTONS] = {
-    Adafruit_NeoPixel::Color(255, 0, 0),     // Vermelho
-    Adafruit_NeoPixel::Color(0, 0, 255),     // Azul
-    Adafruit_NeoPixel::Color(255, 215, 0),   // Amarelo/Dourado
-    Adafruit_NeoPixel::Color(0, 128, 0)      // Verde
+    Adafruit_NeoPixel::Color(255, 0, 0),     // Red
+    Adafruit_NeoPixel::Color(0, 0, 255),     // Blue
+    Adafruit_NeoPixel::Color(255, 215, 0),   // Yellow/Gold
+    Adafruit_NeoPixel::Color(0, 128, 0)      // Green
 };
 
-// Nomes das cores
+// Color names
 const char* COLOR_NAMES[BUTTONS] = {"Red", "Blue", "Yellow", "Green"};
 
-// Arquivos de som
+// Sound files
 const char* COLOR_SOUNDS[BUTTONS] = {"red.mp3", "blue.mp3", "yellow.mp3", "green.mp3"};
 
-// Estados do jogo
+// Game states
 enum GameStatus {
     Initialising,
     WaitCommand,
@@ -108,7 +108,7 @@ enum GameStatus {
     WaitForReset
 };
 
-// Enum de cores
+// Color enum
 enum Color {
     COLOR_RED = 0,
     COLOR_BLUE = 1,
@@ -117,7 +117,7 @@ enum Color {
 };
 
 // ============================================================================
-// VARIÁVEIS GLOBAIS
+// GLOBAL VARIABLES
 // ============================================================================
 GameStatus gameStatus = Initialising;
 int gameSequence[MAX_LEVELS];
@@ -128,66 +128,66 @@ bool rainbowActive = false;
 uint8_t gHue = 0;
 unsigned long lastRainbowUpdate = 0;
 
-// Callbacks para botões
+// Button callbacks
 void onButtonPressed(pinid_t pin, bool held);
 
 // ============================================================================
-// CLASSE SIMON SAYS PUZZLE
+// SIMON SAYS PUZZLE CLASS
 // ============================================================================
 class SimonSaysPuzzle : public PuzzleBase {
 public:
-    SimonSaysPuzzle() : PuzzleBase(20) {}  // ID 20 na rede RS485
+    SimonSaysPuzzle() : PuzzleBase(20) {}  // ID 20 on the RS485 network
 
     void setupHardware() override {
         Serial.println(F("\n========================================"));
-        Serial.println(F("  Simon Says - Jogo Genius"));
+        Serial.println(F("  Simon Says - Genius Game"));
         Serial.println(F("========================================"));
 
-        // Inicializa SwitchInput
+        // Initializes SwitchInput
         if (hw.hasPortExpander()) {
-            Serial.println(F("[SIMON] Inicializando SwitchInput..."));
+            Serial.println(F("[SIMON] Initializing SwitchInput..."));
             switches.init(hw.io(), SWITCHES_POLL_KEYS_ONLY, true);
 
-            // Adiciona botões com callback
+            // Adds buttons with callback
             switches.addSwitch(BUTTON_RED_PIN, onButtonPressed, NO_REPEAT, false);
             switches.addSwitch(BUTTON_BLUE_PIN, onButtonPressed, NO_REPEAT, false);
             switches.addSwitch(BUTTON_YELLOW_PIN, onButtonPressed, NO_REPEAT, false);
             switches.addSwitch(BUTTON_GREEN_PIN, onButtonPressed, NO_REPEAT, false);
 
-            Serial.println(F("[SIMON] 4 botoes configurados"));
+            Serial.println(F("[SIMON] 4 buttons configured"));
         } else {
-            Serial.println(F("[SIMON] ERRO: PCF8574 nao detectado!"));
+            Serial.println(F("[SIMON] ERROR: PCF8574 not detected!"));
         }
 
-        // Inicializa NeoPixel externos
+        // Initializes the external NeoPixels
         hw.pixelsExternal().updateLength(TOTAL_LEDS);
         hw.pixelsExternal().begin();
         hw.pixelsExternal().setBrightness(70);
         hw.pixelsExternal().clear();
         hw.pixelsExternal().show();
 
-        // Configura fechadura
+        // Configures the lock
         hw.pinMode(PIN_EXTERNAL_POWER, OUTPUT);
-        hw.digitalWrite(PIN_EXTERNAL_POWER, LOW);  // Trancado
+        hw.digitalWrite(PIN_EXTERNAL_POWER, LOW);  // Locked
 
-        // Gera sequência do jogo
+        // Generates the game sequence
         generateGameSequence();
 
-        // Toca som de pronto
+        // Plays the ready sound
         hw.sound().playOnce("ready.mp3");
 
         gameStatus = WaitCommand;
-        Serial.println(F("[SIMON] Pronto - pressione qualquer botao para iniciar"));
+        Serial.println(F("[SIMON] Ready - press any button to start"));
     }
 
     void update() override {
-        // Processa audio
+        // Processes audio
         hw.sound().loop();
 
-        // Processa inputs
+        // Processes inputs
         switches.runLoop();
 
-        // Máquina de estados
+        // State machine
         switch (gameStatus) {
             case WaitCommand:
                 handleWaitCommand();
@@ -208,7 +208,7 @@ public:
                 break;
         }
 
-        // Atualiza animação rainbow se ativa
+        // Updates the rainbow animation if active
         if (rainbowActive) {
             updateRainbow();
         }
@@ -216,12 +216,12 @@ public:
 
 private:
     // ------------------------------------------------------------------------
-    // MANIPULADORES DE ESTADO
+    // STATE HANDLERS
     // ------------------------------------------------------------------------
     void handleWaitCommand() {
-        hw.digitalWrite(PIN_EXTERNAL_POWER, LOW);  // Garante trancado
+        hw.digitalWrite(PIN_EXTERNAL_POWER, LOW);  // Ensures locked
 
-        // Aguarda qualquer botão
+        // Waits for any button
         if (switches.isSwitchPressed(BUTTON_RED_PIN) ||
             switches.isSwitchPressed(BUTTON_BLUE_PIN) ||
             switches.isSwitchPressed(BUTTON_YELLOW_PIN) ||
@@ -232,10 +232,10 @@ private:
     }
 
     void handleOverture() {
-        Serial.println(F("[SIMON] Iniciando jogo..."));
+        Serial.println(F("[SIMON] Starting game..."));
         hw.sound().playOnce("begin.mp3");
 
-        // Acende todos os anéis
+        // Lights all rings
         for (int i = 0; i < TOTAL_LEDS; i++) {
             int ring = i / NUM_LEDS_PER_RING;
             hw.pixelsExternal().setPixelColor(i, COLORS[ring]);
@@ -243,7 +243,7 @@ private:
         hw.pixelsExternal().show();
         delay(1000);
 
-        // Apaga todos
+        // Turns everything off
         hw.pixelsExternal().clear();
         hw.pixelsExternal().show();
         delay(1000);
@@ -252,17 +252,17 @@ private:
     }
 
     void handleRunning() {
-        hw.digitalWrite(PIN_EXTERNAL_POWER, LOW);  // Trancado
+        hw.digitalWrite(PIN_EXTERNAL_POWER, LOW);  // Locked
         playGame();
     }
 
     void handleSolved() {
-        Serial.println(F("[SIMON] PUZZLE RESOLVIDO! Caixa aberta."));
+        Serial.println(F("[SIMON] PUZZLE SOLVED! Box open."));
         hw.sound().playOnce("victory.mp3");
         startRainbow();
-        hw.digitalWrite(PIN_EXTERNAL_POWER, HIGH);  // Abre fechadura
+        hw.digitalWrite(PIN_EXTERNAL_POWER, HIGH);  // Opens the lock
 
-        delay(5000);  // Aguarda estabilização
+        delay(5000);  // Waits for stabilization
         gameStatus = WaitForReset;
     }
 
@@ -293,20 +293,20 @@ private:
     }
 
     // ------------------------------------------------------------------------
-    // LÓGICA DO JOGO
+    // GAME LOGIC
     // ------------------------------------------------------------------------
     void playGame() {
         while (gameStatus == Running) {
             hw.sound().loop();
 
-            // Mostra sequência
+            // Shows the sequence
             showSequence();
             delay(500);
 
-            // Aguarda jogador repetir
+            // Waits for the player to repeat it
             int result = checkPlayerInput();
 
-            // Se errou, repete mesma sequência (sem punição!)
+            // If wrong, repeats the same sequence (no punishment!)
             while (result == 0 && gameStatus == Running) {
                 hw.sound().playOnce("error.mp3");
                 delay(1000);
@@ -315,7 +315,7 @@ private:
                 result = checkPlayerInput();
             }
 
-            // Se acertou completamente
+            // If fully correct
             if (result == 1) {
                 hw.sound().playOnce("correct.mp3");
                 delay(500);
@@ -333,7 +333,7 @@ private:
     }
 
     void showSequence() {
-        Serial.print(F("[SIMON] Sequencia: "));
+        Serial.print(F("[SIMON] Sequence: "));
         for (int i = 0; i < currentLevel; i++) {
             Serial.print(COLOR_NAMES[gameSequence[i]]);
             Serial.print(F(" "));
@@ -348,7 +348,7 @@ private:
             int button = -1;
             unsigned long startTime = millis();
 
-            // Aguarda botão ou timeout
+            // Waits for a button or timeout
             while (button == -1) {
                 hw.sound().loop();
                 switches.runLoop();
@@ -369,26 +369,26 @@ private:
                 }
             }
 
-            // Feedback visual/sonoro
+            // Visual/sound feedback
             flashRing(button, 500);
 
-            // Verifica se acertou
+            // Checks if it was correct
             if (button != gameSequence[i]) {
-                return 0;  // Errou
+                return 0;  // Wrong
             }
 
             correctMoves++;
         }
 
         correctMoves = 0;
-        return 1;  // Acertou tudo
+        return 1;  // All correct
     }
 
     // ------------------------------------------------------------------------
-    // EFEITOS VISUAIS
+    // VISUAL EFFECTS
     // ------------------------------------------------------------------------
     void flashRing(int colorIdx, int duration) {
-        // Acende anel
+        // Lights the ring
         for (int i = colorIdx * NUM_LEDS_PER_RING;
              i < (colorIdx + 1) * NUM_LEDS_PER_RING;
              i++) {
@@ -396,11 +396,11 @@ private:
         }
         hw.pixelsExternal().show();
 
-        // Toca som
+        // Plays the sound
         hw.sound().playOnce(COLOR_SOUNDS[colorIdx]);
         delay(duration);
 
-        // Apaga anel
+        // Turns the ring off
         for (int i = colorIdx * NUM_LEDS_PER_RING;
              i < (colorIdx + 1) * NUM_LEDS_PER_RING;
              i++) {
@@ -414,7 +414,7 @@ private:
         rainbowActive = true;
         gHue = 0;
         lastRainbowUpdate = millis();
-        Serial.println(F("[SIMON] Rainbow iniciado"));
+        Serial.println(F("[SIMON] Rainbow started"));
     }
 
     void stopRainbow() {
@@ -431,14 +431,14 @@ private:
 
         lastRainbowUpdate = now;
 
-        // Apaga todos
+        // Turns everything off
         hw.pixelsExternal().clear();
 
-        // Para cada anel, acende 1 LED com cor rainbow
+        // For each ring, lights 1 LED with a rainbow color
         for (int ring = 0; ring < BUTTONS; ring++) {
             int ledPos = (ring * NUM_LEDS_PER_RING) + (gHue % NUM_LEDS_PER_RING);
 
-            // Converte HSV para RGB
+            // Converts HSV to RGB
             uint8_t r, g, b;
             hsvToRgb(gHue + (ring * 64), 255, 255, r, g, b);
             hw.pixelsExternal().setPixelColor(ledPos, r, g, b);
@@ -449,7 +449,7 @@ private:
     }
 
     void resetAnimation() {
-        // Ciclo individual
+        // Individual cycle
         for (int cycle = 0; cycle < BUTTONS; cycle++) {
             for (int i = 0; i < NUM_LEDS_PER_RING; i++) {
                 int ledIdx = (cycle * NUM_LEDS_PER_RING) + i;
@@ -462,7 +462,7 @@ private:
             }
         }
 
-        // Duas piscadas
+        // Two blinks
         for (int p = 0; p < 2; p++) {
             for (int i = 0; i < TOTAL_LEDS; i++) {
                 int ring = i / NUM_LEDS_PER_RING;
@@ -477,7 +477,7 @@ private:
     }
 
     // ------------------------------------------------------------------------
-    // GERENCIAMENTO DO JOGO
+    // GAME MANAGEMENT
     // ------------------------------------------------------------------------
     void resetGame() {
         currentLevel = MIN_LEVELS;
@@ -487,19 +487,19 @@ private:
         hw.sound().playOnce("ready.mp3");
         delay(500);
         gameStatus = WaitCommand;
-        Serial.println(F("[SIMON] Jogo resetado"));
+        Serial.println(F("[SIMON] Game reset"));
     }
 
     void generateGameSequence() {
-        // Sequência base
+        // Base sequence
         int baseSequence[BUTTONS] = {COLOR_RED, COLOR_BLUE, COLOR_YELLOW, COLOR_GREEN};
 
-        // Preenche repetição
+        // Fills the repetition
         for (int i = 0; i < MAX_LEVELS; i++) {
             gameSequence[i] = baseSequence[i % BUTTONS];
         }
 
-        // Evita repetições consecutivas
+        // Avoids consecutive repetitions
         for (int i = 1; i < MAX_LEVELS; i++) {
             if (gameSequence[i] == gameSequence[i - 1]) {
                 for (int j = i + 1; j < MAX_LEVELS; j++) {
@@ -513,10 +513,10 @@ private:
             }
         }
 
-        // Embaralha adicional
+        // Additional shuffle
         bubbleUnsort(gameSequence, MAX_LEVELS);
 
-        // Verificação final
+        // Final check
         for (int i = 1; i < MAX_LEVELS; i++) {
             if (gameSequence[i] == gameSequence[i - 1]) {
                 for (int j = i + 1; j < MAX_LEVELS; j++) {
@@ -540,7 +540,7 @@ private:
     }
 
     // ------------------------------------------------------------------------
-    // UTILITÁRIOS
+    // UTILITIES
     // ------------------------------------------------------------------------
     void bubbleUnsort(int* list, int elem) {
         for (int a = elem - 1; a > 0; a--) {
@@ -572,11 +572,11 @@ private:
 };
 
 // ============================================================================
-// CALLBACKS GLOBAIS
+// GLOBAL CALLBACKS
 // ============================================================================
 void onButtonPressed(pinid_t pin, bool held) {
-    // Callback necessário para SwitchInput
-    // Lógica principal está no checkPlayerInput
+    // Callback required for SwitchInput
+    // The main logic is in checkPlayerInput
 }
 
 // ============================================================================
@@ -591,7 +591,7 @@ void setup() {
     while (!Serial && (millis() - start < 3000)) delay(10);
 
     hw.begin();
-    hw.addPcf8574(PCF_ADDRESS);  // Inicializa PCF8574 (8 pinos, usando P0-P3 para 4 botoes)
+    hw.addPcf8574(PCF_ADDRESS);  // Initializes PCF8574 (8 pins, using P0-P3 for 4 buttons)
 
     master.addPuzzle(&puzzle);
     master.begin();

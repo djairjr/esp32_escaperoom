@@ -1,28 +1,28 @@
-# KeypadCodeEntry — Algoritmo do Jogo
+# KeypadCodeEntry — Game Algorithm
 
-## Visão Geral
+## Overview
 
-Puzzle de código numérico. O jogador insere um código de 4 dígitos via teclado matricial. Se correto, destrava. Configurável via JSON.
+Numeric code puzzle. The player enters a 4-digit code via a matrix keypad. If correct, it unlocks. Configurable via JSON.
 
-## Configuração (JSON: keypad.json)
+## Configuration (JSON: keypad.json)
 
-- **code**: código de 4 dígitos
-- **maxAttempts**: tentativas máximas
+- **code**: 4-digit code
+- **maxAttempts**: maximum attempts
 - **Hardware**: lockPin, neoCount, volume
 
-## Estados
+## States
 
 IDLE → ENTERING → CHECKING → SOLVED/ERROR → IDLE
 
-## Fluxo
+## Flow
 
-1. IDLE: aguardando primeira tecla
-2. Tecla pressionada: entra em modo ENTERING
-3. 4 dígitos acumulados: verifica código
-4. Correto → SOLVED (destrava, áudio de sucesso)
-5. Errado → incrementa tentativa. Se excedeu maxAttempts → ERROR. Senão, volta a ENTERING
-6. `*` ou `#`: limpa entrada
+1. IDLE: waiting for the first key
+2. Key pressed: enters ENTERING mode
+3. 4 digits accumulated: checks the code
+4. Correct → SOLVED (unlocks, success audio)
+5. Wrong → increments the attempt count. If maxAttempts was exceeded → ERROR. Otherwise, returns to ENTERING
+6. `*` or `#`: clears the entry
 
 ## AP Mode + WiFi
 
-Configuração de rede via portal web em 192.168.4.1.
+Network configuration via web portal at 192.168.4.1.

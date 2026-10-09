@@ -1,21 +1,21 @@
 /**
- * UNIVERSAL CONTROLLER MULTI - Multiplos puzzles em uma placa
+ * UNIVERSAL CONTROLLER MULTI - Multiple puzzles on one board
  *
- * Port do RP2040 PropMaker para ESP32-S3 usando ESP32EscapeRoom
+ * Port of the RP2040 PropMaker to ESP32-S3 using ESP32EscapeRoom
  *
- * Exemplo com 2 instancias de UniversalController, cada uma com:
- * - Seu proprio PCF8575 (endereco I2C unico)
- * - Sua configuracao JSON (modo, sequencia, audio, cor)
- * - Sua faixa de NeoPixels no strip
- * - Seu pino de saida (trava/rele)
+ * Example with 2 instances of UniversalController, each with:
+ * - Its own PCF8575 (unique I2C address)
+ * - Its own JSON configuration (mode, sequence, audio, color)
+ * - Its own NeoPixel range on the strip
+ * - Its own output pin (lock/relay)
  *
  * Hardware: Seeed XIAO ESP32-S3
- * - PCF8575 #1 em 0x20 (Puzzle A)
- * - PCF8575 #2 em 0x21 (Puzzle B)
- * - NeoPixel strip compartilhado
+ * - PCF8575 #1 at 0x20 (Puzzle A)
+ * - PCF8575 #2 at 0x21 (Puzzle B)
+ * - Shared NeoPixel strip
  *
- * Home Assistant: Game Master monitora cada puzzle independentemente.
- * Controla START / RESET de cada um remotamente.
+ * Home Assistant: Game Master monitors each puzzle independently.
+ * Controls START / RESET of each one remotely.
  */
 
 #include <ESP32EscapeRoom.h>
@@ -80,37 +80,37 @@ void initHA() {
   haDevice.setName(netConfig.devName());
   haDevice.setSoftwareVersion("1.0.0");
 
-  haStateA.setName("Estado Puzzle A");
+  haStateA.setName("Puzzle A State");
   haStateA.setIcon("mdi:puzzle");
-  haProgressA.setName("Progresso Puzzle A");
+  haProgressA.setName("Puzzle A Progress");
   haProgressA.setUnitOfMeasurement("%");
   haProgressA.setIcon("mdi:progress-check");
 
-  haStartA.setName("Iniciar Puzzle A");
+  haStartA.setName("Start Puzzle A");
   haStartA.setIcon("mdi:play");
   haStartA.onCommand([](HAButton*){ puzzleA.run(); if(puzzleA.engine()) puzzleA.engine()->start(); });
 
-  haResetA.setName("Resetar Puzzle A");
+  haResetA.setName("Reset Puzzle A");
   haResetA.setIcon("mdi:restart");
   haResetA.onCommand([](HAButton*){ puzzleA.setState(PuzzleState::Idle); if(puzzleA.engine()) puzzleA.engine()->reset(); });
 
-  haStateB.setName("Estado Puzzle B");
+  haStateB.setName("Puzzle B State");
   haStateB.setIcon("mdi:puzzle");
-  haProgressB.setName("Progresso Puzzle B");
+  haProgressB.setName("Puzzle B Progress");
   haProgressB.setUnitOfMeasurement("%");
   haProgressB.setIcon("mdi:progress-check");
 
-  haStartB.setName("Iniciar Puzzle B");
+  haStartB.setName("Start Puzzle B");
   haStartB.setIcon("mdi:play");
   haStartB.onCommand([](HAButton*){ puzzleB.run(); if(puzzleB.engine()) puzzleB.engine()->start(); });
 
-  haResetB.setName("Resetar Puzzle B");
+  haResetB.setName("Reset Puzzle B");
   haResetB.setIcon("mdi:restart");
   haResetB.onCommand([](HAButton*){ puzzleB.setState(PuzzleState::Idle); if(puzzleB.engine()) puzzleB.engine()->reset(); });
 
   haMqtt.begin(netConfig.mqttBroker(), netConfig.mqttUser(), netConfig.mqttPass());
   haOK = true;
-  Serial.println("[HA] Conectado ao Home Assistant");
+  Serial.println("[HA] Connected to Home Assistant");
 }
 
 void loopHA() {
@@ -127,7 +127,7 @@ void publishHA() {
 }
 
 // ============================================================================
-// CLASSE PUZZLE (reutiliza ConfigManager + PuzzleEngine)
+// PUZZLE CLASS (reuses ConfigManager + PuzzleEngine)
 // ============================================================================
 
 class MultiControllerPuzzle : public PuzzleBase {
@@ -157,10 +157,10 @@ private:
 };
 
 void MultiControllerPuzzle::setupHardware() {
-    Serial.printf("[Puzzle %d] Iniciando (PCF=0x%02X, pixels=%d-%d)\n",
+    Serial.printf("[Puzzle %d] Starting (PCF=0x%02X, pixels=%d-%d)\n",
                   getId(), pcfAddress_, pixelOffset_, pixelOffset_ + pixelCount_ - 1);
 
-    // Monta LittleFS (so na primeira chamada)
+    // Mounts LittleFS (only on the first call)
     static bool fsMounted = false;
     if (!fsMounted) {
         fsMounted = LittleFS.begin();
@@ -173,7 +173,7 @@ void MultiControllerPuzzle::setupHardware() {
 
     const auto& inputs = configManager_.getInputConfig();
 
-    // Configura PCF especifico deste puzzle
+    // Configures the PCF specific to this puzzle
     hw.addPcf8575(pcfAddress_);
     if (hw.hasExpander()) {
         auto* io = hw.io();
@@ -186,12 +186,12 @@ void MultiControllerPuzzle::setupHardware() {
     engine_ = new PuzzleEngine(configManager_);
     engine_->begin();
 
-    // Configura saida
+    // Configures the output
     const auto& output = configManager_.getOutputConfig();
     hw.pinMode(output.lockPin, OUTPUT);
     hw.digitalWrite(output.lockPin, output.activeHigh ? LOW : HIGH);
 
-    // Define faixa de NeoPixel deste puzzle
+    // Sets this puzzle's NeoPixel range
     setPixelRange(pixelOffset_, pixelCount_);
 
     setState(PuzzleState::Idle);
@@ -201,14 +201,14 @@ void MultiControllerPuzzle::update() {
     hw.sound().loop();
 
     if (getState() == PuzzleState::Idle) {
-        // Inicia automaticamente no setup()
+        // Starts automatically in setup()
     }
 
     if (engine_ && getState() == PuzzleState::Running) {
         engine_->update();
         if (engine_->isSolved()) {
             setState(PuzzleState::Solved);
-            publishHA();  // publica imediatamente ao resolver
+            publishHA();  // publishes immediately on solve
         }
     }
 
@@ -220,13 +220,13 @@ void MultiControllerPuzzle::update() {
 
 void MultiControllerPuzzle::printStatus() {
     if (!engine_) return;
-    Serial.printf("[Puzzle %d] Progresso: %d%% (%d/%d)\n",
+    Serial.printf("[Puzzle %d] Progress: %d%% (%d/%d)\n",
                   getId(), engine_->getProgress(),
                   engine_->getCurrentStep(), engine_->getTotalSteps());
 }
 
 // ============================================================================
-// INSTANCIAS
+// INSTANCES
 // ============================================================================
 
 MultiControllerPuzzle puzzleA(1, "/config_puzzleA.json", 0x20, 0, 8);
@@ -245,7 +245,7 @@ void setup() {
     // WiFi + MQTT
     netConfig.begin();
     if (netConfig.isAPMode()) {
-        Serial.println(F("[CFG] Modo AP: http://192.168.4.1"));
+        Serial.println(F("[CFG] AP Mode: http://192.168.4.1"));
     }
 
     master.addPuzzle(&puzzleA);
@@ -259,7 +259,7 @@ void setup() {
     initHA();
     publishHA();
 
-    Serial.println(F("[MAIN] Puzzle A e B em execucao"));
+    Serial.println(F("[MAIN] Puzzle A and B running"));
 }
 
 void loop() {

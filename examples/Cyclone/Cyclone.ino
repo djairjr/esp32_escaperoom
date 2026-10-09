@@ -1,20 +1,20 @@
 /**
- * EXEMPLO: CYCLONE - JOGO DE TIMING
+ * EXAMPLE: CYCLONE - TIMING GAME
  * -----------------------------------
- * Luz percorre um anel de NeoPixels em velocidade crescente.
- * Jogador pressiona SELECT para parar a luz no setor verde (alvo).
- * Se acertar, o puzzle resolve. Se errar, tenta de novo.
+ * A light travels around a ring of NeoPixels at increasing speed.
+ * The player presses SELECT to stop the light in the green sector (target).
+ * If it hits, the puzzle is solved. If it misses, the player tries again.
  *
- * Port do RP2040 PropMaker para ESP32-S3 usando ESP32EscapeRoom
+ * Port from RP2040 PropMaker to ESP32-S3 using ESP32EscapeRoom
  *
  * Hardware:
- *   - NeoPixel externo para o anel de luzes
- *   - Botao SELECT (GPIO 4 / D3) para parar
- *   - Botao DET (GPIO 10 / D10) para resetar apos solucao
- *   - Audio MP3 via I2S (LittleFS)
- *   - Rele/Trava no pino D0 (GPIO1)
+ *   - External NeoPixel for the ring of lights
+ *   - SELECT button (GPIO 4 / D3) to stop
+ *   - DET button (GPIO 10 / D10) to reset after solving
+ *   - MP3 audio via I2S (LittleFS)
+ *   - Relay/Lock on pin D0 (GPIO1)
  *
- * Configuracao via /cyclone.json no LittleFS.
+ * Configuration via /cyclone.json on LittleFS.
  */
 
 #include <ESP32EscapeRoom.h>
@@ -25,7 +25,7 @@
 using namespace esp32_escaperoom;
 
 // ============================================================================
-// HOME ASSISTANT + WIFI (adicionado pelo port ESP32)
+// HOME ASSISTANT + WIFI (added by the ESP32 port)
 // ============================================================================
 ConfigManager netConfig;
 WiFiClient wifiClient;
@@ -40,7 +40,7 @@ void initHA() {
   haDevice.setUniqueId(mac, sizeof(mac));
   haDevice.setName(netConfig.devName());
   haDevice.setSoftwareVersion("1.0.0");
-  haSensorState.setName("Estado");
+  haSensorState.setName("State");
   haSensorState.setIcon("mdi:puzzle");
   haMqtt.begin(netConfig.mqttBroker(), netConfig.mqttUser(), netConfig.mqttPass());
 }
@@ -52,7 +52,7 @@ void loopHA() {
 
 
 // ============================================================================
-// MAPEAMENTO D-PIN -> GPIO
+// D-PIN -> GPIO MAPPING
 // ============================================================================
 #define D0   1
 #define D1   2
@@ -69,10 +69,10 @@ void loopHA() {
 #define D12  41
 
 // ============================================================================
-// CONFIGURACAO JSON
+// JSON CONFIGURATION
 // ============================================================================
 struct CycloneConfig {
-  uint8_t lockPin = D0;          // GPIO1 - Relé da trava
+  uint8_t lockPin = D0;          // GPIO1 - Lock relay
   uint8_t neoCount = 16;
   uint8_t targetSize = 3;
   float startSpeed = 0.05f;
@@ -110,7 +110,7 @@ static void loadConfig() {
 }
 
 // ============================================================================
-// PINOS
+// PINS
 // ============================================================================
 #define BTN_SELECT D3   // GPIO4
 #define BTN_DET    D10  // GPIO9
@@ -132,14 +132,14 @@ public:
   void setupHardware() override {
     loadConfig();
 
-    // Trava
+    // Lock
     hw.pinMode(config.lockPin, OUTPUT);
     hw.digitalWrite(config.lockPin, HIGH);
 
-    // Faixa de NeoPixel
+    // NeoPixel strip
     if (config.neoCount > 0) setPixelRange(0, config.neoCount);
 
-    // SwitchInput via PCF (ou GPIO nativo se sem expander)
+    // SwitchInput via PCF (or native GPIO if no expander)
     if (hw.hasExpander()) {
       switches.init(hw.io(), SWITCHES_POLL_KEYS_ONLY, true);
     } else {
@@ -151,7 +151,7 @@ public:
     randomSeed(esp_random());
     resetGame();
     setState(PuzzleState::Idle);
-    Serial.printf("[CYCLONE] SELECT para comecar (%d acertos para vencer)\n", config.roundsToWin);
+    Serial.printf("[CYCLONE] SELECT to start (%d hits to win)\n", config.roundsToWin);
   }
 
   void update() override {
@@ -196,7 +196,7 @@ private:
     speed_ = config.startSpeed;
     nextRound();
     setState(PuzzleState::Running);
-    Serial.println(F("[CYCLONE] INICIO! SELECT para parar"));
+    Serial.println(F("[CYCLONE] START! SELECT to stop"));
   }
 
   void nextRound() {
@@ -221,7 +221,7 @@ private:
     int ipos = (int)pos_;
     if (ipos >= targetStart_ && ipos < targetStart_ + config.targetSize) {
       round_++;
-      Serial.printf("[CYCLONE] ACERTOU! Round %d/%d\n", round_, config.roundsToWin);
+      Serial.printf("[CYCLONE] HIT! Round %d/%d\n", round_, config.roundsToWin);
       hw.sound().playOnce(config.sfxHit);
 
       if (round_ >= config.roundsToWin) {
@@ -231,7 +231,7 @@ private:
         nextRound();
       }
     } else {
-      Serial.println(F("[CYCLONE] ERROU!"));
+      Serial.println(F("[CYCLONE] MISSED!"));
       hw.sound().playOnce(config.sfxMiss);
       nextRound();
     }
@@ -242,7 +242,7 @@ private:
     hw.sound().playOnce(config.sfxSolved);
     solvedAt_ = millis();
     setState(PuzzleState::Solved);
-    Serial.println(F("[CYCLONE] RESOLVIDO!"));
+    Serial.println(F("[CYCLONE] SOLVED!"));
   }
 
   void renderAll() {
@@ -289,7 +289,7 @@ private:
 };
 
 // ============================================================================
-// CALLBACK GLOBAL
+// GLOBAL CALLBACK
 // ============================================================================
 static void onButtonPress(pinid_t pin, bool held) {
   if (held || !cycloneInstance) return;
@@ -314,7 +314,7 @@ void setup() {
     initHA();
   master.begin();
 
-  Serial.println(F("[CYCLONE] Pronto!"));
+  Serial.println(F("[CYCLONE] Ready!"));
 }
 
 void loop() {

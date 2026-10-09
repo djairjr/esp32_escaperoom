@@ -1,42 +1,42 @@
-# Manual do Cyclone - Jogo de Reflexo
+# Cyclone Manual - Reflex Game
 
-Guia para donos de sala, game masters e jogadores.
-
----
-
-## 1. Visao Geral
-
-### O que e este dispositivo?
-
-O **Cyclone** e um jogo de reflexo onde uma luz corre em circulo em um anel de LEDs e o jogador deve pressionar um botao no momento certo para fazer a luz parar dentro de uma zona-alvo verde. A cada acerto, a velocidade aumenta. Tres acertos resolvem o puzzle.
-
-### Como funciona no jogo?
-
-- Os jogadores veem um anel de luzes com uma luz branca correndo em circulo
-- Uma zona verde indica onde a luz deve parar
-- O jogador pressiona o botao para tentar parar a luz na zona verde
-- Se acertar, a luz fica verde e a velocidade aumenta
-- Se errar, a luz fica vermelha e o jogador tenta de novo
-- Apos 3 acertos, o puzzle e resolvido
+Guide for room owners, game masters and players.
 
 ---
 
-## 2. Componentes do Jogo
+## 1. Overview
 
-| Componente | Descricao |
+### What is this device?
+
+**Cyclone** is a reflex game where a light runs in a circle around a ring of LEDs and the player must press a button at the right moment to make the light stop inside a green target zone. With each hit, the speed increases. Three hits solve the puzzle.
+
+### How does it work in the game?
+
+- Players see a ring of lights with a white light running in a circle
+- A green zone indicates where the light must stop
+- The player presses the button to try to stop the light in the green zone
+- If it hits, the light turns green and the speed increases
+- If it misses, the light turns red and the player tries again
+- After 3 hits, the puzzle is solved
+
+---
+
+## 2. Game Components
+
+| Component | Description |
 |------------|-----------|
-| **Anel de LEDs NeoPixel** | Luzes que mostram a luz correndo e a zona-alvo |
-| **Botao SELECT** | Botao principal para parar a luz |
-| **Botao DET** | Botao alternativo (funciona igual ao SELECT) |
-| **Alto-falante** | Sons de tick, acerto, erro e vitoria |
+| **NeoPixel LED Ring** | Lights that show the running light and the target zone |
+| **SELECT Button** | Main button to stop the light |
+| **DET Button** | Alternative button (works the same as SELECT) |
+| **Speaker** | Tick, hit, miss and victory sounds |
 
 ---
 
-## 3. Configuracao Inicial
+## 3. Initial Configuration
 
-### Ajuste de dificuldade
+### Difficulty adjustment
 
-Edite o arquivo `/cyclone.json`:
+Edit the `/cyclone.json` file:
 
 ```json
 {
@@ -48,104 +48,104 @@ Edite o arquivo `/cyclone.json`:
 }
 ```
 
-| Parametro | Efeito | Facil | Dificil |
+| Parameter | Effect | Easy | Hard |
 |-----------|--------|-------|---------|
-| `targetSize` | Tamanho da zona-alvo | 5 (grande) | 1 (ponto) |
-| `startSpeed` | Velocidade inicial | 0.03 | 0.08 |
-| `speedIncrement` | Aumento por round | 0.01 | 0.04 |
-| `maxSpeed` | Velocidade maxima | 0.2 | 0.6 |
-| `roundsToWin` | Acertos necessarios | 2 | 5 |
+| `targetSize` | Size of the target zone | 5 (large) | 1 (dot) |
+| `startSpeed` | Initial speed | 0.03 | 0.08 |
+| `speedIncrement` | Increase per round | 0.01 | 0.04 |
+| `maxSpeed` | Maximum speed | 0.2 | 0.6 |
+| `roundsToWin` | Hits required | 2 | 5 |
 
 ---
 
-## 4. Como Jogar
+## 4. How to Play
 
-### Para o Game Master
+### For the Game Master
 
-1. Ajuste a dificuldade no JSON antes de comecar
-2. Posicione o anel de LEDs em local visivel
-3. Pressione SELECT para iniciar o jogo
+1. Adjust the difficulty in the JSON before starting
+2. Position the LED ring in a visible location
+3. Press SELECT to start the game
 
-### Para os jogadores
+### For the players
 
-1. **Observe** a luz correndo no anel
-2. **Aguarde** ate que a luz se aproxime da zona verde
-3. **Pressione SELECT** para parar a luz
-4. **Se acertar**: a luz fica verde, a velocidade aumenta, va para o proximo round
-5. **Se errar**: a luz fica vermelha, tente de novo
-6. **Apos 3 acertos**: puzzle resolvido!
+1. **Watch** the light running on the ring
+2. **Wait** until the light approaches the green zone
+3. **Press SELECT** to stop the light
+4. **If it hits**: the light turns green, the speed increases, go to the next round
+5. **If it misses**: the light turns red, try again
+6. **After 3 hits**: puzzle solved!
 
-### Dicas
+### Tips
 
-- Antecipe o movimento: a luz sempre se move na mesma direcao
-- Pressione um pouco antes de a luz chegar ao alvo (tempo de reacao)
-- A velocidade aumenta a cada acerto - fique mais rapido!
-- Use ambos os botoes (SELECT ou DET) se disponiveis
-
----
-
-## 5. O que acontece ao resolver
-
-1. O som de vitoria toca
-2. Os LEDs fazem efeito rainbow
-3. A trava e liberada
-4. Apos 8 segundos, o puzzle volta ao estado inicial
+- Anticipate the movement: the light always moves in the same direction
+- Press a little before the light reaches the target (reaction time)
+- The speed increases with each hit - get faster!
+- Use both buttons (SELECT or DET) if available
 
 ---
 
-## 6. Checklist de Audio
+## 5. What happens when it is solved
 
-| Arquivo | Quando Toca | Obrigatorio? |
+1. The victory sound plays
+2. The LEDs do a rainbow effect
+3. The lock is released
+4. After 8 seconds, the puzzle returns to its initial state
+
+---
+
+## 6. Audio Checklist
+
+| File | When It Plays | Required? |
 |---------|-------------|--------------|
-| `tick.mp3` | Cada passo da luz (opcional) | Nao |
-| `hit.mp3` | Acertou o alvo | Sim |
-| `miss.mp3` | Errou o alvo | Sim |
-| `solved.mp3` | Puzzle resolvido | Sim |
+| `tick.mp3` | Each step of the light (optional) | No |
+| `hit.mp3` | Hit the target | Yes |
+| `miss.mp3` | Missed the target | Yes |
+| `solved.mp3` | Puzzle solved | Yes |
 
-Formato: MP3, 128kbps, 44.1kHz, stereo, sem ID3 tags.
-
----
-
-## 7. Solucao de Problemas
-
-### A luz nao se move
-
-1. Verifique se o anel NeoPixel esta conectado
-2. Teste com `hw.test()` via Serial
-3. Verifique neoCount no JSON
-
-### O botao nao funciona
-
-1. Verifique o pino SELECT (GPIO 4)
-2. Teste com `switches` via debug Serial
-
-### A luz esta muito rapida
-
-1. Reduza `startSpeed` e `speedIncrement` no JSON
-2. Aumente `targetSize` para facilitar
+Format: MP3, 128kbps, 44.1kHz, stereo, no ID3 tags.
 
 ---
 
-## Resumo Rapido
+## 7. Troubleshooting
 
-| Acao | Como Fazer |
+### The light does not move
+
+1. Check whether the NeoPixel ring is connected
+2. Test with `hw.test()` via Serial
+3. Check neoCount in the JSON
+
+### The button does not work
+
+1. Check the SELECT pin (GPIO 4)
+2. Test with `switches` via debug Serial
+
+### The light is too fast
+
+1. Reduce `startSpeed` and `speedIncrement` in the JSON
+2. Increase `targetSize` to make it easier
+
+---
+
+## Quick Summary
+
+| Action | How To Do It |
 |------|------------|
-| Iniciar jogo | Pressione SELECT |
-| Parar a luz | Pressione SELECT |
-| Acertar | Luz para na zona verde |
-| Errar | Luz para fora da zona |
-| Vencer | 3 acertos |
+| Start game | Press SELECT |
+| Stop the light | Press SELECT |
+| Hit | Light stops in the green zone |
+| Miss | Light stops outside the zone |
+| Win | 3 hits |
 
-### Estados dos LEDs
+### LED States
 
-| Cor/Padrao | Significado |
+| Color/Pattern | Meaning |
 |------------|-------------|
-| Azul pulsante | Aguardando inicio |
-| Branco + trail + verde | Jogo em andamento |
-| Verde fixo | Acertou! |
-| Vermelho fixo | Errou! |
-| Rainbow | Puzzle resolvido! |
+| Pulsing blue | Waiting to start |
+| White + trail + green | Game in progress |
+| Solid green | Hit! |
+| Solid red | Missed! |
+| Rainbow | Puzzle solved! |
 
 ---
 
-*Manual Cyclone - Versao 1.0 para biblioteca PropMaker EscapeRoom*
+*Cyclone Manual - Version 1.0 for the PropMaker EscapeRoom library*

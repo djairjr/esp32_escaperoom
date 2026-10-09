@@ -1,41 +1,41 @@
-# Manual da Roulette - Roleta de Sorte
+# Roulette Manual - Wheel of Fortune
 
-Guia para donos de sala, game masters e jogadores.
-
----
-
-## 1. Visao Geral
-
-### O que e este dispositivo?
-
-A **Roulette** e uma roleta luminosa electronica. O jogador pressiona um botao para girar o anel de LEDs. A luz corre em volta do anel e desacelera gradualmente ate parar em uma posicao. Se parar no setor vencedor (marcado em verde), o jogador ganha a rodada. Tres rodadas vencidas resolvem o puzzle.
-
-### Como funciona no jogo?
-
-- Os jogadores veem um anel de LEDs com um setor iluminado em verde
-- Ao pressionar o botao, uma luz branca comeca a correr em volta do anel
-- A luz vai desacelerando ate parar
-- Se parar no setor verde, o jogador vence a rodada
-- Se parar fora, pode tentar de novo
-- Tres acertos resolvem o puzzle
+Guide for room owners, game masters and players.
 
 ---
 
-## 2. Componentes do Jogo
+## 1. Overview
 
-| Componente | Descricao |
+### What is this device?
+
+The **Roulette** is an electronic light roulette. The player presses a button to spin the LED ring. The light runs around the ring and gradually slows down until it stops at a position. If it stops on the winning sector (marked in green), the player wins the round. Three won rounds solve the puzzle.
+
+### How does it work in the game?
+
+- Players see a ring of LEDs with a sector lit in green
+- When the button is pressed, a white light starts running around the ring
+- The light slows down until it stops
+- If it stops on the green sector, the player wins the round
+- If it stops outside, the player can try again
+- Three hits solve the puzzle
+
+---
+
+## 2. Game Components
+
+| Component | Description |
 |------------|-----------|
-| **Anel de LEDs NeoPixel** | A roleta propriamente dita |
-| **Botao SELECT** | Para girar a roleta |
-| **Alto-falante** | Sons de giro, vitoria, derrota e resolucao |
+| **NeoPixel LED Ring** | The roulette itself |
+| **SELECT Button** | To spin the roulette |
+| **Speaker** | Spin, win, lose and solve sounds |
 
 ---
 
-## 3. Configuracao Inicial
+## 3. Initial Configuration
 
-### Ajuste da roleta
+### Roulette adjustment
 
-Edite o arquivo `/roulette.json`:
+Edit the `/roulette.json` file:
 
 ```json
 {
@@ -47,115 +47,115 @@ Edite o arquivo `/roulette.json`:
 }
 ```
 
-| Parametro | Efeito | Facil | Dificil |
+| Parameter | Effect | Easy | Hard |
 |-----------|--------|-------|---------|
-| `spinSpeed` | Velocidade inicial | 6.0 | 12.0 |
-| `friction` | Atrito (0.99 = desacelera devagar) | 0.98 | 0.95 |
-| `winSectorCount` | Quantos LEDs sao vencedores | 3 | 1 |
-| `roundsToWin` | Acertos necessarios para vencer | 1 | 5 |
+| `spinSpeed` | Initial speed | 6.0 | 12.0 |
+| `friction` | Friction (0.99 = slows down slowly) | 0.98 | 0.95 |
+| `winSectorCount` | How many LEDs are winners | 3 | 1 |
+| `roundsToWin` | Hits required to win | 1 | 5 |
 
-### Comportamento esperado
+### Expected behavior
 
-- friction = 0.97: roleta gira ~12 voltas antes de parar
-- friction = 0.95: roleta gira ~6 voltas (mais rapido)
-- friction = 0.99: roleta gira ~50 voltas (muito lento para parar)
-
----
-
-## 4. Como Jogar
-
-### Para o Game Master
-
-1. Ajuste a dificuldade no JSON
-2. Posicione o anel em local visivel
-3. Mostre aos jogadores que o setor verde e o alvo
-
-### Para os jogadores
-
-1. **Veja** o setor vencedor (verde pulsante)
-2. **Pressione SELECT** para girar a roleta
-3. **Acompanhe** a luz desacelerando
-4. **Se acertar**: verde! Mais um passo para vencer
-5. **Se errar**: vermelho. Tente novamente!
-6. **Apos 3 acertos**: puzzle resolvido!
-
-### Dicas
-
-- O setor vencedor esta sempre visivel (verde pulsante)
-- A roleta sempre desacelera - nao tem truque
-- Observe o padrao de desaceleracao para prever onde vai parar
-- A sorte e o principal fator, mas a persistencia vence
+- friction = 0.97: roulette spins ~12 turns before stopping
+- friction = 0.95: roulette spins ~6 turns (faster)
+- friction = 0.99: roulette spins ~50 turns (very slow to stop)
 
 ---
 
-## 5. O que acontece ao resolver
+## 4. How to Play
 
-1. O som de vitoria toca
-2. Os LEDs fazem efeito rainbow
-3. A trava e liberada
-4. Apos 8 segundos, um novo setor vencedor e sorteado e o puzzle volta ao inicio
+### For the Game Master
+
+1. Adjust the difficulty in the JSON
+2. Position the ring in a visible location
+3. Show the players that the green sector is the target
+
+### For the players
+
+1. **See** the winning sector (pulsing green)
+2. **Press SELECT** to spin the roulette
+3. **Follow** the light slowing down
+4. **If it hits**: green! One more step to win
+5. **If it misses**: red. Try again!
+6. **After 3 hits**: puzzle solved!
+
+### Tips
+
+- The winning sector is always visible (pulsing green)
+- The roulette always slows down - there is no trick
+- Watch the deceleration pattern to predict where it will stop
+- Luck is the main factor, but persistence wins
 
 ---
 
-## 6. Checklist de Audio
+## 5. What happens when it is solved
 
-| Arquivo | Quando Toca | Obrigatorio? |
+1. The victory sound plays
+2. The LEDs do a rainbow effect
+3. The lock is released
+4. After 8 seconds, a new winning sector is drawn and the puzzle returns to the start
+
+---
+
+## 6. Audio Checklist
+
+| File | When It Plays | Required? |
 |---------|-------------|--------------|
-| `spin.mp3` | Ao girar a roleta | Sim |
-| `win.mp3` | Acertou o setor | Sim |
-| `lose.mp3` | Errou o setor | Sim |
-| `solved.mp3` | 3 acertos | Sim |
+| `spin.mp3` | When spinning the roulette | Yes |
+| `win.mp3` | Hit the sector | Yes |
+| `lose.mp3` | Missed the sector | Yes |
+| `solved.mp3` | 3 hits | Yes |
 
-Formato: MP3, 128kbps, 44.1kHz, stereo, sem ID3 tags.
-
----
-
-## 7. Solucao de Problemas
-
-### A roleta nao gira
-
-1. Verifique o botao SELECT (GPIO 4)
-2. Verifique o anel NeoPixel
-
-### A roleta para muito rapido
-
-1. Aumente `friction` no JSON (0.98-0.99)
-2. Aumente `spinSpeed` (10.0-15.0)
-
-### A roleta demora para parar
-
-1. Diminua `friction` (0.95-0.96)
-2. Aumente `minSpeed` (0.2-0.3)
-
-### Nunca acerta o setor
-
-1. Aumente `winSectorCount` (3-5)
-2. Verifique se `roundsToWin` nao esta muito alto
+Format: MP3, 128kbps, 44.1kHz, stereo, no ID3 tags.
 
 ---
 
-## Resumo Rapido
+## 7. Troubleshooting
 
-| Acao | Como Fazer |
+### The roulette does not spin
+
+1. Check the SELECT button (GPIO 4)
+2. Check the NeoPixel ring
+
+### The roulette stops too quickly
+
+1. Increase `friction` in the JSON (0.98-0.99)
+2. Increase `spinSpeed` (10.0-15.0)
+
+### The roulette takes too long to stop
+
+1. Decrease `friction` (0.95-0.96)
+2. Increase `minSpeed` (0.2-0.3)
+
+### It never hits the sector
+
+1. Increase `winSectorCount` (3-5)
+2. Check whether `roundsToWin` is too high
+
+---
+
+## Quick Summary
+
+| Action | How To Do It |
 |------|------------|
-| Girar roleta | Pressione SELECT |
-| Setor vencedor | LED verde pulsante |
-| Acertou | LED verde fixo |
-| Errou | LED vermelho fixo |
-| Vencer | 3 acertos |
+| Spin roulette | Press SELECT |
+| Winning sector | Pulsing green LED |
+| Hit | Solid green LED |
+| Miss | Solid red LED |
+| Win | 3 hits |
 
-### Estados dos LEDs
+### LED States
 
-| Cor/Padrao | Significado |
+| Color/Pattern | Meaning |
 |------------|-------------|
-| Verde pulsante | Setor vencedor visivel (idle) |
-| Branco + trail | Roleta girando |
-| Verde fixo | Acertou! |
-| Vermelho fixo | Errou! |
-| Rainbow | Puzzle resolvido! |
+| Pulsing green | Winning sector visible (idle) |
+| White + trail | Roulette spinning |
+| Solid green | Hit! |
+| Solid red | Missed! |
+| Rainbow | Puzzle solved! |
 
 ---
 
-*Boa sorte! Que a roleta esteja a seu favor...*
+*Good luck! May the roulette be in your favor...*
 
-*Manual Roulette - Versao 1.0 para biblioteca PropMaker EscapeRoom*
+*Roulette Manual - Version 1.0 for the PropMaker EscapeRoom library*

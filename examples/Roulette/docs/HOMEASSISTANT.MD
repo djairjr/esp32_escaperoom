@@ -1,24 +1,24 @@
-# Roulette — Entidades Home Assistant
+# Roulette — Home Assistant Entities
 
-## Sensores
-| Nome | ID | Valores |
+## Sensors
+| Name | ID | Values |
 |---|---|---|
-| Estado | `state` | idle, spinning, decelerating, solved, miss |
-| Setor Atual | `current_sector` | 1-N |
-| Velocidade | `speed` | 0-100% |
+| State | `state` | idle, spinning, decelerating, solved, miss |
+| Current Sector | `current_sector` | 1-N |
+| Speed | `speed` | 0-100% |
 
-## Botões
-| Nome | ID |
+## Buttons
+| Name | ID |
 |---|---|
-| Girar | `spin` |
-| Parar | `stop` |
-| Resetar | `reset` |
+| Spin | `spin` |
+| Stop | `stop` |
+| Reset | `reset` |
 
-## Números
-| Nome | ID | Range |
+## Numbers
+| Name | ID | Range |
 |---|---|---|
-| Setor Vencedor | `winning_sector` | 1-N |
-| Nº Setores | `num_sectors` | 4-24 |
+| Winning Sector | `winning_sector` | 1-N |
+| Num Sectors | `num_sectors` | 4-24 |
 
 ## AP Mode
-Rede WiFi "Roulette-XXXX" + portal em 192.168.4.1.
+WiFi network "Roulette-XXXX" + portal at 192.168.4.1.

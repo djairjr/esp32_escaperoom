@@ -1,41 +1,41 @@
-# EscapeRoomPhone — Algoritmo do Jogo
+# EscapeRoomPhone — Game Algorithm
 
-## Visão Geral
+## Overview
 
-Simulador de telefone antigo. O jogador tira o fone do gancho, ouve tom de discagem, disca um número (keypad ou disco rotativo), e ouve uma mensagem de áudio correspondente. Se o número discado tiver um arquivo .txt associado, a fechadura elétrica é destravada.
+Vintage phone simulator. The player takes the handset off the hook, hears a dial tone, dials a number (keypad or rotary dial), and hears a corresponding audio message. If the dialed number has an associated .txt file, the electric lock is released.
 
-## Configuração
+## Configuration
 
-- **Entrada**: Keypad I2C (PCF8574), Keypad GPIO direto, ou Rotary Dial
-- **Hardware**: hookPin (sensor de gancho), lockPin (relé da trava), externalPower
-- **Timeout**: DIAL_TIMEOUT_MS=3000 (tempo máximo entre dígitos)
-- **Máximo dígitos**: MAX_PHONE_DIGITS=8
+- **Input**: I2C Keypad (PCF8574), direct GPIO Keypad, or Rotary Dial
+- **Hardware**: hookPin (hook sensor), lockPin (lock relay), externalPower
+- **Timeout**: DIAL_TIMEOUT_MS=3000 (maximum time between digits)
+- **Maximum digits**: MAX_PHONE_DIGITS=8
 
-## Estados
+## States
 
-IDLE → OFF_HOOK → DIALING → PLAYING → BUSY → IDLE (gancho)
+IDLE → OFF_HOOK → DIALING → PLAYING → BUSY → IDLE (hook)
 
-## Fluxo do Jogo
+## Game Flow
 
-1. **Gancho no lugar**: sistema em repouso, qualquer áudio é interrompido
-2. **Fone levantado**: toca tom de discagem em loop
-3. **Discagem**:
-   - Keypad: teclas 0-9, *, # com feedback DTMF
-   - Rotary: pulsos decodificados com feedback de pulso
-   - Timeout de 3s ou 8 dígitos → processa chamada
-4. **Processamento**:
-   - Verifica se arquivo `/NUMERO.mp3` existe no SD
-   - Se sim: toca o áudio
-   - Se houver `/NUMERO.txt`: ativa lockPin (destrava porta)
-   - Se não: toca mensagem de número inválido
-5. **Pós-áudio**: toca tom de ocupado até fone ser recolocado
-6. **Gancho recolocado**: reseta tudo, para qualquer áudio
+1. **Handset on the hook**: system at rest, any audio is stopped
+2. **Handset lifted**: plays the dial tone in a loop
+3. **Dialing**:
+   - Keypad: keys 0-9, *, # with DTMF feedback
+   - Rotary: decoded pulses with pulse feedback
+   - Timeout of 3s or 8 digits → processes the call
+4. **Processing**:
+   - Checks whether file `/NUMBER.mp3` exists on the SD
+   - If yes: plays the audio
+   - If there is `/NUMBER.txt`: activates lockPin (unlocks the door)
+   - If not: plays the invalid number message
+5. **Post-audio**: plays busy tone until the handset is put back
+6. **Handset back on the hook**: resets everything, stops any audio
 
 ## Feedback
 
-- Áudio: dialtone, DTMF por tecla, pulso por disco, mensagem de áudio, busy tone
-- Não usa NeoPixel nem display (áudio apenas)
+- Audio: dialtone, DTMF per key, pulse per dial position, audio message, busy tone
+- Does not use NeoPixel or display (audio only)
 
 ## AP Mode + WiFi
 
-Configuração de rede via portal web em 192.168.4.1.
+Network configuration via web portal at 192.168.4.1.

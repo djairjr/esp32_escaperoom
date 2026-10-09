@@ -5,14 +5,14 @@
 namespace esp32_escaperoom {
 
 enum class GameLevelMode : uint8_t {
-    PARALLEL = 0,   // Todos os puzzles do nivel rodam simultaneamente
-    SEQUENCE = 1    // Puzzles rodam um apos o outro
+    PARALLEL = 0,   // All puzzles in the level run simultaneously
+    SEQUENCE = 1    // Puzzles run one after the other
 };
 
 struct GameLevelConfig {
-    const uint8_t* puzzleIds;   // Array de IDs dos puzzles neste nivel
-    uint8_t puzzleCount;        // Quantidade de puzzles no nivel
-    GameLevelMode mode;         // PARALLEL ou SEQUENCE
+    const uint8_t* puzzleIds;   // Array of puzzle IDs in this level
+    uint8_t puzzleCount;        // Number of puzzles in the level
+    GameLevelMode mode;         // PARALLEL or SEQUENCE
 };
 
 } // namespace esp32_escaperoom

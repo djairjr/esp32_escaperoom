@@ -1,19 +1,19 @@
 /**
- * EXEMPLO: RADIOCLOCK - SINTONIZADOR DE RADIO
- * ---------------------------------------------
- * Jogador usa SELECT para percorrer frequencias no dial.
- * Audio toca estatica em frequencias erradas, sinal limpo na certa.
- * Display HT16K33 mostra a frequencia atual.
- * 3 acertos resolvem o puzzle.
+ * EXAMPLE: RADIOCLOCK - RADIO TUNER
+ * ----------------------------------
+ * The player uses SELECT to scroll through frequencies on the dial.
+ * Audio plays static on wrong frequencies, clean signal on the right one.
+ * HT16K33 display shows the current frequency.
+ * 3 correct hits solve the puzzle.
  *
  * Hardware:
- *   - NeoPixel externo para o dial do radio
- *   - Botao SELECT (GPIO 4) para percorrer frequencias
- *   - Display HT16K33 para mostrar frequencia
- *   - Audio MP3 via I2S (LittleFS)
- *   - Rele/Trava no pino lockPin
+ *   - External NeoPixel for the radio dial
+ *   - SELECT button (GPIO 4) to scroll through frequencies
+ *   - HT16K33 display to show the frequency
+ *   - MP3 audio via I2S (LittleFS)
+ *   - Relay/Lock on the lockPin
  *
- * Configuracao via /radioClock.json no LittleFS.
+ * Configuration via /radioClock.json on LittleFS.
  */
 
 #include <ESP32EscapeRoom.h>
@@ -26,7 +26,7 @@
 using namespace esp32_escaperoom;
 
 // ============================================================================
-// HOME ASSISTANT + WIFI (adicionado pelo port ESP32)
+// HOME ASSISTANT + WIFI (added by the ESP32 port)
 // ============================================================================
 ConfigManager netConfig;
 WiFiClient wifiClient;
@@ -41,7 +41,7 @@ void initHA() {
   haDevice.setUniqueId(mac, sizeof(mac));
   haDevice.setName(netConfig.devName());
   haDevice.setSoftwareVersion("1.0.0");
-  haSensorState.setName("Estado");
+  haSensorState.setName("State");
   haSensorState.setIcon("mdi:puzzle");
   haMqtt.begin(netConfig.mqttBroker(), netConfig.mqttUser(), netConfig.mqttPass());
 }
@@ -53,13 +53,13 @@ void loopHA() {
 
 
 // ============================================================================
-// CONFIGURACAO JSON
+// JSON CONFIGURATION
 // ============================================================================
 struct RadioClockConfig {
   uint8_t lockPin = 10;
   uint8_t neoCount = 24;
-  uint8_t frequencyCount = 12;      // quantas "frequencias" no dial
-  uint8_t targetFrequencies[3] = {3, 8, 5}; // frequencias-alvo (3 rounds)
+  uint8_t frequencyCount = 12;      // how many "frequencies" on the dial
+  uint8_t targetFrequencies[3] = {3, 8, 5}; // target frequencies (3 rounds)
   uint8_t roundsToWin = 3;
   uint8_t volume = 128;
   char sfxStatic[24]   = "/sfx/static.mp3";
@@ -96,7 +96,7 @@ static void loadConfig() {
 }
 
 // ============================================================================
-// PINOS
+// PINS
 // ============================================================================
 #define BTN_SELECT 4
 
@@ -165,11 +165,11 @@ public:
   }
 
 private:
-  int freq_ = 0;                // frequencia atual (0..frequencyCount-1)
-  int round_ = 0;               // round atual
+  int freq_ = 0;                // current frequency (0..frequencyCount-1)
+  int round_ = 0;               // current round
   unsigned long solvedAt_ = 0;
   unsigned long lastMove_ = 0;
-  bool signalFound_ = false;    // true depois de tocar sinal no round atual
+  bool signalFound_ = false;    // true after playing the signal in the current round
 
   void newGame() {
     round_ = 0;
@@ -183,7 +183,7 @@ private:
     signalFound_ = false;
     setState(PuzzleState::Running);
     showFrequency();
-    Serial.printf("[RADIO] Round %d/%d. Frequencia alvo: %d\n",
+    Serial.printf("[RADIO] Round %d/%d. Target frequency: %d\n",
                   round_ + 1, config.roundsToWin, config.targetFrequencies[round_]);
   }
 
@@ -195,7 +195,7 @@ private:
     hw.sound().playOnce(config.sfxSelect);
     showFrequency();
 
-    // Checa se acertou
+    // Check if it was correct
     if (freq_ == config.targetFrequencies[round_]) {
       onTargetHit();
     } else {
@@ -210,7 +210,7 @@ private:
     hw.sound().playOnce(config.sfxSignal);
     showSignal();
 
-    Serial.printf("[RADIO] Acertou! Round %d/%d\n", round_, config.roundsToWin);
+    Serial.printf("[RADIO] Correct! Round %d/%d\n", round_, config.roundsToWin);
 
     if (round_ >= config.roundsToWin) {
       solve();
@@ -223,7 +223,7 @@ private:
     solvedAt_ = millis();
     disp.print("donE");
     setState(PuzzleState::Solved);
-    Serial.println("[RADIO] RESOLVIDO!");
+    Serial.println("[RADIO] SOLVED!");
   }
 
   void showFrequency() {
@@ -237,13 +237,13 @@ private:
     auto* px = pixels();
     px->clear();
 
-    // Mapeia frequencia para posicao no anel
+    // Map frequency to position on the ring
     int center = map(freq_, 0, config.frequencyCount - 1, 0, config.neoCount - 1);
 
-    // Brilho branco no centro
+    // White brightness at the center
     px->setPixel(center, 0x404040);
 
-    // Trail sutil
+    // Subtle trail
     for (int i = 1; i <= 2; i++) {
       int left = (center - i + config.neoCount) % config.neoCount;
       int right = (center + i) % config.neoCount;
@@ -260,7 +260,7 @@ private:
     auto* px = pixels();
     px->clear();
 
-    // Verde pulsante
+    // Pulsing green
     uint8_t g = (sin(millis() / 200.0f) * 0.5f + 0.5f) * 50 + 30;
     px->setAll(px->Color(0, g, 0));
     px->show();
@@ -269,12 +269,12 @@ private:
   }
 
   void updateRunning() {
-    // Retorna ao estado normal apos mostrar sinal
+    // Return to the normal state after showing the signal
     if (signalFound_ && millis() - lastMove_ > 2000) {
       signalFound_ = false;
 
       if (getState() == PuzzleState::Running) {
-        // Ainda jogando (nao resolveu), mostra nova frequencia alvo
+        // Still playing (not solved), show the new target frequency
         showFrequency();
         disp.bright(15);
         char buf[5];

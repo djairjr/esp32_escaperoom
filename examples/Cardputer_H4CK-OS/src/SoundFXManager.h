@@ -12,11 +12,11 @@
 using namespace audio_tools;
 
 // ============================================================================
-// SOUND FX MANAGER — Efeitos sonoros via I2S + MP3 (arduino-audio-tools)
+// SOUND FX MANAGER — Sound effects via I2S + MP3 (arduino-audio-tools)
 // ============================================================================
-// Substitui M5Cardputer.Speaker.tone() — PWM não funciona no NS4168 I2S.
-// Abordagem idêntica ao AudioPlayer da PropMakerEscapeRoom.
-// Todos os efeitos são MP3 gerados sinteticamente (ffmpeg).
+// Replaces M5Cardputer.Speaker.tone() — PWM doesn't work on the NS4168 I2S.
+// Approach identical to the AudioPlayer in PropMakerEscapeRoom.
+// All effects are MP3s generated synthetically (ffmpeg).
 // ============================================================================
 
 class SoundFXManager {
@@ -44,8 +44,8 @@ public:
 
     bool available() const { return mounted_; }
 
-    // ─── EFEITOS INDIVIDUAIS ─────────────────────────────────────────────────
-    // Todos síncronos (blocking): copier_.copyAll() consome o arquivo inteiro.
+    // ─── INDIVIDUAL EFFECTS ─────────────────────────────────────────────────
+    // All synchronous (blocking): copier_.copyAll() consumes the whole file.
 
     void keyClick()   { playBlocking("/keyclick.mp3"); }
     void cmdBeep()    { playBlocking("/cmd.mp3"); }
@@ -67,8 +67,8 @@ public:
     }
     void exploitBeep() { playBlocking("/exploit.mp3"); }
 
-    // ─── GENÉRICO ────────────────────────────────────────────────────────────
-    // Toca qualquer MP3 de forma síncrona (bloqueia até terminar)
+    // ─── GENERIC ─────────────────────────────────────────────────────────────
+    // Plays any MP3 synchronously (blocks until it finishes)
     bool playBlocking(const char* path, bool useSD = false) {
         if (!begun_ || !mounted_) return false;
         fs::FS& fs = useSD ? (fs::FS&)SD : (fs::FS&)LittleFS;
@@ -78,14 +78,14 @@ public:
         Serial.printf("[FX] Playing: %s\n", path);
         copier_.begin(decoder_, file);
         decoder_.begin();
-        copier_.copyAll(); // BLOCKING — consome todo o arquivo
+        copier_.copyAll(); // BLOCKING — consumes the whole file
         decoder_.end();
         copier_.end();
         file.close();
         return true;
     }
 
-    // Toca qualquer MP3 de forma assíncrona (não bloqueia — chamar loop() no tick)
+    // Plays any MP3 asynchronously (non-blocking — call loop() on tick)
     bool playAsync(const char* path, bool useSD = false) {
         if (!begun_ || !mounted_) return false;
         fs::FS& fs = useSD ? (fs::FS&)SD : (fs::FS&)LittleFS;
@@ -120,7 +120,7 @@ public:
         }
     }
 
-    // ─── TOM SENOIDAL (fallback para beeps rápidos, sem MP3) ─────────────────
+    // ─── SINE TONE (fallback for quick beeps, no MP3) ────────────────────────
     void startTone(float freq, uint8_t vol = 128) {
         if (!begun_) return;
         if (asyncPlaying_) stop();
@@ -181,7 +181,7 @@ private:
         cfg.pin_data = I2S_DATA;
         cfg.buffer_count = 12;
         cfg.buffer_size = 512;
-        cfg.channels = 1;      // Mono — NS4168 é mono
+        cfg.channels = 1;      // Mono — NS4168 is mono
         cfg.bits_per_sample = 16;
         cfg.sample_rate = 44100;
 
@@ -194,7 +194,7 @@ private:
         Serial.println(F("[FX] I2S OK"));
 
         volume_.setVolume(volumeLevel_);
-        volume_.begin();  // CRÍTICO: sem begin() o volume = 100%
+        volume_.begin();  // CRITICAL: without begin() the volume = 100%
         Serial.println(F("[FX] VolumeSet"));
         return true;
     }

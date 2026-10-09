@@ -1,78 +1,78 @@
-# BombTimer STAMPLC — Manual do Usuário
+# BombTimer STAMPLC — User Manual
 
-> Puzzle de escape room — timer de contagem regressiva com fios, códigos e RFID.
-> Baseado no M5Stack StamPLC (ESP32-S3).
+> Escape room puzzle — countdown timer with wires, codes and RFID.
+> Based on the M5Stack StamPLC (ESP32-S3).
 
 ---
 
-## 1. Visão Geral
+## 1. Overview
 
-O BombTimer é um puzzle onde os jogadores precisam **desarmar uma bomba virtual** antes que o tempo acabe. O desarme pode ser feito de 3 formas diferentes, configuráveis pelo game master:
+The BombTimer is a puzzle where players need to **defuse a virtual bomb** before time runs out. The defusal can be done in 3 different ways, configurable by the game master:
 
-- **CODE** — digitar um código numérico de 4 dígitos no keypad
-- **WIRE** — cortar o fio correto (DEFUSE) entre 4 fios coloridos
-- **ORDER** — cortar os 4 fios em uma sequência específica
+- **CODE** — type a 4-digit numeric code on the keypad
+- **WIRE** — cut the correct wire (DEFUSE) among 4 colored wires
+- **ORDER** — cut the 4 wires in a specific sequence
 
-O sistema possui conectividade WiFi e se integra ao **Home Assistant** via MQTT para que o game master possa monitorar e controlar o puzzle remotamente.
+The system has WiFi connectivity and integrates with **Home Assistant** via MQTT so the game master can monitor and control the puzzle remotely.
 
 ---
 
 ## 2. Hardware
 
-### Frontal
+### Front
 ```
 ┌──────────────────────────────────────┐
 │                              [W][M][R][T]│  ← WiFi / MQTT / RFID / RTC
 │                                      │
 │          ┌─────────────┐             │
-│          │   03:00     │             │  ← Timer (minutos:segundos)
+│          │   03:00     │             │  ← Timer (minutes:seconds)
 │          └─────────────┘             │
-│              180s                    │  ← Total em segundos
+│              180s                    │  ← Total in seconds
 │                                      │
-│  ●Y ●R ●B ●G            IDLE        │  ← Fios + Status
+│  ●Y ●R ●B ●G            IDLE        │  ← Wires + Status
 └──────────────────────────────────────┘
 ```
 
-### Conexões
+### Connections
 
-| Porta | Conector | Dispositivo |
+| Port | Connector | Device |
 |-------|----------|-------------|
-| PORT.A (RED) | Grove 4 pinos | Keypad 4×3 (via PCF8574 I2C) + RFID 2 Unit (MFRC522 I2C) |
-| PORT.B (BLACK) | Grove 4 pinos | (livre) |
-| PORT.C (BLUE) | Grove 4 pinos | RF433 Receiver (SYN531R) — DATA no fio branco (G4) |
-| USB-C | Traseiro | Alimentação 5V + Upload |
+| PORT.A (RED) | Grove 4-pin | 4×3 Keypad (via PCF8574 I2C) + RFID 2 Unit (MFRC522 I2C) |
+| PORT.B (BLACK) | Grove 4-pin | (free) |
+| PORT.C (BLUE) | Grove 4-pin | RF433 Receiver (SYN531R) — DATA on the white wire (G4) |
+| USB-C | Rear | 5V Power + Upload |
 
-### Relés (bornes traseiros)
+### Relays (rear terminals)
 
-| Relé | Função | Bornes |
+| Relay | Function | Terminals |
 |------|--------|--------|
-| RLY1 | DETONATE 1 | NA/COM/NF |
-| RLY2 | DETONATE 2 | NA/COM/NF |
-| RLY3 | DEFUSE 1 | NA/COM/NF |
-| RLY4 | DEFUSE 2 | NA/COM/NF |
+| RLY1 | DETONATE 1 | NO/COM/NC |
+| RLY2 | DETONATE 2 | NO/COM/NC |
+| RLY3 | DEFUSE 1 | NO/COM/NC |
+| RLY4 | DEFUSE 2 | NO/COM/NC |
 
-### Opto-entradas (bornes traseiros)
+### Opto-inputs (rear terminals)
 
-| Entrada | Função | Sinal |
+| Input | Function | Signal |
 |---------|--------|-------|
-| WIRE1 (P0_5) | Fio Amarelo | HIGH=conectado, LOW=cortado |
-| WIRE2 (P0_6) | Fio Vermelho | HIGH=conectado, LOW=cortado |
-| WIRE3 (P0_7) | Fio Azul | HIGH=conectado, LOW=cortado |
-| WIRE4 (P1_4) | Fio Verde | HIGH=conectado, LOW=cortado |
-| DET (P0_4) | Detonação externa | LOW→HIGH = detona |
+| WIRE1 (P0_5) | Yellow Wire | HIGH=connected, LOW=cut |
+| WIRE2 (P0_6) | Red Wire | HIGH=connected, LOW=cut |
+| WIRE3 (P0_7) | Blue Wire | HIGH=connected, LOW=cut |
+| WIRE4 (P1_4) | Green Wire | HIGH=connected, LOW=cut |
+| DET (P0_4) | External detonation | LOW→HIGH = detonate |
 
 ---
 
-## 3. Botões e Controles
+## 3. Buttons and Controls
 
-| Botão | Símbolo | Função |
+| Button | Symbol | Function |
 |-------|---------|--------|
-| BtnA (esquerdo) | ◀ | Diminuir valor / Navegar para trás no menu |
-| BtnB (centro) | ● | Entrar no menu / Confirmar edição |
-| BtnC (direito) | ▶ | Aumentar valor / Navegar para frente |
-| BOOT (traseiro) | ▶▶ | Iniciar contagem / Resetar / Detonar |
+| BtnA (left) | ◀ | Decrease value / Navigate back in the menu |
+| BtnB (center) | ● | Enter menu / Confirm edit |
+| BtnC (right) | ▶ | Increase value / Navigate forward |
+| BOOT (rear) | ▶▶ | Start countdown / Reset / Detonate |
 
-### Keypad 4×3
+### 4×3 Keypad
 
 ```
 ┌───┬───┬───┐
@@ -86,191 +86,191 @@ O sistema possui conectividade WiFi e se integra ao **Home Assistant** via MQTT 
 └───┴───┴───┘
 ```
 
-- Usado para digitar código de desarme (modo CODE)
-- Usado para configurar código e ordem no menu
-- `*` ou `#` cancela a entrada durante a digitação
+- Used to type the defuse code (CODE mode)
+- Used to configure the code and order in the menu
+- `*` or `#` cancels the entry during typing
 
 ---
 
-## 4. Estados do Puzzle
+## 4. Puzzle States
 
-### 4.1 IDLE (Repouso)
+### 4.1 IDLE (Rest)
 
-Estado inicial. O display mostra o timer ajustável e "IDLE".
+Initial state. The display shows the adjustable timer and "IDLE".
 
-**Controles em IDLE:**
-- **BtnA/BtnC (curto):** Ajusta o tempo em ±1 segundo
-- **BtnA/BtnC (longo >600ms):** Ajusta o tempo em ±5 segundos (acelera a cada 150ms)
-- **BtnB (centro):** Entra no menu de configuração
-- **BOOT:** Inicia a contagem regressiva → RUNNING
-- **RF433 START:** Inicia a contagem regressiva
+**Controls in IDLE:**
+- **BtnA/BtnC (short):** Adjusts the time by ±1 second
+- **BtnA/BtnC (long >600ms):** Adjusts the time by ±5 seconds (speeds up every 150ms)
+- **BtnB (center):** Enters the configuration menu
+- **BOOT:** Starts the countdown → RUNNING
+- **RF433 START:** Starts the countdown
 
-### 4.2 RUNNING (Contagem Regressiva)
+### 4.2 RUNNING (Countdown)
 
-A contagem está rodando. O timer decrementa a cada segundo.
+The countdown is running. The timer decrements every second.
 
-**O que acontece:**
-- **Tick sonoro:** Beep a cada segundo (frequência aumenta nos últimos 10s)
-- **RGB LED:** Vermelho pulsante (500ms, 250ms nos últimos 10s)
-- **Fios:** Cortar um fio pode detonar, desarmar, acelerar ou pausar (depende da configuração)
-- **Keypad:** Se modo CODE, pode digitar o código de desarme
-- **RFID:** Se habilitado, aproximar uma tag pode desarmar ou detonar
+**What happens:**
+- **Sound tick:** Beep every second (frequency increases in the last 10s)
+- **RGB LED:** Pulsing red (500ms, 250ms in the last 10s)
+- **Wires:** Cutting a wire can detonate, defuse, speed up or pause (depends on the configuration)
+- **Keypad:** If CODE mode, you can type the defuse code
+- **RFID:** If enabled, bringing a tag close can defuse or detonate
 
-**Controles em RUNNING:**
-- **BOOT:** Detona imediatamente
-- **Keypad (modo CODE):** Digitar 4 dígitos do código
-- **RF433 DETONATE:** Detona remotamente
-- **RF433 DEFUSE:** Desarma remotamente
-- **RF433 PAUSE:** Pausa por 2s
-- **RF433 SPEED:** Acelera (toggle)
+**Controls in RUNNING:**
+- **BOOT:** Detonates immediately
+- **Keypad (CODE mode):** Type the 4 code digits
+- **RF433 DETONATE:** Detonates remotely
+- **RF433 DEFUSE:** Defuses remotely
+- **RF433 PAUSE:** Pauses for 2s
+- **RF433 SPEED:** Speeds up (toggle)
 
-### 4.3 DETONATED (Bomba explodiu!)
+### 4.3 DETONATED (Bomb exploded!)
 
-O tempo acabou ou um fio DET foi cortado.
+The time ran out or a DET wire was cut.
 
-**O que aparece:**
-- Tela: "DETONATED! BOOM!" em vermelho
-- RGB LED: Vermelho sólido
-- Relés DETONATE ativados por [TDET] segundos
+**What appears:**
+- Screen: "DETONATED! BOOM!" in red
+- RGB LED: Solid red
+- DETONATE relays activated for [TDET] seconds
 
-**Controles:**
-- **BOOT:** Volta ao IDLE
+**Controls:**
+- **BOOT:** Returns to IDLE
 
-### 4.4 DEFUSED (Bomba desarmada!)
+### 4.4 DEFUSED (Bomb defused!)
 
-O código correto foi digitado, o fio DEFUSE foi cortado, ou a sequência ORDER foi completada.
+The correct code was typed, the DEFUSE wire was cut, or the ORDER sequence was completed.
 
-**O que aparece:**
-- Tela: "DEFUSED! SUCCESS!" em verde
-- RGB LED: Verde sólido
-- Relés DEFUSE ativados por [TDEF] segundos
+**What appears:**
+- Screen: "DEFUSED! SUCCESS!" in green
+- RGB LED: Solid green
+- DEFUSE relays activated for [TDEF] seconds
 
-**Controles:**
-- **BOOT:** Volta ao IDLE
+**Controls:**
+- **BOOT:** Returns to IDLE
 
-### 4.5 ALARM (Alarme)
+### 4.5 ALARM (Alarm)
 
-O alarme programado no RTC disparou.
+The alarm scheduled in the RTC triggered.
 
-**O que aparece:**
-- Tela: "ALARM! START to stop" em magenta
-- RGB LED: Laranja intermitente
-- Beep 3500Hz a cada 500ms
+**What appears:**
+- Screen: "ALARM! START to stop" in magenta
+- RGB LED: Intermittent orange
+- 3500Hz beep every 500ms
 
-**Controles:**
-- **BOOT:** Volta ao IDLE
+**Controls:**
+- **BOOT:** Returns to IDLE
 
-### 4.6 MENU (Configuração)
+### 4.6 MENU (Configuration)
 
-18 itens de configuração navegáveis.
+18 navigable configuration items.
 
-**Navegação:**
-- **BtnA/BtnC:** Navega entre os itens
-- **BtnB (centro):** Entra no modo de edição do item atual
-- **BtnB (centro) durante edição:** Confirma e salva
-- **BOOT:** Sai do menu (volta ao IDLE)
-- **Timeout 15s:** Sai automaticamente
+**Navigation:**
+- **BtnA/BtnC:** Navigate between items
+- **BtnB (center):** Enters edit mode for the current item
+- **BtnB (center) during edit:** Confirms and saves
+- **BOOT:** Exits the menu (returns to IDLE)
+- **15s Timeout:** Exits automatically
 
 ---
 
-## 5. Menu de Configuração (18 itens)
+## 5. Configuration Menu (18 items)
 
-| # | Item | Opções | Descrição |
+| # | Item | Options | Description |
 |---|------|--------|-----------|
-| 0 | COUNTDOWN | 5-5999s | Tempo da contagem regressiva |
-| 1 | MODE | CODE / WIRE / ORDER | Modo de desarme |
-| 2 | CODE | 0000-9999 | Código de desarme (modo CODE) |
-| 3 | ORDER | Sequência 1-4 | Ordem dos fios (modo ORDER) |
-| 4 | DET WIRE | RAND / 1-4 / NONE | Fio que detona ao cortar |
-| 5 | SPD WIRE | RAND / 1-4 / NONE | Fio que acelera o timer |
-| 6 | PAUSE WIRE | RAND / 1-4 / NONE | Fio que pausa 2s |
-| 7 | BRIGHT | 0-15 | Brilho do display |
-| 8 | TICK | ON / OFF | Som do tick |
-| 9 | RFID | ON / OFF | Habilita leitura RFID durante jogo |
-| 10 | RF DEFU | (aprender) | Aproxime uma tag para desarme |
-| 11 | RF DETO | (aprender) | Aproxime uma tag para detonação |
-| 12 | TDET | 1-10s | Tempo que relés DETONATE ficam ativos |
-| 13 | TDEF | 1-10s | Tempo que relés DEFUSE ficam ativos |
-| 14 | ALARM H | 0-23 | Hora do alarme |
-| 15 | ALARM M | 0-59 (passo 5) | Minuto do alarme |
-| 16 | CLR DEFU | (confirmar) | Limpa todas as tags de desarme |
-| 17 | CLR DETO | (confirmar) | Limpa todas as tags de detonação |
+| 0 | COUNTDOWN | 5-5999s | Countdown time |
+| 1 | MODE | CODE / WIRE / ORDER | Defuse mode |
+| 2 | CODE | 0000-9999 | Defuse code (CODE mode) |
+| 3 | ORDER | Sequence 1-4 | Wire order (ORDER mode) |
+| 4 | DET WIRE | RAND / 1-4 / NONE | Wire that detonates when cut |
+| 5 | SPD WIRE | RAND / 1-4 / NONE | Wire that speeds up the timer |
+| 6 | PAUSE WIRE | RAND / 1-4 / NONE | Wire that pauses 2s |
+| 7 | BRIGHT | 0-15 | Display brightness |
+| 8 | TICK | ON / OFF | Tick sound |
+| 9 | RFID | ON / OFF | Enables RFID reading during the game |
+| 10 | RF DEFU | (learn) | Bring a tag close to defuse |
+| 11 | RF DETO | (learn) | Bring a tag close to detonate |
+| 12 | TDET | 1-10s | Time DETONATE relays stay active |
+| 13 | TDEF | 1-10s | Time DEFUSE relays stay active |
+| 14 | ALARM H | 0-23 | Alarm hour |
+| 15 | ALARM M | 0-59 (step 5) | Alarm minute |
+| 16 | CLR DEFU | (confirm) | Clears all defuse tags |
+| 17 | CLR DETO | (confirm) | Clears all detonation tags |
 
 ---
 
-## 6. Configuração Inicial (WiFi e MQTT)
+## 6. Initial Configuration (WiFi and MQTT)
 
-### Primeira inicialização
+### First boot
 
-1. Conecte o StamPLC via USB-C
-2. O sistema tenta conectar ao WiFi salvo
-3. Se não houver WiFi configurado, entra em **Modo AP**
-4. Conecte-se ao WiFi `BombTimer-STAMPLC` (sem senha)
-5. Abra http://192.168.4.1 no navegador
-6. Preencha:
-   - **WiFi SSID e Senha** (da sua rede)
-   - **MQTT Broker** (endereço do Home Assistant)
-   - **Porta** (padrão 1883)
-   - **User/Pass** (se necessário)
-   - **Nome do dispositivo** (opcional)
-7. Clique em "Salvar e Reiniciar"
+1. Connect the StamPLC via USB-C
+2. The system tries to connect to the saved WiFi
+3. If there is no WiFi configured, it enters **AP Mode**
+4. Connect to the WiFi `BombTimer-STAMPLC` (no password)
+5. Open http://192.168.4.1 in the browser
+6. Fill in:
+   - **WiFi SSID and Password** (of your network)
+   - **MQTT Broker** (Home Assistant address)
+   - **Port** (default 1883)
+   - **User/Pass** (if needed)
+   - **Device name** (optional)
+7. Click "Save and Restart"
 
-O StamPLC reinicia, conecta ao WiFi e ao MQTT, e as entidades aparecem no Home Assistant automaticamente.
+The StamPLC restarts, connects to WiFi and MQTT, and the entities appear in Home Assistant automatically.
 
-### Para reconfigurar
-- Se o WiFi falhar, o sistema volta ao Modo AP automaticamente
-- Para forçar o Modo AP, desligue o roteador e religue o StamPLC
+### To reconfigure
+- If the WiFi fails, the system returns to AP Mode automatically
+- To force AP Mode, turn off the router and turn the StamPLC back on
 
 ---
 
 ## 7. Home Assistant
 
-### Entidades disponíveis
+### Available entities
 
-Após conectar ao MQTT, as seguintes entidades aparecem no Home Assistant:
+After connecting to MQTT, the following entities appear in Home Assistant:
 
-**Sensores (monitoramento):**
-- `sensor.bombtimer_state` — Estado atual (idle/running/defused/detonated)
-- `sensor.bombtimer_time` — Tempo restante em segundos
-- `sensor.bombtimer_wires_cut` — Quantos fios já foram cortados
-- `sensor.bombtimer_code_attempts` — Tentativas de código (modo CODE)
-- `sensor.bombtimer_mode` — Modo de desarme atual
-- `sensor.bombtimer_i2c_status` — Dispositivos I2C detectados no boot
-- `sensor.bombtimer_wire1` a `wire4` — Estado de cada fio (0=conectado, 1=cortado)
+**Sensors (monitoring):**
+- `sensor.bombtimer_state` — Current state (idle/running/defused/detonated)
+- `sensor.bombtimer_time` — Remaining time in seconds
+- `sensor.bombtimer_wires_cut` — How many wires have already been cut
+- `sensor.bombtimer_code_attempts` — Code attempts (CODE mode)
+- `sensor.bombtimer_mode` — Current defuse mode
+- `sensor.bombtimer_i2c_status` — I2C devices detected at boot
+- `sensor.bombtimer_wire1` to `wire4` — State of each wire (0=connected, 1=cut)
 
-**Controles:**
-- `button.bombtimer_start` — Iniciar a contagem
-- `button.bombtimer_reset` — Resetar para IDLE
-- `number.bombtimer_countdown` — Ajustar tempo (5-5999s)
-- `number.bombtimer_defuse_code` — Alterar código de desarme
-- `number.bombtimer_brightness` — Ajustar brilho (0-15)
-- `select.bombtimer_mode` — Selecionar modo (CODE/WIRE/ORDER)
-- `select.bombtimer_det_wire` — Configurar fio DET (RAND/1-4/NONE)
-- `select.bombtimer_defuse_wire` — Configurar fio DEFUSE
-- `select.bombtimer_speed_wire` — Configurar fio SPEED
-- `select.bombtimer_pause_wire` — Configurar fio PAUSE
-- `switch.bombtimer_tick_sound` — Ligar/desligar som do tick
+**Controls:**
+- `button.bombtimer_start` — Start the countdown
+- `button.bombtimer_reset` — Reset to IDLE
+- `number.bombtimer_countdown` — Adjust time (5-5999s)
+- `number.bombtimer_defuse_code` — Change defuse code
+- `number.bombtimer_brightness` — Adjust brightness (0-15)
+- `select.bombtimer_mode` — Select mode (CODE/WIRE/ORDER)
+- `select.bombtimer_det_wire` — Configure DET wire (RAND/1-4/NONE)
+- `select.bombtimer_defuse_wire` — Configure DEFUSE wire
+- `select.bombtimer_speed_wire` — Configure SPEED wire
+- `select.bombtimer_pause_wire` — Configure PAUSE wire
+- `switch.bombtimer_tick_sound` — Turn tick sound on/off
 
-### Automações sugeridas
+### Suggested automations
 
-**Exemplo: notificar quando detonar**
+**Example: notify when it detonates**
 ```yaml
 automation:
-  - alias: "Bomba detonou!"
+  - alias: "Bomb detonated!"
     trigger:
       - platform: state
         entity_id: sensor.bombtimer_state
         to: "detonated"
     action:
-      - service: notify.mobile_app_seu_celular
+      - service: notify.mobile_app_your_phone
         data:
-          message: "💥 A BOMBA EXPLODIU!"
+          message: "💥 THE BOMB EXPLODED!"
 ```
 
-**Exemplo: iniciar jogo automático**
+**Example: start game automatically**
 ```yaml
 automation:
-  - alias: "Iniciar bomba às 19:00"
+  - alias: "Start bomb at 19:00"
     trigger:
       - platform: time
         at: "19:00:00"
@@ -282,154 +282,154 @@ automation:
 
 ---
 
-## 8. Cenários de Jogo
+## 8. Game Scenarios
 
-### 8.1 Modo CODE (padrão)
+### 8.1 CODE Mode (default)
 
-O jogador precisa digitar o código de 4 dígitos no keypad.
+The player must type the 4-digit code on the keypad.
 
-**Configuração:**
+**Configuration:**
 - MODE = CODE
-- CODE = 1234 (ou outro)
-- DET WIRE = RAND (um fio aleatório detona)
+- CODE = 1234 (or another)
+- DET WIRE = RAND (a random wire detonates)
 - SPEED WIRE = NONE
 - PAUSE WIRE = NONE
 
-**Jogabilidade:**
-- Cortar o fio DET → detona instantaneamente
-- Digitar código errado → 3 tentativas, na 4ª detona
-- Digitar código correto → desarma
+**Gameplay:**
+- Cut the DET wire → detonates instantly
+- Type the wrong code → 3 attempts, on the 4th it detonates
+- Type the correct code → defuses
 
-### 8.2 Modo WIRE
+### 8.2 WIRE Mode
 
-O jogador precisa cortar o fio correto (e apenas ele).
+The player must cut the correct wire (and only it).
 
-**Configuração:**
+**Configuration:**
 - MODE = WIRE
-- DEFUSE WIRE = 2 (por exemplo, fio vermelho)
+- DEFUSE WIRE = 2 (for example, red wire)
 - DET WIRE = RAND
 - SPEED WIRE = RAND
 - PAUSE WIRE = RAND
 
-**Jogabilidade:**
-- Cortar o fio DEFUSE (vermelho) → desarma
-- Cortar qualquer outro fio → pode detonar (DET), acelerar ou pausar
+**Gameplay:**
+- Cut the DEFUSE wire (red) → defuses
+- Cut any other wire → may detonate (DET), speed up or pause
 
-### 8.3 Modo ORDER
+### 8.3 ORDER Mode
 
-O jogador precisa cortar os 4 fios em uma sequência específica.
+The player must cut the 4 wires in a specific sequence.
 
-**Configuração:**
+**Configuration:**
 - MODE = ORDER
-- ORDER = 3142 (por exemplo)
-- DET WIRE = NONE (ou RAND para dificuldade extra)
+- ORDER = 3142 (for example)
+- DET WIRE = NONE (or RAND for extra difficulty)
 
-**Jogabilidade:**
-- Ordem correta (amarelo→azul→verde→vermelho) → desarma ao cortar o 4º
-- Qualquer erro na ordem → detona imediatamente
+**Gameplay:**
+- Correct order (yellow→blue→green→red) → defuses on cutting the 4th
+- Any error in the order → detonates immediately
 
-### 8.4 Com RFID
+### 8.4 With RFID
 
-Aproximar uma tag RFID pode desarmar ou detonar.
+Bringing an RFID tag close can defuse or detonate.
 
-**Configuração:**
+**Configuration:**
 - RFID = ON
-- RF DEFU: aproxime uma tag para ensinar (até 4 tags)
-- RF DETO: aproxime uma tag para ensinar
+- RF DEFU: bring a tag close to teach it (up to 4 tags)
+- RF DETO: bring a tag close to teach it
 
-**Jogabilidade:**
-- Aproximar tag de desarme → desarma
-- Aproximar tag de detonação → detona
+**Gameplay:**
+- Bring the defuse tag close → defuses
+- Bring the detonation tag close → detonates
 
-### 8.5 Com RF433
+### 8.5 With RF433
 
-Controle remoto via RF 433MHz.
+Remote control via 433MHz RF.
 
-**Comandos disponíveis:**
-- PREV / NEXT / MENU / START — mesmos botões físicos
-- DETONATE — detona remotamente
-- DEFUSE — desarma remotamente
-- SPEED — acelera/desacelera (toggle)
-- PAUSE — pausa por 2s
+**Available commands:**
+- PREV / NEXT / MENU / START — same as the physical buttons
+- DETONATE — detonates remotely
+- DEFUSE — defuses remotely
+- SPEED — speeds up/slows down (toggle)
+- PAUSE — pauses for 2s
 
 ---
 
-## 9. Manutenção
+## 9. Maintenance
 
-### Atualização de firmware
-1. Conecte via USB-C ao computador
-2. Abra o Arduino IDE ou arduino-cli
-3. Selecione placa: M5Stack StamPLC (ESP32-S3)
-4. Faça upload do novo firmware
+### Firmware update
+1. Connect via USB-C to the computer
+2. Open the Arduino IDE or arduino-cli
+3. Select board: M5Stack StamPLC (ESP32-S3)
+4. Upload the new firmware
 
-### Verificação de dispositivos I2C
-No boot, o sistema varre ambos os barramentos I2C e publica o resultado no sensor `i2c_status` do Home Assistant. Dispositivos esperados:
+### I2C device check
+At boot, the system scans both I2C buses and publishes the result to the `i2c_status` sensor in Home Assistant. Expected devices:
 
-**Barramento interno:** PI4IOE5V6408(0x43), AW9523B(0x59), RX8130CE(0x32), LM75B(0x48), INA226(0x40)
+**Internal bus:** PI4IOE5V6408(0x43), AW9523B(0x59), RX8130CE(0x32), LM75B(0x48), INA226(0x40)
 
 **PORT.A:** PCF8574(0x20-0x27), MFRC522(0x28)
 
-### Solução de problemas
+### Troubleshooting
 
-| Problema | Causa provável | Solução |
+| Problem | Probable cause | Solution |
 |----------|---------------|---------|
-| Não conecta ao WiFi | Senha incorreta | Entre no Modo AP e reconfigue |
-| Keypad não funciona | PCF8574 não detectado | Verifique cabos do Grove PORT.A |
-| RFID não funciona | Chip não presente ou I2C 0x28 ocupado | Verifique endereço I2C |
-| Tick não toca | TICK desligado no menu | Ative no menu (item 8) |
-| Relés não acionam | TDET/TDEF = 0 ou falha AW9523B | Verifique configuração e I2C |
-| Display apagado | Brilho = 0 | Ajuste BRIGHT no menu (item 7) |
-| Botões não respondem | PI4IOE5V6408 não detectado | Verifique barramento I2C interno |
+| Does not connect to WiFi | Incorrect password | Enter AP Mode and reconfigure |
+| Keypad does not work | PCF8574 not detected | Check the PORT.A Grove cables |
+| RFID does not work | Chip not present or I2C 0x28 busy | Check the I2C address |
+| Tick does not play | TICK off in the menu | Turn it on in the menu (item 8) |
+| Relays do not trigger | TDET/TDEF = 0 or AW9523B failure | Check the configuration and I2C |
+| Display off | Brightness = 0 | Adjust BRIGHT in the menu (item 7) |
+| Buttons do not respond | PI4IOE5V6408 not detected | Check the internal I2C bus |
 
 ---
 
-## 10. Especificações Técnicas
+## 10. Technical Specifications
 
-| Item | Especificação |
+| Item | Specification |
 |------|---------------|
-| Microcontrolador | ESP32-S3 (M5Stack StamPLC) |
-| Display | TFT ST7789v2 240×135, rotação 1 |
-| Timer | Contagem regressiva 5-5999s |
-| Precisão | ±1s (baseado em millis()) |
-| Fios | 4 opto-isolados (YEL/RED/BLU/GRN) |
-| Relés | 4 canais (2 DETONATE + 2 DEFUSE) |
-| Keypad | 4×3 matriz via PCF8574 I2C |
+| Microcontroller | ESP32-S3 (M5Stack StamPLC) |
+| Display | TFT ST7789v2 240×135, rotation 1 |
+| Timer | Countdown 5-5999s |
+| Precision | ±1s (based on millis()) |
+| Wires | 4 opto-isolated (YEL/RED/BLU/GRN) |
+| Relays | 4 channels (2 DETONATE + 2 DEFUSE) |
+| Keypad | 4×3 matrix via PCF8574 I2C |
 | RFID | MFRC522/WS1850S I2C (RFID 2 Unit) |
 | RF433 | SYN531R (rc-switch) |
-| RTC | RX8130CE (alarme programável) |
-| Conectividade | WiFi 2.4GHz + MQTT (ArduinoHA) |
-| Alimentação | USB-C 5V |
-| Consumo | ~200mA (com WiFi ativo) |
-| Persistência | NVS (Preferences) + SPIFFS (WiFi config) |
+| RTC | RX8130CE (programmable alarm) |
+| Connectivity | WiFi 2.4GHz + MQTT (ArduinoHA) |
+| Power | USB-C 5V |
+| Consumption | ~200mA (with WiFi active) |
+| Persistence | NVS (Preferences) + SPIFFS (WiFi config) |
 
 ---
 
-## 11. Licença e Créditos
+## 11. License and Credits
 
-Projeto desenvolvido para uso em escape rooms. Baseado no GameTimerPro original (AVR/RP2040) e BombTimer XIAO S3.
+Project developed for use in escape rooms. Based on the original GameTimerPro (AVR/RP2040) and BombTimer XIAO S3.
 
-**Bibliotecas utilizadas:**
-- M5StamPLC / M5Unified / M5GFX — display e hardware
-- ArduinoHA — integração Home Assistant
-- MFRC522_I2C — leitura RFID
+**Libraries used:**
+- M5StamPLC / M5Unified / M5GFX — display and hardware
+- ArduinoHA — Home Assistant integration
+- MFRC522_I2C — RFID reading
 - rc-switch — RF433
-- ArduinoJson — configuração WiFi
+- ArduinoJson — WiFi configuration
 - PubSubClient — MQTT
 
 ---
 
-## 12. Anexo: Mapeamento PCF8574 → Keypad
+## 12. Appendix: PCF8574 → Keypad Mapping
 
-O keypad 4×3 usa 7 pinos do PCF8574: 4 para linhas (output) e 3 para colunas (input). A pinagem varia conforme o modelo do keypad.
+The 4×3 keypad uses 7 pins of the PCF8574: 4 for rows (output) and 3 for columns (input). The pinout varies depending on the keypad model.
 
-**Para ajustar a pinagem:** edite `Pins.h` e altere os arrays:
+**To adjust the pinout:** edit `Pins.h` and change the arrays:
 
 ```cpp
-// PCF8574 pin → row do keypad (pino que recebe LOW para ativar a linha)
+// PCF8574 pin → keypad row (pin that receives LOW to activate the row)
 static const uint8_t KEYPAD_ROW_PINS[4] PROGMEM = {0, 4, 5, 6};
 
-// PCF8574 pin → col do keypad (pino lido para detectar tecla)
+// PCF8574 pin → keypad col (pin read to detect a key)
 static const uint8_t KEYPAD_COL_PINS[3] PROGMEM = {3, 1, 2};
 ```
 
-Use um multímetro ou o programa auxiliar de keypad para descobrir a correspondência correta para o seu modelo.
+Use a multimeter or the keypad helper program to figure out the correct mapping for your model.

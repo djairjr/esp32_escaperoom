@@ -1,1 +1,1 @@
-Esse arquivo serve para abertura de fechaduras e deve ter o mesmo nome que algum dos arquivos de áudio. 
+This file is used to open locks and must have the same name as one of the audio files. 

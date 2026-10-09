@@ -1,32 +1,32 @@
-# ConnectWires — Entidades Home Assistant
+# ConnectWires — Home Assistant Entities
 
-## Sensores
-| Nome | ID | Valores |
+## Sensors
+| Name | ID | Values |
 |---|---|---|
-| Estado | `state` | idle, running, solved |
-| Conexões Corretas | `correct_connections` | 0-N |
-| Tensão Canal 0 | `voltage_0` | 0-5000mV |
+| State | `state` | idle, running, solved |
+| Correct Connections | `correct_connections` | 0-N |
+| Channel 0 Voltage | `voltage_0` | 0-5000mV |
 
-## Binários (por soquete)
-| Nome | ID |
+## Binary sensors (per socket)
+| Name | ID |
 |---|---|
-| Soquete 1..N | `socket_1`..`socket_N` |
+| Socket 1..N | `socket_1`..`socket_N` |
 
-## Binários (por par de conexão)
-| Nome | ID |
+## Binary sensors (per connection pair)
+| Name | ID |
 |---|---|
-| Par A..D | `pair_a`..`pair_d` |
+| Pair A..D | `pair_a`..`pair_d` |
 
-## Botões
-| Nome | ID |
+## Buttons
+| Name | ID |
 |---|---|
-| Resetar | `reset` |
-| Destravar | `unlock` |
+| Reset | `reset` |
+| Unlock | `unlock` |
 
-## Números
-| Nome | ID | Range |
+## Numbers
+| Name | ID | Range |
 |---|---|---|
-| Nº Conexões | `num_connections` | 2-6 |
+| No. Connections | `num_connections` | 2-6 |
 
 ## AP Mode
-Rede WiFi "ConnectWires-XXXX" + portal em 192.168.4.1.
+WiFi network "ConnectWires-XXXX" + portal at 192.168.4.1.

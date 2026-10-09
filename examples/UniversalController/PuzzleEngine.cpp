@@ -12,13 +12,13 @@ void PuzzleEngine::begin() {
     const auto& logic = config_.getLogicConfig();
     const auto& inputs = config_.getInputConfig();
 
-    // Inicializa sequência baseada no modo
+    // Initializes sequence based on the mode
     switch (logic.mode) {
         case PuzzleMode::CUSTOM_SEQUENCE:
-            // Usa sequência definida no JSON
+            // Uses the sequence defined in the JSON
             sequenceLength_ = logic.sequenceLength;
             for (uint8_t i = 0; i < sequenceLength_; i++) {
-                sequence_[i] = logic.sequence[i] - 1;  // Converte para índice 0-based
+                sequence_[i] = logic.sequence[i] - 1;  // Converts to 0-based index
             }
             break;
 
@@ -27,7 +27,7 @@ void PuzzleEngine::begin() {
             break;
 
         case PuzzleMode::ALL_CONNECTED:
-            // Todas as entradas devem ser ativadas
+            // All inputs must be activated
             sequenceLength_ = inputs.count;
             for (uint8_t i = 0; i < sequenceLength_; i++) {
                 sequence_[i] = i;
@@ -39,7 +39,7 @@ void PuzzleEngine::begin() {
             break;
 
         case PuzzleMode::MUSICAL_SEQUENCE:
-            // Sequência vem do config musical (notas MIDI)
+            // Sequence comes from the musical config (MIDI notes)
             sequenceLength_ = config_.getMusicalConfig().noteCount;
             for (uint8_t i = 0; i < sequenceLength_; i++) {
                 sequence_[i] = config_.getMusicalConfig().notes[i].midi;
@@ -51,14 +51,14 @@ void PuzzleEngine::begin() {
     currentStep_ = 0;
     progress_ = 0;
 
-    // Log da sequência
-    Serial.printf("[PuzzleEngine] Modo: %s | Sequência: ", ConfigManager::modeToString(logic.mode));
+    // Sequence log
+    Serial.printf("[PuzzleEngine] Mode: %s | Sequence: ", ConfigManager::modeToString(logic.mode));
     for (uint8_t i = 0; i < sequenceLength_; i++) {
         Serial.printf("%d ", sequence_[i] + 1);
     }
     Serial.printf("| Total steps: %d\n", totalSteps_);
 
-    // Configura NeoPixel se habilitado (NÃO no modo musical — sem feedback local)
+    // Configures NeoPixel if enabled (NOT in musical mode — no local feedback)
     const auto& np = config_.getNeoPixelConfig();
     if (logic.mode != PuzzleMode::MUSICAL_SEQUENCE && np.enabled && np.count > 0) {
         hw.pixelsExternal().updateLength(np.count);
@@ -75,7 +75,7 @@ void PuzzleEngine::begin() {
 void PuzzleEngine::update() {
     const auto& logic = config_.getLogicConfig();
 
-    // Verifica timeout
+    // Checks timeout
     if (logic.timeoutSeconds > 0 && state_ == EngineState::RUNNING) {
         if (millis() - puzzleStartTime_ > logic.timeoutSeconds * 1000UL) {
             onTimeout();
@@ -83,10 +83,10 @@ void PuzzleEngine::update() {
         }
     }
 
-    // Processa baseado no estado
+    // Processes based on the state
     switch (state_) {
         case EngineState::IDLE:
-            // Aguarda comando para iniciar
+            // Waits for a command to start
             break;
 
         case EngineState::RUNNING:
@@ -110,7 +110,7 @@ void PuzzleEngine::update() {
             break;
 
         case EngineState::INPUT_CORRECT:
-            // Aguarda breve momento antes de continuar
+            // Waits a brief moment before continuing
             if (millis() - stateStartTime_ > 500) {
                 state_ = EngineState::RUNNING;
                 showRunningEffect();
@@ -118,7 +118,7 @@ void PuzzleEngine::update() {
             break;
 
         case EngineState::INPUT_WRONG:
-            // Aguarda breve momento para feedback
+            // Waits a brief moment for feedback
             if (millis() - stateStartTime_ > 1000) {
                 if (logic.resetOnError) {
                     reset();
@@ -132,19 +132,19 @@ void PuzzleEngine::update() {
 
         case EngineState::ERROR:
         case EngineState::TIMEOUT:
-            // Estados finais de erro
+            // Final error states
             break;
 
         case EngineState::SOLVED:
-            // Mantém efeito de solução
+            // Keeps the solved effect
             showSolvedEffect();
             break;
     }
 
-    // Atualiza PWM
+    // Updates PWM
     updatePwmOutput();
 
-    // Atualiza NeoPixel
+    // Updates NeoPixel
     updateNeoPixel();
 }
 
@@ -161,7 +161,7 @@ void PuzzleEngine::start() {
     puzzleStartTime_ = millis();
     state_ = EngineState::RUNNING;
     showRunningEffect();
-    Serial.println("[PuzzleEngine] Puzzle iniciado");
+    Serial.println("[PuzzleEngine] Puzzle started");
 }
 
 uint16_t PuzzleEngine::getRemainingTime() const {
@@ -173,10 +173,10 @@ uint16_t PuzzleEngine::getRemainingTime() const {
     return logic.timeoutSeconds - elapsed;
 }
 
-// ===== PROCESSAMENTO POR MODO =====
+// ===== PROCESSING BY MODE =====
 
 void PuzzleEngine::processCustomSequence() {
-    // Verifica se há input correto na sequência
+    // Checks whether there is a correct input in the sequence
     for (uint8_t i = 0; i < config_.getInputConfig().count; i++) {
         if (detectInputRisingEdge(i)) {
             uint8_t expectedInput = sequence_[currentStep_];
@@ -186,18 +186,18 @@ void PuzzleEngine::processCustomSequence() {
             } else {
                 onInputWrong(i);
             }
-            break;  // Só processa um input por ciclo
+            break;  // Only processes one input per cycle
         }
     }
 }
 
 void PuzzleEngine::processLinearSequence() {
-    // Mesma lógica de custom sequence, mas sequência é 0,1,2,3...
+    // Same logic as custom sequence, but the sequence is 0,1,2,3...
     processCustomSequence();
 }
 
 void PuzzleEngine::processAllConnected() {
-    // Verifica se todas as entradas estão ativas
+    // Checks whether all inputs are active
     uint8_t activeCount = 0;
     const auto& inputs = config_.getInputConfig();
 
@@ -216,7 +216,7 @@ void PuzzleEngine::processAllConnected() {
 }
 
 void PuzzleEngine::processRandomSequence() {
-    // Mesma lógica de custom sequence
+    // Same logic as custom sequence
     processCustomSequence();
 }
 
@@ -226,20 +226,20 @@ void PuzzleEngine::processMusicalSequence() {
     const auto& musical = config_.getMusicalConfig();
     if (!musical.enabled || musical.noteCount == 0) return;
 
-    // Lê a nota detectada pelo MicInput (MIDI ou -1 se silêncio)
+    // Reads the note detected by MicInput (MIDI or -1 if silence)
     int detected = mic_->detectNote();
     if (detected < 0) {
-        // Silêncio — verifica gap excedido
+        // Silence — checks for exceeded gap
         if (lastInputTime_ > 0 && (millis() - lastInputTime_ > musical.maxGapMs)) {
             onTimeout();
         }
         return;
     }
 
-    // Nota detectada — verifica se é a esperada (dentro da tolerância)
+    // Note detected — checks whether it is the expected one (within tolerance)
     uint8_t expected = sequence_[currentStep_];
     int diff = detected - expected;
-    // Tolerância em cents: 1 semitom = 100 cents. Converte diff de semitons para cents.
+    // Tolerance in cents: 1 semitone = 100 cents. Converts semitone diff to cents.
     int diffCents = diff * 100;
     if (abs(diffCents) <= musical.toleranceCents) {
         onNoteCorrect((uint8_t)detected);
@@ -255,7 +255,7 @@ void PuzzleEngine::onNoteCorrect(uint8_t midi) {
     currentStep_++;
     updateProgress();
 
-    Serial.printf("[PuzzleEngine] Nota %d CORRETA | Progresso: %d/%d\n",
+    Serial.printf("[PuzzleEngine] Note %d CORRECT | Progress: %d/%d\n",
                   midi, currentStep_, totalSteps_);
 
     if (currentStep_ >= totalSteps_) {
@@ -274,14 +274,14 @@ bool PuzzleEngine::detectInputRisingEdge(uint8_t pin) {
     auto* io = hw.io();
     if (!io) return false;
 
-    // Lê estado atual (LOW = ativo com PULLUP)
+    // Reads current state (LOW = active with PULLUP)
     uint8_t current = (io->digitalRead(inputs.pinMapping[pin]) == LOW) ? 1 : 0;
     uint8_t previous = lastInputStates_[pin];
 
-    // Atualiza estado para próxima chamada
+    // Updates state for the next call
     lastInputStates_[pin] = current;
 
-    // Borda de subida: inativo -> ativo
+    // Rising edge: inactive -> active
     return (previous == 0 && current == 1);
 }
 
@@ -306,7 +306,7 @@ void PuzzleEngine::onInputCorrect(uint8_t inputIndex) {
     playInputSound(currentStep_ - 1);
     showCorrectEffect();
 
-    Serial.printf("[PuzzleEngine] Input %d CORRETO | Progresso: %d/%d\n",
+    Serial.printf("[PuzzleEngine] Input %d CORRECT | Progress: %d/%d\n",
                   inputIndex + 1, currentStep_, totalSteps_);
 
     if (currentStep_ >= totalSteps_) {
@@ -321,7 +321,7 @@ void PuzzleEngine::onInputWrong(uint8_t inputIndex) {
     playErrorSound();
     showErrorEffect();
 
-    Serial.printf("[PuzzleEngine] Input %d ERRADO | Esperado: %d\n",
+    Serial.printf("[PuzzleEngine] Input %d WRONG | Expected: %d\n",
                   inputIndex + 1, sequence_[currentStep_] + 1);
 }
 
@@ -332,12 +332,12 @@ void PuzzleEngine::onSequenceComplete() {
     playUnlockSound();
     showSolvedEffect();
 
-    // Ativa saída (relê/trava)
+    // Activates output (relay/lock)
     const auto& output = config_.getOutputConfig();
     hw.pinMode(output.lockPin, OUTPUT);
     hw.digitalWrite(output.lockPin, output.activeHigh ? HIGH : LOW);
 
-    Serial.println("[PuzzleEngine] PUZZLE RESOLVIDO!");
+    Serial.println("[PuzzleEngine] PUZZLE SOLVED!");
 }
 
 void PuzzleEngine::onTimeout() {
@@ -357,10 +357,10 @@ void PuzzleEngine::updatePwmOutput() {
     const auto& pwm = config_.getPwmConfig();
     if (!pwm.enabled) return;
 
-    // Calcula valor PWM baseado no progresso
+    // Calculates PWM value based on progress
     uint8_t value = map(progress_, 0, 100, pwm.minValue, pwm.maxValue);
 
-    // Define saída PWM
+    // Sets PWM output
     hw.setAnalogOutput(pwm.channel, value);
 }
 
@@ -374,7 +374,7 @@ void PuzzleEngine::updateNeoPixel() {
         if (i < ledsToLight) {
             hw.pixelsExternal().setPixelColor(i, np.colorProgress);
         } else if (i == ledsToLight && state_ == EngineState::INPUT_CORRECT) {
-            // Efeito de pulso no LED atual
+            // Pulse effect on the current LED
             uint8_t brightness = 128 + 127 * sin(millis() / 200.0);
             uint32_t color = Adafruit_NeoPixel::Color(
                 (np.colorProgress >> 16) & 0xFF * brightness / 255,
@@ -390,7 +390,7 @@ void PuzzleEngine::updateNeoPixel() {
     hw.pixelsExternal().show();
 }
 
-// ===== ÁUDIO =====
+// ===== AUDIO =====
 
 void PuzzleEngine::playInputSound(uint8_t index) {
     const auto& audio = config_.getAudioConfig();
@@ -419,7 +419,7 @@ void PuzzleEngine::playResetSound() {
     hw.sound().playOnce(audio.resetSound);
 }
 
-// ===== GERAÇÃO DE SEQUÊNCIAS =====
+// ===== SEQUENCE GENERATION =====
 
 void PuzzleEngine::generateLinearSequence() {
     const auto& inputs = config_.getInputConfig();
@@ -433,7 +433,7 @@ void PuzzleEngine::generateRandomSequence() {
     const auto& inputs = config_.getInputConfig();
     sequenceLength_ = inputs.count;
 
-    // Preenche array com todas as entradas
+    // Fills array with all inputs
     uint8_t temp[16];
     for (uint8_t i = 0; i < sequenceLength_; i++) {
         temp[i] = i;
@@ -447,19 +447,19 @@ void PuzzleEngine::generateRandomSequence() {
         temp[j] = swap;
     }
 
-    // Copia para sequência
+    // Copies to sequence
     for (uint8_t i = 0; i < sequenceLength_; i++) {
         sequence_[i] = temp[i];
     }
 }
 
-// ===== EFEITOS VISUAIS =====
+// ===== VISUAL EFFECTS =====
 
 void PuzzleEngine::showIdleEffect() {
     const auto& np = config_.getNeoPixelConfig();
     if (!np.enabled || np.count == 0) return;
 
-    // Todos os LEDs na cor idle, efeito de respiração
+    // All LEDs in idle color, breathing effect
     for (uint8_t i = 0; i < np.count; i++) {
         hw.pixelsExternal().setPixelColor(i, np.colorIdle);
     }
@@ -470,7 +470,7 @@ void PuzzleEngine::showRunningEffect() {
     const auto& np = config_.getNeoPixelConfig();
     if (!np.enabled || np.count == 0) return;
 
-    // Barra de progresso vazia
+    // Empty progress bar
     for (uint8_t i = 0; i < np.count; i++) {
         hw.pixelsExternal().setPixelColor(i, np.colorIdle);
     }
@@ -481,7 +481,7 @@ void PuzzleEngine::showCorrectEffect() {
     const auto& np = config_.getNeoPixelConfig();
     if (!np.enabled || np.count == 0) return;
 
-    // Flash verde breve
+    // Brief green flash
     for (uint8_t i = 0; i < np.count; i++) {
         hw.pixelsExternal().setPixelColor(i, np.colorSolved);
     }
@@ -492,7 +492,7 @@ void PuzzleEngine::showErrorEffect() {
     const auto& np = config_.getNeoPixelConfig();
     if (!np.enabled || np.count == 0) return;
 
-    // Flash vermelho
+    // Red flash
     for (uint8_t i = 0; i < np.count; i++) {
         hw.pixelsExternal().setPixelColor(i, np.colorError);
     }
@@ -503,7 +503,7 @@ void PuzzleEngine::showSolvedEffect() {
     const auto& np = config_.getNeoPixelConfig();
     if (!np.enabled || np.count == 0) return;
 
-    // Efeito de celebração (fade in/out verde)
+    // Celebration effect (green fade in/out)
     static unsigned long lastUpdate = 0;
     static uint8_t brightness = 0;
     static bool increasing = true;

@@ -1,9 +1,9 @@
-Assets de audio para Mastermind.
-Copie para a raiz do LittleFS ou SD Card.
+Audio assets for Mastermind.
+Copy to the root of LittleFS or SD Card.
 
-- /sfx/beep.mp3   - Toca ao pressionar uma tecla
-- /sfx/magic.mp3  - Puzzle resolvido (destrava)
-- /sfx/error.mp3  - Esgotaram as tentativas
-- /sfx/cancel.mp3 - Limpou a tentativa atual
+- /sfx/beep.mp3   - Plays when a key is pressed
+- /sfx/magic.mp3  - Puzzle solved (unlocks)
+- /sfx/error.mp3  - Attempts exhausted
+- /sfx/cancel.mp3 - Cleared the current attempt
 
-Formato: MP3 128Kbps 44KHz estereo, sem ID3 tags.
+Format: MP3 128Kbps 44KHz stereo, no ID3 tags.

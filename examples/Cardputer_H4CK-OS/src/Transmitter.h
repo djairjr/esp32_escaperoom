@@ -5,20 +5,20 @@
 #include <RCSwitch.h>
 
 // ============================================================================
-// TRANSMITTER — RF433 real via SYN531R no Grove G2
+// TRANSMITTER — real RF433 via SYN531R on Grove G2
 // ============================================================================
-// Códigos padronizados com BombTimer StamPLC (InputManager.h mapRFValue):
-//   0x456789 — START  (iniciar contagem)
-//   0x56789A — DETONATE  (detonar)
-//   0x6789AB — DEFUSE    (desarmar)
-//   0x789ABC — SPEED     (acelerar)
-//   0x89ABCD — PAUSE     (pausar)
+// Standardized codes with BombTimer StamPLC (InputManager.h mapRFValue):
+//   0x456789 — START  (start countdown)
+//   0x56789A — DETONATE  (detonate)
+//   0x6789AB — DEFUSE    (defuse)
+//   0x789ABC — SPEED     (speed up)
+//   0x89ABCD — PAUSE     (pause)
 //   0x123456 — PREV  (menu left)
 //   0x234567 — NEXT  (menu right)
 //   0x345678 — MENU  (menu select)
 // ============================================================================
 
-// Códigos de 24 bits (compatíveis com EV1527/PT2262)
+// 24-bit codes (compatible with EV1527/PT2262)
 #define RF_START    0x456789UL
 #define RF_DETONATE 0x56789AUL
 #define RF_DEFUSE   0x6789ABUL

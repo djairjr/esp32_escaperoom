@@ -1,401 +1,401 @@
-# Manual do GameTimerPro - Bomba para Escape Room
+# GameTimerPro Manual - Escape Room Bomb
 
-Um guia completo para donos de sala, game masters e jogadores.
-
----
-
-## 1. Visao Geral
-
-### O que e este dispositivo?
-
-O **GameTimerPro** e uma **bomba temporizada eletronica** projetada para jogos de Escape Room. Ele simula uma bomba real com contagem regressiva, fios para cortar, teclado numérico e efeitos sonoros e luminosos imersivos.
-
-### Como funciona no jogo?
-
-- Os jogadores encontram a "bomba" dentro da sala
-- O display mostra o tempo restante em minutos e segundos
-- Para vencer, eles precisam **desarmar a bomba antes que o tempo acabe**
-- O desarme pode ser feito de varias formas: digitando um código secreto, cortando fios específicos ou seguindo uma sequência de fios em ordem correta
+A complete guide for room owners, game masters and players.
 
 ---
 
-## 2. Componentes do Jogo
+## 1. Overview
 
-Estes sao os elementos que os jogadores interagem durante o jogo:
+### What is this device?
 
-| Componente | Descricao |
+The **GameTimerPro** is an **electronic timed bomb** designed for Escape Room games. It simulates a real bomb with a countdown, wires to cut, a numeric keypad and immersive sound and light effects.
+
+### How does it work in the game?
+
+- Players find the "bomb" inside the room
+- The display shows the remaining time in minutes and seconds
+- To win, they need to **defuse the bomb before time runs out**
+- The defusal can be done in several ways: typing a secret code, cutting specific wires or following a sequence of wires in the correct order
+
+---
+
+## 2. Game Components
+
+These are the elements the players interact with during the game:
+
+| Component | Description |
 |------------|-----------|
-| **Display digital** | Mostra o tempo restante no formato MM:SS (minutos e segundos) |
-| **Teclado numérico** | Teclas de 0 a 9 para digitar códigos de desarme |
-| **Fios coloridos** | Quatro fios que podem ser cortados pelos jogadores |
-| **Botao DET (Detonar)** | Botao vermelho que inicia a contagem regressiva |
-| **Botões de navegação** | Botões esquerda, direita e seletor (para configuração) |
-| **Luzes LED** | Faixa de luzes coloridas que indicam o estado da bomba |
-| **Alto-falante** | Emite sons de tick, explosão, erro e sucesso |
+| **Digital display** | Shows the remaining time in MM:SS format (minutes and seconds) |
+| **Numeric keypad** | Keys 0 to 9 to type defuse codes |
+| **Colored wires** | Four wires that can be cut by the players |
+| **DET button (Detonate)** | Red button that starts the countdown |
+| **Navigation buttons** | Left, right and selector buttons (for configuration) |
+| **LED lights** | Strip of colored lights that indicate the bomb's state |
+| **Speaker** | Emits tick, explosion, error and success sounds |
 
 ---
 
-## 3. Configuração Inicial (para o dono da sala)
+## 3. Initial Configuration (for the room owner)
 
-### Como ajustar o tempo da contagem regressiva
+### How to adjust the countdown time
 
-1. **Ligue o dispositivo** - Ele mostrará o tempo atual no display
-2. **Use os botões laterais** para ajustar:
-   - Botão da **esquerda**: diminui o tempo
-   - Botão da **direita**: aumenta o tempo
-   - **Aperte rapidamente**: muda em 1 segundo
-   - **Segure pressionado**: muda em 5 segundos continuamente
-3. **Segure o botao SELECT por 1 segundo** para salvar
+1. **Turn on the device** - It will show the current time on the display
+2. **Use the side buttons** to adjust:
+   - **Left** button: decreases the time
+   - **Right** button: increases the time
+   - **Quick press**: changes by 1 second
+   - **Hold pressed**: changes by 5 seconds continuously
+3. **Hold the SELECT button for 1 second** to save
 
-> **Dica**: O tempo minimo é 10 segundos e o maximo é 99 minutos e 59 segundos.
+> **Tip**: The minimum time is 10 seconds and the maximum is 99 minutes and 59 seconds.
 
-### Como entrar no menu de configuração
+### How to enter the configuration menu
 
-1. Com o dispositivo ligado, **aperte rapidamente o botão SELECT** (solte em menos de 1 segundo)
-2. O display mostrará o primeiro item do menu: **BRIG**
-3. Use os botões esquerda/direita para navegar entre as opções
-4. Para entrar em uma opção, **aperte SELECT rapidamente**
-5. Para salvar e sair, **segure SELECT por 1 segundo**
+1. With the device on, **quickly press the SELECT button** (release in less than 1 second)
+2. The display will show the first menu item: **BRIG**
+3. Use the left/right buttons to navigate between the options
+4. To enter an option, **quickly press SELECT**
+5. To save and exit, **hold SELECT for 1 second**
 
-### Explicação de cada opção do menu
+### Explanation of each menu option
 
-#### BRIG (Brilho da tela)
-- Ajusta o quão clara a tela fica
-- Valores de 0 (apagado) a 15 (maximo)
-- Recomendado: 12-15 para salas bem iluminadas
+#### BRIG (Screen brightness)
+- Adjusts how bright the screen is
+- Values from 0 (off) to 15 (maximum)
+- Recommended: 12-15 for well-lit rooms
 
-#### VOL (Volume do som)
-- Ajusta o volume dos efeitos sonoros
-- Valores de 0 (mudo) a 15 (maximo)
-- Recomendado: 10-12 para salas de tamanho medio
+#### VOL (Sound volume)
+- Adjusts the volume of the sound effects
+- Values from 0 (mute) to 15 (maximum)
+- Recommended: 10-12 for medium-sized rooms
 
-#### TICK (Som de tick)
-- Liga ou desliga o som de "tick" a cada segundo
-- **ON**: faz tick-tock durante a contagem
-- **OFF**: silencioso, apenas sons de eventos
+#### TICK (Tick sound)
+- Turns the "tick" sound on or off every second
+- **ON**: makes tick-tock during the countdown
+- **OFF**: silent, only event sounds
 
-#### SHAK (Modo do acelerômetro)
-O acelerômetro detecta quando alguém move ou sacode o dispositivo. Escolha uma opção:
+#### SHAK (Accelerometer mode)
+The accelerometer detects when someone moves or shakes the device. Choose an option:
 
-| Opção | Significado | Efeito no jogo |
+| Option | Meaning | Effect in the game |
 |-------|-------------|----------------|
-| **OFF** | Desligado | O acelerômetro não faz nada |
-| **STRT** | Start (Iniciar) | A contagem começa quando alguém mover a bomba |
-| **FAST** | Velocidade 2x | Sacudir a bomba faz o tempo passar 2x mais rapido |
-| **PAUS** | Pausa | Sacudir a bomba congela o relogio por 2 segundos (e emite um erro) |
-| **BOOM** | Explosão imediata | Sacudir a bomba com força causa detonação instantanea |
+| **OFF** | Off | The accelerometer does nothing |
+| **STRT** | Start | The countdown starts when someone moves the bomb |
+| **FAST** | 2x Speed | Shaking the bomb makes time pass 2x faster |
+| **PAUS** | Pause | Shaking the bomb freezes the clock for 2 seconds (and emits an error) |
+| **BOOM** | Immediate explosion | Shaking the bomb hard causes instant detonation |
 
-> **Dica**: Modo STRT é otimo para surpreender jogadores que pegam a bomba sem querer!
+> **Tip**: STRT mode is great for surprising players who pick up the bomb by accident!
 
-#### NET (Comunicação com outros dispositivos)
-- **ON**: A bomba se comunica com outros puzzles via cabo de rede
-- **OFF**: Funciona sozinha, sem conexao
-- Use ON se tiver outros dispositivos sincronizados na sala
+#### NET (Communication with other devices)
+- **ON**: The bomb communicates with other puzzles via network cable
+- **OFF**: Works on its own, without connection
+- Use ON if you have other synced devices in the room
 
-#### WIRE (Configuração dos fios)
-Acesse um submenu com 5 opções para configurar os fios:
+#### WIRE (Wire configuration)
+Access a submenu with 5 options to configure the wires:
 
-**ORDR** (Ordem): Define a sequencia de corte quando no modo "Ordem de Fios"
-- Digite 4 digitos de 1 a 4 (exemplo: 2413 = fio 2, depois 4, depois 1, depois 3)
-- Cada numero deve ser unico (nao repita)
+**ORDR** (Order): Defines the cutting sequence when in "Wire Order" mode
+- Type 4 digits from 1 to 4 (example: 2413 = wire 2, then 4, then 1, then 3)
+- Each number must be unique (do not repeat)
 
-**DET** (Fio Detonador): Qual fio explode a bomba se cortado?
-- **NONE**: Nenhum fio explode
-- **1/2/3/4**: Fio especifico explode
-- **RAND**: Sorteia aleatoriamente a cada jogo
+**DET** (Detonation Wire): Which wire explodes the bomb if cut?
+- **NONE**: No wire explodes
+- **1/2/3/4**: Specific wire explodes
+- **RAND**: Draws randomly each game
 
-**DEF** (Fio Desarmador): Qual fio desarma a bomba se cortado?
-- **NONE**: Nenhum fio desarma
-- **1/2/3/4**: Fio especifico desarma
-- **RAND**: Sorteia aleatoriamente a cada jogo
+**DEF** (Defuse Wire): Which wire defuses the bomb if cut?
+- **NONE**: No wire defuses
+- **1/2/3/4**: Specific wire defuses
+- **RAND**: Draws randomly each game
 
-**SPD** (Fio Acelerador): Qual fio acelera a contagem se cortado?
-- **NONE**: Nenhum fio acelera
-- **1/2/3/4**: Fio especifico acelera para 2x
-- **RAND**: Sorteia aleatoriamente
+**SPD** (Accelerator Wire): Which wire speeds up the countdown if cut?
+- **NONE**: No wire speeds up
+- **1/2/3/4**: Specific wire speeds up to 2x
+- **RAND**: Draws randomly
 
-**PAUS** (Fio de Pausa): Qual fio pausa a contagem por 2 segundos?
-- **NONE**: Nenhum fio pausa
-- **1/2/3/4**: Fio especifico pausa
-- **RAND**: Sorteia aleatoriamente
+**PAUS** (Pause Wire): Which wire pauses the countdown for 2 seconds?
+- **NONE**: No wire pauses
+- **1/2/3/4**: Specific wire pauses
+- **RAND**: Draws randomly
 
-> **Importante**: Um fio nao pode ter duas funcoes ao mesmo tempo. O sistema avisa se houver conflito.
+> **Important**: A wire cannot have two functions at the same time. The system warns if there is a conflict.
 
-#### CODE (Código de desarme)
-- Define a senha numérica de 4 digitos para desarmar a bomba
-- Ao selecionar, digite os 4 numeros no teclado
-- O código padrao é **1234**
+#### CODE (Defuse code)
+- Defines the 4-digit numeric password to defuse the bomb
+- When selecting, type the 4 numbers on the keypad
+- The default code is **1234**
 
-#### RELE (Tempos dos gatilhos)
-Configura por quanto tempo as saidas ficam ativadas:
+#### RELE (Trigger times)
+Configures how long the outputs stay activated:
 
-**TDET** (Tempo de Detonação): Quanto tempo o gatilho de explosao fica ligado (1 a 10 segundos)
+**TDET** (Detonation Time): How long the explosion trigger stays on (1 to 10 seconds)
 
-**TDEF** (Tempo de Desarme): Quanto tempo o gatilho de sucesso fica ligado (1 a 10 segundos)
+**TDEF** (Defuse Time): How long the success trigger stays on (1 to 10 seconds)
 
 ---
 
-## 4. Como Jogar
+## 4. How to Play
 
-### Para o Game Master - Iniciando o jogo
+### For the Game Master - Starting the game
 
-1. **Configure o tempo** desejado para a partida
-2. **Escolha o modo de desarme** (código, fio específico ou ordem de fios)
-3. **Explique as regras** aos jogadores antes de eles entrarem
-4. **Aperte o botão DET** (vermelho) para iniciar a contagem quando estiverem prontos
+1. **Configure the time** desired for the match
+2. **Choose the defuse mode** (code, specific wire or wire order)
+3. **Explain the rules** to the players before they enter
+4. **Press the DET button** (red) to start the countdown when they are ready
 
-> Alternativa: No modo **SHAK = STRT**, a contagem inicia automaticamente quando alguém mover a bomba!
+> Alternative: In **SHAK = STRT** mode, the countdown starts automatically when someone moves the bomb!
 
-### Para os jogadores - O que acontece durante o jogo
+### For the players - What happens during the game
 
-**Ao iniciar:**
-- O display mostra o tempo começando a diminuir
-- As luzes ficam vermelhas e pulsam
-- Se o TICK estiver ligado, ouve-se um "tick" a cada segundo
-- O som **armed.mp3** toca indicando que a bomba esta ativa
+**At the start:**
+- The display shows the time starting to decrease
+- The lights turn red and pulse
+- If TICK is on, a "tick" is heard every second
+- The **armed.mp3** sound plays indicating the bomb is active
 
-**Durante a contagem:**
-- O tempo diminui em segundos
-- As luzes piscam mais rapido quando falta pouco tempo
-- Se o modo SHAK estiver em FAST, sacudir a bomba acelera o tempo!
+**During the countdown:**
+- The time decreases in seconds
+- The lights blink faster when little time remains
+- If the SHAK mode is FAST, shaking the bomb speeds up the time!
 
-### Como desarmar a bomba
+### How to defuse the bomb
 
-Existem **4 formas** de desarmar, dependendo da configuração:
+There are **4 ways** to defuse, depending on the configuration:
 
-#### 1. Modo CÓDIGO (CODE)
+#### 1. CODE Mode (CODE)
 
-Ao escolher o modo de desarme por código (CODE), o jogador deve inserir um código de 4 dígitos no keypad.
+When choosing the code defuse mode (CODE), the player must enter a 4-digit code on the keypad.
 
-**Sistema de Tentativas:**
-- O jogador possui **3 tentativas** para acertar o código
-- Se o código estiver correto: a bomba é desarmada
-- Se o código estiver errado:
-  - **1ª a 3ª tentativa:** O display mostra "_Err" e o jogador pode tentar novamente
-  - **4ª tentativa:** A bomba explode imediatamente!
+**Attempt System:**
+- The player has **3 attempts** to get the code right
+- If the code is correct: the bomb is defused
+- If the code is wrong:
+  - **1st to 3rd attempt:** The display shows "_Err" and the player can try again
+  - **4th attempt:** The bomb explodes immediately!
 
-**Exemplo de uso:**
-1. Código correto: 1234
-2. Jogador digita: 1111 → Display mostra "_Err" (tentativa 1/3)
-3. Jogador digita: 2222 → Display mostra "_Err" (tentativa 2/3)
-4. Jogador digita: 3333 → Display mostra "_Err" (tentativa 3/3)
-5. Jogador digita: 4444 → **EXPLOSÃO!**
+**Usage example:**
+1. Correct code: 1234
+2. Player types: 1111 → Display shows "_Err" (attempt 1/3)
+3. Player types: 2222 → Display shows "_Err" (attempt 2/3)
+4. Player types: 3333 → Display shows "_Err" (attempt 3/3)
+5. Player types: 4444 → **EXPLOSION!**
 
-**Dica:** Preste atenção ao código configurado no menu antes de iniciar o jogo!
+**Tip:** Pay attention to the code configured in the menu before starting the game!
 
-#### 2. Modo FIO ESPECÍFICO (WIRE + DEF)
-- Corte o fio correto (aquele configurado como DEF)
-- Se cortar o fio errado... BOOM!
+#### 2. SPECIFIC WIRE Mode (WIRE + DEF)
+- Cut the correct wire (the one configured as DEF)
+- If you cut the wrong wire... BOOM!
 
-#### 3. Modo ORDEM DE FIOS (WIRE + ORDR)
-- Corte os fios na sequencia exata configurada
-- Exemplo: se a ordem for 2413, voce deve cortar o fio 2 primeiro, depois o 4, depois o 1, e por fim o 3
-- Se errar a ordem: **EXPLODE!**
+#### 3. WIRE ORDER Mode (WIRE + ORDR)
+- Cut the wires in the exact configured sequence
+- Example: if the order is 2413, you must cut wire 2 first, then 4, then 1, and finally 3
+- If you get the order wrong: **EXPLODES!**
 
-#### 4. Modo REDE (NET)
-- A bomba se desarma automaticamente quando outros puzzles na sala forem resolvidos
-- Requer conexão com outros dispositivos
+#### 4. NETWORK Mode (NET)
+- The bomb defuses automatically when other puzzles in the room are solved
+- Requires connection to other devices
 
-### O que acontece se o tempo acabar
+### What happens if time runs out
 
-Quando o display chega em **00:00**:
+When the display reaches **00:00**:
 
-1. O display mostra **"boom"**
-2. O som de explosão toca bem alto
-3. As luzes fazem um efeito de explosão (amarelo, laranja, vermelho)
-4. O gatilho de saida é ativado (pode acionar fumaça, luzes, outro puzzle, etc.)
-5. O jogo termina - os jogadores perderam!
+1. The display shows **"boom"**
+2. The explosion sound plays very loud
+3. The lights do an explosion effect (yellow, orange, red)
+4. The output trigger is activated (can trigger smoke, lights, another puzzle, etc.)
+5. The game ends - the players lost!
 
-### O que acontece ao desarmar
+### What happens on defusal
 
-Quando a bomba é desarmada com sucesso:
+When the bomb is successfully defused:
 
-1. O display mostra o código de desarme (4 numeros)
-2. O som de sucesso toca
-3. As luzes ficam verdes e brilhantes
-4. O gatilho de saida é ativado (pode destrancar uma porta, liberar um objeto, etc.)
-5. Os jogadores venceram este puzzle!
+1. The display shows the defuse code (4 numbers)
+2. The success sound plays
+3. The lights turn green and bright
+4. The output trigger is activated (can unlock a door, release an object, etc.)
+5. The players beat this puzzle!
 
-### Entendendo o sistema de fios
+### Understanding the wire system
 
-Os 4 fios podem ter diferentes efeitos quando cortados:
+The 4 wires can have different effects when cut:
 
-| Tipo de Fio | Efeito ao cortar |
+| Wire Type | Effect when cut |
 |-------------|------------------|
-| **Fio Detonador (DET)** | **EXPLODE IMEDIATAMENTE!** |
-| **Fio Desarmador (DEF)** | Desarma a bomba - você vence! |
-| **Fio Acelerador (SPD)** | O tempo passa 2x mais rapido! |
-| **Fio de Pausa (PAUS)** | O relógio para por 2 segundos (ganha tempo) |
-| **Fio Normal** | Sem efeito especial |
+| **Detonation Wire (DET)** | **EXPLODES IMMEDIATELY!** |
+| **Defuse Wire (DEF)** | Defuses the bomb - you win! |
+| **Accelerator Wire (SPD)** | Time passes 2x faster! |
+| **Pause Wire (PAUS)** | The clock stops for 2 seconds (gains time) |
+| **Normal Wire** | No special effect |
 
-> **Dica para jogadores**: Cuidado! Cortar todos os fios de uma vez é uma péssima ideia... provavelmente um deles explode!
+> **Player tip**: Be careful! Cutting all the wires at once is a terrible idea... one of them probably explodes!
 
 ---
 
-## 5. Dicas para o Game Master
+## 5. Tips for the Game Master
 
-### Como incorporar no enredo da sala
+### How to incorporate it into the room's plot
 
-**Ideias de histórias:**
-- **Sabotagem corporativa**: Os jogadores são espiões que precisam desarmar uma bomba na sede de uma empresa corrupta
-- **Laboratório químico**: Um cientista louco armou um dispositivo - desarme antes que o veneno seja liberado!
-- **Resgate no trem**: Uma bomba na linha do trem - desarme para salvar os passageiros
-- **Casa mal-assombrada**: Um "espírito" deixou uma armadilha temporizada
+**Story ideas:**
+- **Corporate sabotage**: The players are spies who need to defuse a bomb at the headquarters of a corrupt company
+- **Chemical laboratory**: A mad scientist armed a device - defuse it before the poison is released!
+- **Train rescue**: A bomb on the train line - defuse it to save the passengers
+- **Haunted house**: A "spirit" left a timed trap
 
-**Pistas para dar aos jogadores:**
-- Deixe um bilhete com parte do código (ex: "O código começa com 12...")
-- Esconda um diagrama mostrando qual fio cortar
-- Use outro puzzle para revelar a ordem dos fios
-- Deixe um gravador de áudio com instruções embaralhadas
+**Clues to give the players:**
+- Leave a note with part of the code (e.g. "The code starts with 12...")
+- Hide a diagram showing which wire to cut
+- Use another puzzle to reveal the wire order
+- Leave an audio recorder with scrambled instructions
 
-### Níveis de dificuldade
+### Difficulty levels
 
-**Fácil (para iniciantes):**
-- Tempo: 15-20 minutos
-- Modo: Código simples (1234 ou código escrito em algum lugar)
-- Fios: Apenas o DEF definido, outros sem função
+**Easy (for beginners):**
+- Time: 15-20 minutes
+- Mode: Simple code (1234 or code written somewhere)
+- Wires: Only the DEF defined, others without function
 - SHAK: OFF
 
-**Médio (padrão):**
-- Tempo: 10-15 minutos
-- Modo: Fio específico (RAND - sorteado aleatoriamente)
-- Fios: DET e DEF ativos
-- SHAK: FAST ou PAUS
+**Medium (default):**
+- Time: 10-15 minutes
+- Mode: Specific wire (RAND - drawn randomly)
+- Wires: DET and DEF active
+- SHAK: FAST or PAUS
 
-**Difícil (para experientes):**
-- Tempo: 8-10 minutos
-- Modo: Ordem de fios (ORDR)
-- Fios: Todos com funções diferentes
-- SHAK: BOOM (sacudir explode!)
-- Sem som TICK (menos tensão sonora)
+**Hard (for experienced):**
+- Time: 8-10 minutes
+- Mode: Wire order (ORDR)
+- Wires: All with different functions
+- SHAK: BOOM (shaking explodes!)
+- No TICK sound (less sound tension)
 
-**Expert (desafio máximo):**
-- Tempo: 5-8 minutos
-- Modo: Combinação de código + ordem de fios
-- Fios: Todos sorteados aleatoriamente (ninguém sabe qual é qual!)
-- SHAK: FAST + NET habilitado
-- Múltiplos dispositivos sincronizados
+**Expert (maximum challenge):**
+- Time: 5-8 minutes
+- Mode: Combination of code + wire order
+- Wires: All drawn randomly (nobody knows which is which!)
+- SHAK: FAST + NET enabled
+- Multiple synced devices
 
-### Comportamento esperado dos jogadores
+### Expected player behavior
 
-**O Cauteloso**: Tenta analisar tudo antes de agir. Dê a ele pistas no caminho.
+**The Cautious**: Tries to analyze everything before acting. Give them clues along the way.
 
-**O Impulsivo**: Quer cortar fios imediatamente. O modo RAND é perfeito para surpreendê-lo!
+**The Impulsive**: Wants to cut wires immediately. RAND mode is perfect for surprising them!
 
-**O Técnico**: Tenta entender a lógica. Modos complexos como ORDR desafiam esse tipo.
+**The Technical**: Tries to understand the logic. Complex modes like ORDR challenge this type.
 
-**O Líder**: Organiza a equipe. Configure puzzles em rede para forçar cooperação.
+**The Leader**: Organizes the team. Set up networked puzzles to force cooperation.
 
 ---
 
-## 6. Solução de Problemas Simples
+## 6. Simple Troubleshooting
 
-### O display não acende
+### The display does not turn on
 
-1. Verifique se o cabo de energia esta conectado
-2. Verifique se o display esta bem encaixado nos conectores
-3. Tente ajustar o brilho no menu (opção BRIG)
-4. Desligue e ligue novamente
+1. Check if the power cable is connected
+2. Check if the display is well fitted into the connectors
+3. Try adjusting the brightness in the menu (BRIG option)
+4. Turn it off and on again
 
-### Não há som
+### There is no sound
 
-1. Verifique se o volume não esta em ZERO (menu VOL)
-2. Verifique se os arquivos de som estão carregados no dispositivo
-3. Verifique se o alto-falante esta conectado corretamente
-4. Tente reiniciar o dispositivo
+1. Check if the volume is not at ZERO (VOL menu)
+2. Check if the sound files are loaded on the device
+3. Check if the speaker is connected correctly
+4. Try restarting the device
 
-### Como resetar o dispositivo
+### How to reset the device
 
-Para voltar todas as configurações ao padrão de fábrica:
+To return all settings to factory default:
 
-1. Desligue o dispositivo
-2. Ligue segurando o botão SELECT pressionado
-3. Aguarde o som de inicialização
-4. Todas as configurações voltaram ao padrao:
-   - Tempo: 10 minutos (600 segundos)
-   - Código: 1234
+1. Turn off the device
+2. Turn it on while holding the SELECT button pressed
+3. Wait for the startup sound
+4. All settings returned to default:
+   - Time: 10 minutes (600 seconds)
+   - Code: 1234
    - Volume: 50%
-   - Brilho: Maximo
-   - Todos os modos especiais desligados
+   - Brightness: Maximum
+   - All special modes off
 
-### A bomba não inicia a contagem
+### The bomb does not start the countdown
 
-1. Verifique se você apertou o botão DET (vermelho)
-2. Se estiver no modo SHAK=STRT, tente mover/sacudir levemente a bomba
-3. Verifique se já não esta em contagem (olhe se os dois pontos do display estão piscando)
-4. Reinicie o dispositivo e tente novamente
+1. Check if you pressed the DET button (red)
+2. If in SHAK=STRT mode, try moving/shaking the bomb lightly
+3. Check if it is not already counting (look if the display's colon is blinking)
+4. Restart the device and try again
 
-### Os fios não funcionam
+### The wires do not work
 
-1. Verifique se os fios estão bem conectados
-2. Verifique se você configurou algum fio com função (DET, DEF, etc.)
-3. No menu WIRE, verifique se os valores estão corretos
-4. Modo RAND só sorteia quando a contagem inicia - o fio muda a cada jogo!
+1. Check if the wires are well connected
+2. Check if you configured some wire with a function (DET, DEF, etc.)
+3. In the WIRE menu, check if the values are correct
+4. RAND mode only draws when the countdown starts - the wire changes each game!
 
 ---
 
-## 7. Checklist de Áudio
+## 7. Audio Checklist
 
-Certifique-se de que estes arquivos estão no dispositivo antes de usar:
+Make sure these files are on the device before using:
 
-| Arquivo de Som | Quando Toca | Obrigatório? |
+| Sound File | When It Plays | Required? |
 |----------------|-------------|--------------|
-| `armed.mp3` | Quando a contagem regressiva inicia | **SIM** |
-| `tick.mp3` | A cada segundo (se TICK ligado) | Nao |
-| `boom.mp3` | Quando a bomba explode | **SIM** |
-| `sucess.mp3` | Quando a bomba é desarmada | **SIM** |
-| `error.mp3` | Quando digitado código errado ou shake no modo PAUS | Recomendado |
-| `keypress.mp3` | Ao pressionar botoes no menu | Recomendado |
+| `armed.mp3` | When the countdown starts | **YES** |
+| `tick.mp3` | Every second (if TICK on) | No |
+| `boom.mp3` | When the bomb explodes | **YES** |
+| `sucess.mp3` | When the bomb is defused | **YES** |
+| `error.mp3` | When wrong code is typed or shake in PAUS mode | Recommended |
+| `keypress.mp3` | When pressing buttons in the menu | Recommended |
 
-### Formato correto dos arquivos de som
+### Correct sound file format
 
-Para garantir que os sons funcionem perfeitamente:
+To ensure the sounds work perfectly:
 
-- **Formato**: MP3
-- **Taxa de bits**: 128 kbps
-- **Frequência**: 44.1 kHz (44100 Hz)
-- **Canais**: Estéreo (2 canais)
-- **IMPORTANTE**: Sem tags ID3 (metadata)
+- **Format**: MP3
+- **Bit rate**: 128 kbps
+- **Frequency**: 44.1 kHz (44100 Hz)
+- **Channels**: Stereo (2 channels)
+- **IMPORTANT**: No ID3 tags (metadata)
 
-**Como converter seus arquivos de audio:**
+**How to convert your audio files:**
 
-Se tiver um arquivo MP3 e precisar ajustar:
+If you have an MP3 file and need to adjust it:
 
 ```
-Use o programa ffmpeg com estes comandos:
-ffmpeg -i seu_arquivo.mp3 -acodec libmp3lame -ar 44100 -ac 2 -b:a 128k -map_metadata -1 arquivo_pronto.mp3
+Use the ffmpeg program with these commands:
+ffmpeg -i your_file.mp3 -acodec libmp3lame -ar 44100 -ac 2 -b:a 128k -map_metadata -1 ready_file.mp3
 ```
 
 ---
 
-## Resumo Rapido
+## Quick Summary
 
-### Controles Basicos
+### Basic Controls
 
-| Ação | Como Fazer |
+| Action | How To Do It |
 |------|------------|
-| Ligar/Desligar | Conecte/desconecte a energia |
-| Iniciar jogo | Aperte o botão DET (vermelho) ou mova a bomba (modo STRT) |
-| Ajustar tempo | Botões esquerda/direita no menu principal |
-| Entrar no menu | Aperte SELECT rapidamente |
-| Salvar configuração | Segure SELECT por 1 segundo |
-| Desarmar (modo CODE) | Digite 4 numeros (3 tentativas) |
-| Desarmar (modo WIRE) | Corte o fio correto |
-| Reiniciar após jogo | Aperte DET novamente |
+| Turn On/Off | Connect/disconnect the power |
+| Start game | Press the DET button (red) or move the bomb (STRT mode) |
+| Adjust time | Left/right buttons in the main menu |
+| Enter menu | Quickly press SELECT |
+| Save configuration | Hold SELECT for 1 second |
+| Defuse (CODE mode) | Type 4 numbers (3 attempts) |
+| Defuse (WIRE mode) | Cut the correct wire |
+| Restart after game | Press DET again |
 
-### Estados das Luzes LED
+### LED Light States
 
-| Cor/Efeito | Significado |
+| Color/Effect | Meaning |
 |------------|-------------|
-| **Branco suave** | Aguardando (idle) |
-| **Vermelho pulsante** | Contagem em andamento |
-| **Vermelho piscando rapido** | Velocidade 2x ativada |
-| **Verde brilhante** | Bomba desarmada! |
-| **Amarelo/Laranja/Vermelho** | EXPLODIU! |
-| **Apagado** | Pausa de 2 segundos |
+| **Soft white** | Waiting (idle) |
+| **Pulsing red** | Countdown in progress |
+| **Fast blinking red** | 2x speed activated |
+| **Bright green** | Bomb defused! |
+| **Yellow/Orange/Red** | EXPLODED! |
+| **Off** | 2-second pause |
 
 ---
 
-**Bom jogo! Que os jogadores tenham nervos de aço...**
+**Have a good game! May the players have nerves of steel...**
 
-*Manual GameTimerPro - Versão 1.0 para biblioteca PropMaker EscapeRoom*
+*GameTimerPro Manual - Version 1.0 for the PropMaker EscapeRoom library*

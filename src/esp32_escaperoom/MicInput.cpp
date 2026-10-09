@@ -1,17 +1,17 @@
 #include "MicInput.h"
 
 // ============================================================================
-// LOGICA PORTADA de Esp32VoiceTuner (https://github.com/Vateva/Esp32VoiceTuner)
+// LOGIC PORTED from Esp32VoiceTuner (https://github.com/Vateva/Esp32VoiceTuner)
 // SPDX-FileCopyrightText: Copyright (c) 2025 Vateva
 // SPDX-License-Identifier: MIT
 // [upstream: src/audioprocessing.cpp, src/utilities.cpp, include/config.h]
-// Adaptado para o AcordeonPuzzle (ESP32-C3, projeto standalone) em 19/09/2026.
+// Adapted for AcordeonPuzzle (ESP32-C3, standalone project) on 19/09/2026.
 //
-// Os blocos portados estao marcados com "[upstream]" — a logica de DSP
-// (Butterworth, YIN, harmonicos, bias de faixa, EMA) e' a do upstream, com
-// nomes e constantes preservados. O que e' nosso: leitura STEREO com escolha
-// de slot (o upstream usa a API legacy com I2S_CHANNEL_FMT_ONLY_LEFT, que nao
-// existe na API i2s_std do core 3.x) e a API publica do MicInput.
+// The ported blocks are marked with "[upstream]" — the DSP logic
+// (Butterworth, YIN, harmonics, band bias, EMA) is the upstream's, with
+// names and constants preserved. What is ours: STEREO reading with slot
+// selection (the upstream uses the legacy API with I2S_CHANNEL_FMT_ONLY_LEFT, which
+// does not exist in the i2s_std API of core 3.x) and the public API of MicInput.
 // ============================================================================
 
 #include <driver/i2s_std.h>
@@ -19,29 +19,29 @@
 
 namespace esp32_escaperoom {
 
-// Intervalo minimo entre duas analises YIN.
+// Minimum interval between two YIN analyses.
 static const unsigned long YIN_MIN_INTERVAL_MS = 40;
 
-// O YIN roda DENTRO do loop(), em nucleo unico (ESP32-C3 tem 1 core).
-// Um laco de ~700k iteracoes sem ceder CPU bloqueia o handleAP() e o servidor
-// web PARA de responder — medido: /api/sequence 4/4 timeout com /api/note
-// respondendo em 0.18s (a diferenca e' quando o loop consegue girar).
-// A cada YIN_YIELD_EVERY iteracoes o processamento cede o controle: delay(0)
-// permite que as tarefas do sistema (lwIP/netif, WiFi) rodem. Custa pouco
-// clock e mantem o servidor atendendo durante a analise.
+// YIN runs INSIDE loop(), on a single core (ESP32-C3 has 1 core).
+// A loop of ~700k iterations without yielding CPU blocks handleAP() and the web
+// server STOPS responding — measured: /api/sequence 4/4 timeout with /api/note
+// responding in 0.18s (the difference is when the loop manages to spin).
+// Every YIN_YIELD_EVERY iterations the processing yields control: delay(0)
+// lets the system tasks (lwIP/netif, WiFi) run. It costs little
+// clock and keeps the server serving during the analysis.
 static const int YIN_YIELD_EVERY = 1024;
 
-// Nos pontos de cedencia: (1) delay(0) devolve o tick ao escalonador e
-// (2) se o sketch registrou um pump, ele e' chamado — e' assim que o
-// servidor web RESPONDE durante a analise. O loopTask roda na prioridade 1;
-// o handler HTTP so' executa quando chamado, entao o pump e' o que mantem o
-// servidor vivo enquanto o YIN trabalha.
+// At the yield points: (1) delay(0) returns the tick to the scheduler and
+// (2) if the sketch registered a pump, it is called — that is how the
+// web server RESPONDS during the analysis. loopTask runs at priority 1;
+// the HTTP handler only runs when called, so the pump is what keeps the
+// server alive while YIN works.
 MicInput::YieldPump MicInput::yieldPump_ = nullptr;
 
-// Latencia maxima que o servidor web tolera durante uma analise. O pump NAO
-// roda em toda cedencia (seriam ~500 chamadas por analise e o custo do
-// atendimento dominaria); roda no maximo uma vez a cada intervalo. 5 ms
-// mantem o servidor responsivo sem competir com o calculo.
+// Maximum latency the web server tolerates during an analysis. The pump does NOT
+// run at every yield (that would be ~500 calls per analysis and the cost of
+// servicing would dominate); it runs at most once per interval. 5 ms
+// keeps the server responsive without competing with the computation.
 static const unsigned long PUMP_MIN_INTERVAL_MS = 5;
 static unsigned long s_lastPumpMs = 0;
 
@@ -61,7 +61,7 @@ MicInput::MicInput() {}
 MicInput::~MicInput() { end(); }
 
 // ============================================================================
-// FILTROS IIR (portado)
+// IIR FILTERS (ported)
 // ============================================================================
 
 // [upstream] calculateButterworthCoefficients — audioprocessing.cpp L24-52
@@ -89,9 +89,9 @@ void MicInput::calculateButterworth(float cutoffHz, bool isHighpass, IIRFilter* 
 }
 
 void MicInput::initFilters() {
-    // highpass 60 Hz remove DC e ruido de baixa frequencia;
-    // lowpass 6000 Hz remove o que esta acima dos harmonicos uteis.
-    // Faixa do acordeon (C2~65 Hz a C6~1047 Hz) fica preservada.
+    // highpass 60 Hz removes DC and low-frequency noise;
+    // lowpass 6000 Hz removes what is above the useful harmonics.
+    // Accordion range (C2~65 Hz to C6~1047 Hz) stays preserved.
     calculateButterworth(60.0f,   true,  &highpass_);
     calculateButterworth(6000.0f, false, &lowpass_);
 }
@@ -129,7 +129,7 @@ float MicInput::calculateDbLevel(float rms) {
 }
 
 // ============================================================================
-// YIN (portado)
+// YIN (ported)
 // ============================================================================
 
 // [upstream] findCoarsePeriodYIN — audioprocessing.cpp L254-320
@@ -151,7 +151,7 @@ int MicInput::findCoarsePeriodYIN(int samplesToUse) {
         yinBuffer_[tau] = diff;
     }
 
-    // normalizacao pela media acumulada
+    // normalization by the accumulated mean
     float runningSum = 0.0f;
     yinBuffer_[YIN_MIN_PERIOD] = 1.0f;
     for (int tau = YIN_MIN_PERIOD + 1; tau <= YIN_MAX_PERIOD; tau++) {
@@ -183,7 +183,7 @@ int MicInput::findAllCandidates(int searchMin, int searchMax, int* periods,
             n++;
         }
     }
-    if (n == 0) {                       // fallback: minimo global da janela
+    if (n == 0) {                       // fallback: global minimum of the window
         float minValue = 1.0f; int minPeriod = 0;
         for (int tau = searchMin; tau <= searchMax; tau++) {
             if (yinBuffer_[tau] < minValue) { minValue = yinBuffer_[tau]; minPeriod = tau; }
@@ -249,20 +249,20 @@ int MicInput::selectBestCandidate(int* periods, float* values, int count) {
         float yinScore     = (1.0f - values[i]) * 2.0f;
         float harmonic     = scoreHarmonicContent(periods[i]);
         float freqBias     = calculateFrequencyBias(periods[i]);
-        // pesos do upstream: YIN 0.4, harmonicos 0.5, faixa 0.1
+        // upstream weights: YIN 0.4, harmonics 0.5, band 0.1
         float total = yinScore * 0.4f + harmonic * 0.5f + freqBias * 0.1f;
         if (total > bestScore) { bestScore = total; bestIndex = i; }
     }
     return bestIndex;
 }
 
-// [upstream] yinAnalysis — audioprocessing.cpp L471-584 (sem as partes de
-// timing/debug/display do upstream)
+// [upstream] yinAnalysis — audioprocessing.cpp L471-584 (without the upstream's
+// timing/debug/display parts)
 bool MicInput::yinAnalysis(float* outFrequency) {
     int hinted = findCoarsePeriodYIN(kSamples);
     if (hinted == 0) return false;
 
-    int searchMin = (int)(hinted * 0.60f);   // janela de +-40% (YIN_SEARCH_WINDOW)
+    int searchMin = (int)(hinted * 0.60f);   // window of +-40% (YIN_SEARCH_WINDOW)
     int searchMax = (int)(hinted * 1.40f);
     if (searchMin < YIN_MIN_PERIOD) searchMin = YIN_MIN_PERIOD;
     if (searchMax > YIN_MAX_PERIOD) searchMax = YIN_MAX_PERIOD;
@@ -273,7 +273,7 @@ bool MicInput::yinAnalysis(float* outFrequency) {
         for (int i = 0; i < kSamples - tau; i++) {
             float delta = samples_[i] - samples_[i + tau];
             diff += delta * delta;
-            // cede a CPU periodicamente: mantem o webserver atendendo
+            // periodically yields the CPU: keeps the webserver serving
             if ((++workRef % YIN_YIELD_EVERY) == 0) YIELD_CPU();
         }
         yinBuffer_[tau] = diff;
@@ -296,7 +296,7 @@ bool MicInput::yinAnalysis(float* outFrequency) {
 
     int bestPeriod = periods[best];
 
-    // [upstream] interpolacao parabolica — precisao sub-amostra
+    // [upstream] parabolic interpolation — sub-sample precision
     float betterPeriod;
     if (bestPeriod > YIN_MIN_PERIOD && bestPeriod < YIN_MAX_PERIOD) {
         float ym = yinBuffer_[bestPeriod - 1];
@@ -315,7 +315,7 @@ bool MicInput::yinAnalysis(float* outFrequency) {
 }
 
 // ============================================================================
-// I2S + API PUBLICA
+// I2S + PUBLIC API
 // ============================================================================
 
 bool MicInput::begin() {
@@ -328,15 +328,15 @@ bool MicInput::begin() {
     i2s_chan_handle_t rx = nullptr;
     esp_err_t err = i2s_new_channel(&chan_cfg, nullptr, &rx);
     if (err != ESP_OK) {
-        Serial.printf("[MicInput] i2s_new_channel falhou: %s\n", esp_err_to_name(err));
+        Serial.printf("[MicInput] i2s_new_channel failed: %s\n", esp_err_to_name(err));
         return false;
     }
 
-    // STEREO de proposito. Em MONO com 32 bits o buffer de RX vem com
-    // zero-stuffing ([d,0,d,0,...]) e qualquer etapa que subtraia a media
-    // transforma isso numa onda quadrada em fs/2 — a deteccao passa a ler
-    // sempre a mesma nota aguda. Lendo stereo e escolhendo UM slot, o
-    // stuffing nao existe por construcao.
+    // STEREO on purpose. In 32-bit MONO the RX buffer comes with
+    // zero-stuffing ([d,0,d,0,...]) and any step that subtracts the mean
+    // turns that into a square wave at fs/2 — the detection then reads
+    // the same high note every time. Reading stereo and choosing ONE slot, the
+    // stuffing does not exist by construction.
     i2s_std_config_t std_cfg = {
         .clk_cfg  = I2S_STD_CLK_DEFAULT_CONFIG((uint32_t)kSampleRate),
         .slot_cfg = I2S_STD_PHILIPS_SLOT_DEFAULT_CONFIG(I2S_DATA_BIT_WIDTH_32BIT,
@@ -352,12 +352,12 @@ bool MicInput::begin() {
     };
 
     if ((err = i2s_channel_init_std_mode(rx, &std_cfg)) != ESP_OK) {
-        Serial.printf("[MicInput] init_std_mode falhou: %s\n", esp_err_to_name(err));
+        Serial.printf("[MicInput] init_std_mode failed: %s\n", esp_err_to_name(err));
         i2s_del_channel(rx);
         return false;
     }
     if ((err = i2s_channel_enable(rx)) != ESP_OK) {
-        Serial.printf("[MicInput] channel_enable falhou: %s\n", esp_err_to_name(err));
+        Serial.printf("[MicInput] channel_enable failed: %s\n", esp_err_to_name(err));
         i2s_del_channel(rx);
         return false;
     }
@@ -365,9 +365,9 @@ bool MicInput::begin() {
     rxHandle_ = rx;
     initFilters();
     initialized_ = true;
-    Serial.printf("[MicInput] INMP441 pronto: %lu Hz, 32-bit, STEREO + filtros IIR (YIN)\n",
+    Serial.printf("[MicInput] INMP441 ready: %lu Hz, 32-bit, STEREO + IIR filters (YIN)\n",
                   (unsigned long)kSampleRate);
-    Serial.printf("[MicInput] Gate RMS = %.4f | HP 60 Hz / LP 6000 Hz | janela %u amostras\n",
+    Serial.printf("[MicInput] RMS gate = %.4f | HP 60 Hz / LP 6000 Hz | window %u samples\n",
                   minAmplitude_, (unsigned)kSamples);
     return true;
 }
@@ -376,13 +376,13 @@ bool MicInput::readSample() {
     if (!initialized_ || !rxHandle_) return false;
 
     size_t bytesRead = 0;
-    // kSamples frames * 2 slots * 4 bytes. @48 kHz = 42,7 ms de audio.
+    // kSamples frames * 2 slots * 4 bytes. @48 kHz = 42.7 ms of audio.
     //
-    // TIMEOUT CURTO: antes era 1000 ms. Se o I2S nao entregasse (mic
-    // desconectado, clock ausente), o loop ficava PRESO ate' 1 s — durante
-    // esse tempo o servidor web nao atendia NADA. 50 ms e' maior que os
-    // 42,7 ms de audio, entao uma leitura normal sempre completa, e uma
-    // leitura anormal falha rapido em vez de congelar a placa.
+    // SHORT TIMEOUT: it used to be 1000 ms. If I2S did not deliver (mic
+    // disconnected, missing clock), the loop got STUCK for up to 1 s — during
+    // that time the web server served NOTHING. 50 ms is larger than the
+    // 42.7 ms of audio, so a normal read always completes, and an
+    // abnormal read fails fast instead of freezing the board.
     esp_err_t err = i2s_channel_read((i2s_chan_handle_t)rxHandle_, rawStereo_,
                                      sizeof(rawStereo_), &bytesRead, 50);
     if (err != ESP_OK) { if (MicInput::yieldPump_) MicInput::yieldPump_(); return false; }
@@ -390,7 +390,7 @@ bool MicInput::readSample() {
     size_t frames = bytesRead / (sizeof(int32_t) * 2);
     if (frames == 0) return false;
 
-    // ── escolhe o slot que carrega o audio, por energia, com histerese ──
+    // ── chooses the slot that carries the audio, by energy, with hysteresis ──
     double e0 = 0.0, e1 = 0.0;
     for (size_t f = 0; f < frames; f++) {
         double a = (double)rawStereo_[2 * f];
@@ -401,7 +401,7 @@ bool MicInput::readSample() {
     if (activeSlot_ == 0) { if (e1 > e0 * 4.0) activeSlot_ = 1; }
     else                  { if (e0 > e1 * 4.0) activeSlot_ = 0; }
 
-    // ── copia SO o slot ativo e normaliza (24-bit em slot de 32-bit) ────
+    // ── copies ONLY the active slot and normalizes (24-bit in a 32-bit slot) ────
     double acc = 0.0;
     bool allEqual = (frames > 1);
     int32_t first = rawStereo_[activeSlot_];
@@ -416,13 +416,13 @@ bool MicInput::readSample() {
 
     rms_ = (float)sqrt(acc / (double)frames);
     lineStuck_ = allEqual;
-    // (nao ha flag de cache aqui: quem governa a cadencia de leitura e' a
-    //  janela de TEMPO em detectFrequency — ver o comentario longo la')
+    // (there is no cache flag here: what governs the read cadence is the
+    //  TIME window in detectFrequency — see the long comment there)
 
-    // ── filtragem (portada) e nivel em dB ─────────────────────────────
+    // ── filtering (ported) and level in dB ─────────────────────────────
     if (rms_ >= minAmplitude_) {
         applyPrefiltering((uint16_t)frames);
-        // RMS apos filtro: e' este o sinal que o YIN analisa
+        // RMS after filtering: this is the signal that YIN analyzes
         double acc2 = 0.0;
         for (size_t f = 0; f < frames; f++) acc2 += (double)samples_[f] * (double)samples_[f];
         rms_ = (float)sqrt(acc2 / (double)frames);
@@ -434,48 +434,48 @@ bool MicInput::readSample() {
 float MicInput::detectFrequency() {
     unsigned long agora = millis();
 
-    // ── JANELA DE LEITURA GOVERNADA POR TEMPO ────────────────────────────
-    // O loop chama detectNote() E o PuzzleEngine chama detectFrequency() na
-    // MESMA iteracao. Esta janela evita ler/reanalisar 2x o mesmo instante.
+    // ── READ WINDOW GOVERNED BY TIME ────────────────────────────
+    // The loop calls detectNote() AND the PuzzleEngine calls detectFrequency() in
+    // the SAME iteration. This window avoids reading/re-analyzing the same instant twice.
     //
-    // A janela e' de TEMPO, nao uma flag que a propria leitura precisa zerar.
-    // A versao anterior tinha exatamente esse defeito circular:
-    //     detectFrequency(): if (cacheValid_) return cache;   // nao le o mic
-    //     readSample():      cacheValid_ = false;             // unico que zera
-    // readSample() so' era chamado quando cacheValid_ era false, e cacheValid_
-    // so' era zerado por readSample() -> o mic era lido UMA vez e nunca mais.
-    // Sintoma medido: a nota travava no primeiro valor para sempre (na tela,
-    // F2 fixo enquanto o arquivo tocava C4, E4, G4...).
+    // The window is TIME-based, not a flag that the read itself has to clear.
+    // The previous version had exactly this circular defect:
+    //     detectFrequency(): if (cacheValid_) return cache;   // does not read the mic
+    //     readSample():      cacheValid_ = false;             // the only one that clears it
+    // readSample() was only called when cacheValid_ was false, and cacheValid_
+    // was only cleared by readSample() -> the mic was read ONCE and never again.
+    // Measured symptom: the note got stuck on the first value forever (on screen,
+    // F2 fixed while the file played C4, E4, G4...).
     //
-    // kLeituraIntervaloMs ≈ duracao do buffer de audio (2048 amostras a 48 kHz
-    // = 42,7 ms). Ler mais rapido que isto nao traz amostra nova.
+    // kLeituraIntervaloMs ≈ duration of the audio buffer (2048 samples at 48 kHz
+    // = 42.7 ms). Reading faster than this brings no new sample.
     if (lastReadMs_ != 0 && (agora - lastReadMs_) < kLeituraIntervaloMs) {
         return cachedFrequency_;
     }
     lastReadMs_ = agora;
 
-    // ── LEITURA SEMPRE ───────────────────────────────────────────────────
-    // Esta e' a UNICA chamada que sabe se o som comecou ou parou: ela mede o
-    // RMS do buffer. Sem leitura nao ha como detectar a transicao silencio->
-    // som, que e' justamente o que dispara a deteccao.
+    // ── READ ALWAYS ───────────────────────────────────────────────────
+    // This is the ONLY call that knows whether the sound started or stopped: it measures the
+    // RMS of the buffer. Without a read there is no way to detect the silence->
+    // sound transition, which is exactly what triggers the detection.
     if (!readSample()) {
         cachedFrequency_ = 0.0f;
         overallConfidence_ = 0.0f;
         return 0.0f;
     }
 
-    // ── GATE: o YIN so' roda COM SOM ─────────────────────────────────────
-    // A leitura acima e' barata (I2S + RMS). O YIN custa ~1M operacoes float
-    // e e' o que famintaria o servidor web. Sem som nao ha o que analisar:
-    // devolve SILENCIO (0), que e' tambem como o consumidor sabe que a nota
-    // terminou e pode liberar a trava de nota sustentada.
+    // ── GATE: YIN only runs WITH SOUND ─────────────────────────────────────
+    // The read above is cheap (I2S + RMS). YIN costs ~1M float operations
+    // and is what would starve the web server. Without sound there is nothing to analyze:
+    // it returns SILENCE (0), which is also how the consumer knows that the note
+    // ended and can release the sustained-note lock.
     if (rms_ < minAmplitude_) {
         overallConfidence_ = 0.0f;
         cachedFrequency_ = 0.0f;
         return 0.0f;
     }
 
-    // ── ANALISE (apenas com som presente) ────────────────────────────────
+    // ── ANALYSIS (only with sound present) ────────────────────────────────
     float freq = 0.0f;
     if (!yinAnalysis(&freq)) {
         overallConfidence_ = 0.0f;
@@ -483,28 +483,28 @@ float MicInput::detectFrequency() {
         return 0.0f;
     }
 
-    // ── suavizacao EMA com deteccao de troca de nota (do upstream) ───────
+    // ── EMA smoothing with note-change detection (from upstream) ───────
     if (!smoothingInit_) {
         smoothedFrequency_ = freq;
         smoothingInit_ = true;
     } else {
         float diff = fabsf(freq - smoothedFrequency_);
         float rel  = (smoothedFrequency_ > 0.0f) ? diff / smoothedFrequency_ : 1.0f;
-        if (rel > 0.06f) {               // ~1 semitom: troca de nota, adota direto
+        if (rel > 0.06f) {               // ~1 semitone: note change, adopt directly
             smoothedFrequency_ = freq;
         } else {
-            // alpha menor = mais suave; 0.5 e' um meio-termo estavel para o C3
+            // smaller alpha = smoother; 0.5 is a stable middle ground for C3
             smoothedFrequency_ = 0.5f * freq + 0.5f * smoothedFrequency_;
         }
     }
     lastRawFrequency_ = freq;
 
-    // Confianca de sinal: escala calibrada NESTE microfone. O upstream usa
-    // SIGNAL_CONFIDENCE_GOOD_LEVEL = 0.1 porque o mic dele fica a ~15 cm; aqui
-    // o silencio mede 0.0003-0.0006 e a nota 0.002-0.011 (medido na placa em
-    // 19/09/2026). Com 0.1 como teto, uma nota perfeitamente boa daria
-    // signalConf ~0.1 — o numero existe mas nao informa nada.
-    const float GOOD_LEVEL = 0.01f;      // ~3x o nivel minimo observado com nota
+    // Signal confidence: scale calibrated on THIS microphone. The upstream uses
+    // SIGNAL_CONFIDENCE_GOOD_LEVEL = 0.1 because its mic sits at ~15 cm; here
+    // silence measures 0.0003-0.0006 and a note 0.002-0.011 (measured on the board on
+    // 19/09/2026). With 0.1 as ceiling, a perfectly good note would give
+    // signalConf ~0.1 — the number exists but informs nothing.
+    const float GOOD_LEVEL = 0.01f;      // ~3x the minimum level observed with a note
     float signalConf = (rms_ >= GOOD_LEVEL) ? 1.0f
                      : (rms_ - minAmplitude_) / (GOOD_LEVEL - minAmplitude_);
     if (signalConf < 0.0f) signalConf = 0.0f;
@@ -520,7 +520,7 @@ int MicInput::detectNote() {
     float freq = detectFrequency();
     if (freq <= 0.0f) return -1;
     int midi = (int)roundf(12.0f * log2f(freq / 440.0f) + 69.0f);
-    if (midi < 12 || midi > 108) return -1;      // fora da faixa musical util
+    if (midi < 12 || midi > 108) return -1;      // outside the useful musical range
     return midi;
 }
 

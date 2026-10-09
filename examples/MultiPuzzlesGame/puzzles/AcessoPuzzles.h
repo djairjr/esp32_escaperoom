@@ -1,9 +1,9 @@
-// AcessoPuzzles.h - Puzzle 1, 2, 3 do Nuclear Reactor
-// Level 0: Acesso (PARALLEL) - Liberar os 3 tecnicos presos
+// AcessoPuzzles.h - Puzzles 1, 2, 3 of the Nuclear Reactor
+// Level 0: Access (PARALLEL) - Release the 3 trapped technicians
 //
-// P1 - KeypadRfidLock: cracha RFID + senha no keypad 4x3 (dois fatores)
-// P2 - CoolantValves: ALL_CONNECTED, 3 microswitches/valvulas
-// P3 - ElectricalPanel: LINEAR_SEQUENCE, 3 chaves toggle na ordem
+// P1 - KeypadRfidLock: RFID badge + password on the 4x3 keypad (two factors)
+// P2 - CoolantValves: ALL_CONNECTED, 3 microswitches/valves
+// P3 - ElectricalPanel: LINEAR_SEQUENCE, 3 toggle switches in order
 
 #pragma once
 
@@ -12,10 +12,10 @@
 using namespace esp32_escaperoom;
 
 // ====================================================================
-// P1: KEYPAD + RFID - Libera Alexei (Engenheiro do Reator)
+// P1: KEYPAD + RFID - Releases Alexei (Reactor Engineer)
 // ====================================================================
-// Hardware: PCF8575 0x20, keypad 4x3, PN532 (I2C), NeoPixel, rele
-// Mecanica: aproximar cracha + digitar senha de emergencia = abre porta
+// Hardware: PCF8575 0x20, 4x3 keypad, PN532 (I2C), NeoPixel, relay
+// Mechanics: tap badge + type emergency password = door opens
 
 class KeypadRfidPuzzle : public PuzzleBase {
 public:
@@ -59,7 +59,7 @@ public:
                         pixels()->setPixel(i, pixels()->Color(0, 255, 0));
                     pixels()->show();
                 }
-                Serial.println("[P1] ACCESS GRANTED! Alexei liberado.");
+                Serial.println("[P1] ACCESS GRANTED! Alexei released.");
                 hw.sound().playOnce("/sfx/alexei_free.mp3");
             }
             break;
@@ -184,7 +184,7 @@ private:
 };
 
 // ====================================================================
-// P2: COOLANT VALVES (ALL_CONNECTED) - Libera Boris (Tecnico Coolant)
+// P2: COOLANT VALVES (ALL_CONNECTED) - Releases Boris (Coolant Technician)
 // ====================================================================
 
 class CoolantValvesPuzzle : public PuzzleBase {
@@ -234,7 +234,7 @@ public:
             }
             if (millis() - solveStart_ > 2000) {
                 pcf->digitalWrite(8, LOW);
-                Serial.println("[P2] Door UNLOCKED - Boris liberado!");
+                Serial.println("[P2] Door UNLOCKED - Boris released!");
                 hw.sound().playOnce("/sfx/boris_free.mp3");
                 setState(PuzzleState::Solved);
             }
@@ -251,7 +251,7 @@ private:
 };
 
 // ====================================================================
-// P3: ELECTRICAL PANEL (LINEAR_SEQUENCE) - Libera Vladislav (Eletricista)
+// P3: ELECTRICAL PANEL (LINEAR_SEQUENCE) - Releases Vladislav (Electrician)
 // ====================================================================
 
 class ElectricalPanelPuzzle : public PuzzleBase {
@@ -266,7 +266,7 @@ public:
 
         for (uint8_t i = 0; i < 3; i++) pcf->pinMode(i, INPUT_PULLUP);
         pcf->pinMode(8, OUTPUT);   // Door lock
-        pcf->pinMode(9, OUTPUT);   // Gaveta lock
+        pcf->pinMode(9, OUTPUT);   // Drawer lock
         pcf->digitalWrite(8, HIGH);
         pcf->digitalWrite(9, HIGH);
 
@@ -323,7 +323,7 @@ private:
             sequenceIndex_++;
             Serial.printf("[P3] Correct! Step %d/3\n", sequenceIndex_);
             if (sequenceIndex_ >= 3) {
-                Serial.println("[P3] SEQUENCE COMPLETE! Vladislav liberado.");
+                Serial.println("[P3] SEQUENCE COMPLETE! Vladislav released.");
                 if (pixels()) {
                     for (uint8_t i = 0; i < pixels()->count(); i++)
                         pixels()->setPixel(i, pixels()->Color(0, 255, 0));
@@ -332,7 +332,7 @@ private:
                 auto* pcf = hw.portExpander(pcfIndex_);
                 if (pcf) {
                     pcf->digitalWrite(8, LOW);  // Door
-                    pcf->digitalWrite(9, LOW);  // Gaveta
+                    pcf->digitalWrite(9, LOW);  // Drawer
                 }
                 hw.sound().playOnce("/sfx/vlad_free.mp3");
                 setState(PuzzleState::Solved);

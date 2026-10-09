@@ -1,8 +1,8 @@
 {
-  "_comment": "Exemplo: RANDOM - Sequência aleatória gerada no boot (5 entradas em ordem aleatória)",
+  "_comment": "Example: RANDOM - Random sequence generated at boot (5 inputs in random order)",
 
   "controller": {
-    "name": "Puzzle Aleatório",
+    "name": "Random Puzzle",
     "id": 4,
     "enabled": true
   },

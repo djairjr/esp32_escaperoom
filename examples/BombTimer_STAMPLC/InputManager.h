@@ -7,57 +7,57 @@
 #include <Adafruit_PN532.h>
 #include "Pins.h"
 
-// I2C bus externo (PORT.A: Grove RED — pinos do M5StamPLC pin_config.h)
+// External I2C bus (PORT.A: Grove RED — M5StamPLC pin_config.h pins)
 extern TwoWire PortA;
 
 // ============================================================================
-// INPUT MANAGER — Botões, RF433, Keypad PCF8574 (PORT.A), RFID MFRC522/PN532
+// INPUT MANAGER — Buttons, RF433, PCF8574 Keypad (PORT.A), MFRC522/PN532 RFID
 // ============================================================================
 //
-// Nomenclatura (baseada no GameTimerPro original):
-//   BTN_PREV  (BtnA)  = LEFT    — diminuir valor / navegar
-//   BTN_MENU  (BtnB)  = SELECT  — entrar no menu de configuração / confirmar
-//   BTN_NEXT  (BtnC)  = RIGHT   — aumentar valor / navegar
-//   BTN_START (BOOT)  = DET     — iniciar contagem regressiva / reset pós-explosão
+// Nomenclature (based on the original GameTimerPro):
+//   BTN_PREV  (BtnA)  = LEFT    — decrease value / navigate
+//   BTN_MENU  (BtnB)  = SELECT  — enter configuration menu / confirm
+//   BTN_NEXT  (BtnC)  = RIGHT   — increase value / navigate
+//   BTN_START (BOOT)  = DET     — start countdown / post-explosion reset
 //
-// RF433 mapeia mesmas funções + extras:
+// RF433 maps the same functions + extras:
 //   RF_PREV, RF_NEXT, RF_MENU, RF_START
-//   RF_DETONATE — detona remotamente
-//   RF_DEFUSE   — desarma remotamente
-//   RF_SPEED    — acelera temporizador
-//   RF_PAUSE    — pausa temporizador
+//   RF_DETONATE — detonates remotely
+//   RF_DEFUSE   — defuses remotely
+//   RF_SPEED    — speeds up the timer
+//   RF_PAUSE    — pauses the timer
 //
-// RFID: suporta dois módulos via PORT.A:
+// RFID: supports two modules via PORT.A:
 //   - M5Stack RFID 2 Unit (WS1850S/MFRC522, I2C @ 0x28)
 //   - Adafruit PN532 (I2C @ 0x24)
 // ============================================================================
 
 class InputManager {
 public:
-    // ─── Botões físicos ──────────────────────────────────────────────
+    // ─── Physical buttons ─────────────────────────────────────────────
     enum Button : uint8_t {
-        BTN_PREV  = 0,   // BtnA → LEFT / diminuir
-        BTN_MENU  = 1,   // BtnB → SELECT / entrar menu/config
-        BTN_NEXT  = 2,   // BtnC → RIGHT / aumentar
-        BTN_START = 3    // BOOT → DET / iniciar contagem
+        BTN_PREV  = 0,   // BtnA → LEFT / decrease
+        BTN_MENU  = 1,   // BtnB → SELECT / enter menu/config
+        BTN_NEXT  = 2,   // BtnC → RIGHT / increase
+        BTN_START = 3    // BOOT → DET / start countdown
     };
 
-    // ─── Comandos RF433 ──────────────────────────────────────────────
+    // ─── RF433 Commands ───────────────────────────────────────────────
     enum RFCommand : int8_t {
         RF_NONE      = -1,
         RF_PREV      = 0,   // LEFT / menu left
         RF_NEXT      = 1,   // RIGHT / menu right
         RF_MENU      = 2,   // SELECT / menu config
-        RF_START     = 3,   // START / iniciar contagem
-        RF_DETONATE  = 4,   // DETONATE remoto
-        RF_DEFUSE    = 5,   // DEFUSE remoto
+        RF_START     = 3,   // START / start countdown
+        RF_DETONATE  = 4,   // remote DETONATE
+        RF_DEFUSE    = 5,   // remote DEFUSE
         RF_SPEED     = 6,   // SPEEDUP toggle
         RF_PAUSE     = 7    // PAUSE
     };
 
     RFCommand lastRFCommand = RF_NONE;
 
-    // Callback para notificar mudanças de hardware (keypad, RFID)
+    // Callback to notify hardware changes (keypad, RFID)
     void (*onHardwareChange)(const char* status) = nullptr;
 
     void begin() {
@@ -68,16 +68,16 @@ public:
         rfReceiver_.enableReceive(PIN_RF433_DATA);
         rfReceiver_.setReceiveTolerance(60);
 
-        // Keypad, RFID e PN532 são inicializados pelo i2cScan()
+        // Keypad, RFID and PN532 are initialized by i2cScan()
     }
 
-    // ─── I2C Scan em AMBOS os barramentos ────────────────────────────
-    // Retorna string com resultado para exibir no HA
+    // ─── I2C Scan on BOTH buses ───────────────────────────────────────
+    // Returns a string with the result to display in HA
     const char* i2cScan() {
         i2cResult_[0] = '\0';
-        // Varre barramento interno (Wire - G13/G15)
+        // Scans the internal bus (Wire - G13/G15)
         scanBus(Wire, "INTERNAL", i2cResult_ + strlen(i2cResult_));
-        // Varre barramento externo PORT.A
+        // Scans the external PORT.A bus
         strcat(i2cResult_, "PORT.A:");
         scanBus(PortA, "", i2cResult_ + strlen(i2cResult_));
         return i2cResult_;
@@ -96,7 +96,7 @@ public:
             if (error == 0) {
                 count++;
                 const char* devName = identifyDevice(addr);
-                // Se detectou dispositivo novo, inicializa
+                // If a new device was detected, initializes it
                 if (addr == 0x20 && !pcfOk_) {
                     pcfOk_ = true;
                     pcfAddr_ = addr;
@@ -139,8 +139,8 @@ public:
 
     const char* getI2CResult() { return i2cResult_; }
 
-    // ─── Hot-plug do Keypad ─────────────────────────────────────────
-    // Chama no loop — detecta se PCF8574 foi conectado/desconectado
+    // ─── Keypad hot-plug ─────────────────────────────────────────────
+    // Call in the loop — detects whether the PCF8574 was connected/disconnected
     bool pollKeypad() {
         bool present = false;
         PortA.beginTransmission(0x20);
@@ -148,14 +148,14 @@ public:
             present = true;
         }
         if (present && !pcfOk_) {
-            // Keypad acabou de ser conectado
+            // Keypad was just connected
             pcfOk_ = true;
             pcfAddr_ = 0x20;
             writePCF(0xFF);
             Serial.println("[KEYPAD] PCF8574 CONNECTED (hot-plug)");
             if (onHardwareChange) onHardwareChange(i2cResult_);
         } else if (!present && pcfOk_) {
-            // Keypad foi desconectado
+            // Keypad was disconnected
             pcfOk_ = false;
             pcfAddr_ = 0xFF;
             Serial.println("[KEYPAD] PCF8574 DISCONNECTED");
@@ -164,7 +164,7 @@ public:
         return pcfOk_;
     }
 
-    // ─── Botões A/B/C + START (BOOT) ─────────────────────────────────
+    // ─── A/B/C + START (BOOT) buttons ────────────────────────────────
     bool wasPressed(Button btn) {
         switch (btn) {
             case BTN_PREV:  return M5.BtnA.wasPressed();
@@ -185,7 +185,7 @@ public:
         return false;
     }
 
-    // ─── RF433 Polling ───────────────────────────────────────────────
+    // ─── RF433 Polling ────────────────────────────────────────────────
     RFCommand pollRF() {
         if (rfReceiver_.available()) {
             unsigned long value = rfReceiver_.getReceivedValue();
@@ -205,7 +205,7 @@ public:
 
     void clearRF() { lastRFCommand = RF_NONE; }
 
-    // ─── DET Opto Input (AW9523B no barramento INTERNO) ─────────────
+    // ─── DET Opto Input (AW9523B on the INTERNAL bus) ────────────────
     bool isDetOptoActive() {
         auto& aw = M5StamPLC.getIOExpanderB();
         return (aw.digitalRead(4) == 0);  // P0_4 = index 4
@@ -268,13 +268,13 @@ public:
         return -1;
     }
 
-    // ─── RFID interface genérica ─────────────────────────────────────
-    // Suporta MFRC522 (0x28) ou PN532 (0x24)
-    // O tipo é auto-detectado no i2cScan()
+    // ─── Generic RFID interface ───────────────────────────────────────
+    // Supports MFRC522 (0x28) or PN532 (0x24)
+    // The type is auto-detected in i2cScan()
 
     // ─── MFRC522_I2C (WS1850S) via PORT.A I2C @ 0x28 ────────────────
     void beginMFRC522() {
-        if (rfidOk_ || pn532Ok_) return;  // já tem outro RFID
+        if (rfidOk_ || pn532Ok_) return;  // already has another RFID
         mfrc522_ = new MFRC522_I2C(0x28, -1, &PortA);
         mfrc522_->PCD_Init();
         if (!mfrc522_->PCD_PerformSelfTest()) {
@@ -290,10 +290,10 @@ public:
 
     // ─── Adafruit PN532 via PORT.A I2C @ 0x24 ───────────────────────
     void beginPN532() {
-        if (rfidOk_ || pn532Ok_) return;  // já tem outro RFID
-        // Construtor PN532: (IRQ, Reset, TwoWire*)
-        // PN532 não tem IRQ no módulo básico, -1 = não usado
-        // Reset: alguns módulos usam GPIO, -1 = não conectado
+        if (rfidOk_ || pn532Ok_) return;  // already has another RFID
+        // PN532 constructor: (IRQ, Reset, TwoWire*)
+        // The PN532 has no IRQ on the basic module, -1 = unused
+        // Reset: some modules use GPIO, -1 = not connected
         pn532_ = new Adafruit_PN532(-1, -1, &PortA);
         pn532_->begin();
         uint32_t ver = pn532_->getFirmwareVersion();
@@ -311,8 +311,8 @@ public:
         Serial.printf("[RFID] PN532 detected @ 0x24 (FW: %lu)\n", ver);
     }
 
-    // ─── Leitura RFID unificada ──────────────────────────────────────
-    // Retorna UID em hex, independente do chip
+    // ─── Unified RFID reading ─────────────────────────────────────────
+    // Returns the UID in hex, regardless of the chip
     bool readRFID(char* uidHex, uint8_t* uidLen) {
         if (!rfidOk_) return false;
         switch (rfidType_) {
@@ -327,7 +327,7 @@ public:
 
     bool hasRFID() { return rfidOk_; }
 
-    // Retorna nome legível do chip RFID detectado
+    // Returns the readable name of the detected RFID chip
     const char* getRFIDType() {
         switch (rfidType_) {
             case RFID_MFRC522: return "MFRC522";
@@ -353,7 +353,7 @@ private:
     MFRC522_I2C* mfrc522_ = nullptr;
     Adafruit_PN532* pn532_ = nullptr;
 
-    // ─── Identifica dispositivo I2C pelo endereço ────────────────────
+    // ─── Identifies an I2C device by address ─────────────────────────
     const char* identifyDevice(byte addr) {
         switch (addr) {
             case 0x43: return "PI4IOE5V6408";
@@ -374,7 +374,7 @@ private:
         PortA.endTransmission();
     }
 
-    // ─── Leitura via MFRC522 ─────────────────────────────────────────
+    // ─── Reading via MFRC522 ──────────────────────────────────────────
     bool readMFRC522(char* uidHex, uint8_t* uidLen) {
         if (!mfrc522_) return false;
         if (!mfrc522_->PICC_IsNewCardPresent()) return false;
@@ -391,7 +391,7 @@ private:
         return true;
     }
 
-    // ─── Leitura via PN532 ───────────────────────────────────────────
+    // ─── Reading via PN532 ────────────────────────────────────────────
     bool readPN532(char* uidHex, uint8_t* uidLen) {
         if (!pn532_) return false;
         uint8_t uid[7];
@@ -408,7 +408,7 @@ private:
         return true;
     }
 
-    // ─── Mapeamento RF ───────────────────────────────────────────────
+    // ─── RF Mapping ───────────────────────────────────────────────────
     RFCommand mapRFValue(unsigned long value) {
         switch (value) {
             case 0x123456: return RF_PREV;

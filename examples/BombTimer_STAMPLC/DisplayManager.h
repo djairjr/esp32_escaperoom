@@ -5,19 +5,19 @@
 
 // ============================================================================
 // DISPLAY MANAGER — TFT ST7789v2
-// Resolução nativa: 240×135 (ST7789v2)
-// Rotation 2 = landscape, USB à esquerda → w=240, h=135
+// Native resolution: 240×135 (ST7789v2)
+// Rotation 2 = landscape, USB on the left → w=240, h=135
 //
 // Layout (w=240, h=135):
 //   ┌──────────────────────────────────────┐
 //   │ [W][M][R][T]                         │  0-12  ← status bar (top right)
 //   │                                      │
 //   │         ┌─────────────┐              │
-//   │         │   03:00     │              │ 24-72  ← timer DSEG14 (centrado)
+//   │         │   03:00     │              │ 24-72  ← DSEG14 timer (centered)
 //   │         └─────────────┘              │
-//   │             180s                     │ 78-90  ← segundos pequeno
+//   │             180s                     │ 78-90  ← small seconds
 //   │                                      │
-//   │ ●Y ●R ●B ●G        IDLE             │ 115-135 ← círculos + status
+//   │ ●Y ●R ●B ●G        IDLE             │ 115-135 ← circles + status
 //   └──────────────────────────────────────┘
 // ============================================================================
 
@@ -25,7 +25,7 @@ class DisplayManager {
 public:
     void begin() {
         M5.Lcd.begin();
-        M5.Lcd.setRotation(1);  // 240×135, USB à esquerda
+        M5.Lcd.setRotation(1);  // 240×135, USB on the left
         M5.Lcd.fillScreen(TFT_BLACK);
         M5.Lcd.setTextSize(1);
         M5.Lcd.setTextColor(TFT_WHITE, TFT_BLACK);
@@ -33,17 +33,17 @@ public:
         w_ = M5.Lcd.width();   // 240
         h_ = M5.Lcd.height();  // 135
 
-        // Altura da fonte DSEG14 20pt (descoberta empiricamente)
+        // DSEG14 20pt font height (discovered empirically)
         dsegHeight_ = 42;
     }
 
     int width() { return w_; }
     int height() { return h_; }
 
-    // ─── Status Bar (canto superior direito) ─────────────────────────
-    // Cada "[X]" = 3 chars * ~5px ≈ 15px. 4 ícones = 60px.
-    // Posições: [W] [M] [R] [T] espaçados a cada 14px da direita
-    // Deslocados 10px à esquerda para evitar wrap do último ícone
+    // ─── Status Bar (top right corner) ───────────────────────────────
+    // Each "[X]" = 3 chars * ~5px ≈ 15px. 4 icons = 60px.
+    // Positions: [W] [M] [R] [T] spaced every 14px from the right
+    // Shifted 10px to the left to avoid wrapping the last icon
     void drawWiFiIcon(bool connected) {
         M5.Lcd.setTextColor(connected ? TFT_GREEN : TFT_DARKGREY, TFT_BLACK);
         M5.Lcd.setFont(&fonts::Font0);
@@ -72,34 +72,34 @@ public:
         M5.Lcd.printf(valid ? "[T]" : "[t]");
     }
 
-    // ─── Timer Gigante (DSEG14, centro) ─────────────────────────────
-    // 5 dígitos + ':': ~128px. Área: y=34 a y=82 (48px altura livre)
-    // Fonte DSEG14 20pt ≈ 42px de altura.
-    // Centrado verticalmente: y = 34 + (48 - 42) / 2 = 37 ≈ 38
+    // ─── Giant Timer (DSEG14, center) ────────────────────────────────
+    // 5 digits + ':': ~128px. Area: y=34 to y=82 (48px free height)
+    // DSEG14 20pt font ≈ 42px tall.
+    // Vertically centered: y = 34 + (48 - 42) / 2 = 37 ≈ 38
     void drawTimer(int minutes, int seconds) {
-        // Área limpa: y=34 até y=84 (50px)
+        // Clean area: y=34 to y=84 (50px)
         M5.Lcd.fillRect(0, TIMER_Y, w_, 52, TFT_BLACK);
 
         M5.Lcd.setFont(&DSEG14Classic_Regular20pt7b);
         M5.Lcd.setTextColor(TFT_CYAN, TFT_BLACK);
 
-        // Monta string "MM:SS" e imprime de uma vez
+        // Builds the "MM:SS" string and prints it at once
         char buf[6];
         snprintf(buf, sizeof(buf), "%02d:%02d", minutes, seconds);
 
-        // Largura aproximada: 5 chars * ~24px + ':' gap = ~128px
+        // Approximate width: 5 chars * ~24px + ':' gap = ~128px
         int textW = 24 * 5 + 8;
         int startX = (w_ - textW) / 2;
         if (startX < 0) startX = 0;
 
-        // y = topo + padding para centralizar a fonte de 42px em 50px
+        // y = top + padding to center the 42px font in 50px
         M5.Lcd.setCursor(startX, TIMER_Y + 4);
         M5.Lcd.print(buf);
 
         M5.Lcd.setFont(&fonts::Font0);
     }
 
-    // ─── Segundos (small, abaixo do timer) ───────────────────────────
+    // ─── Seconds (small, below the timer) ─────────────────────────────
     void drawSecondsSmall(int totalSeconds) {
         M5.Lcd.fillRect(0, SEC_Y, w_, 14, TFT_BLACK);
         M5.Lcd.setTextColor(TFT_WHITE, TFT_BLACK);
@@ -108,7 +108,7 @@ public:
         M5.Lcd.printf("%ds", totalSeconds);
     }
 
-    // ─── Círculos fios (canto inferior esquerdo) ─────────────────────
+    // ─── Wire circles (bottom left corner) ───────────────────────────
     static constexpr uint16_t WIRE_COLORS[4] = {
         TFT_YELLOW, TFT_RED, TFT_BLUE, TFT_GREEN
     };
@@ -117,7 +117,7 @@ public:
         if (idx < 0 || idx > 3) return;
         int x = 8 + idx * 18;
         int y = h_ - 12;
-        if (isCut) { // Melhor assim. Quando está conectado, circulo cheio. Quando desconecta, vazio.
+        if (isCut) { // Better this way. When connected, filled circle. When disconnected, empty.
             M5.Lcd.fillCircle(x, y, 5, TFT_BLACK);
             M5.Lcd.drawCircle(x, y, 5, WIRE_COLORS[idx]);
         } else {
@@ -129,7 +129,7 @@ public:
         for (int i = 0; i < 4; i++) drawWireCircle(i, cut[i]);
     }
 
-    // ─── Texto status (canto inferior direito) ───────────────────────
+    // ─── Status text (bottom right corner) ───────────────────────────
     void drawBottomRight(const char* text, uint16_t color = TFT_WHITE) {
         M5.Lcd.fillRect(w_ / 2, h_ - 20, w_ / 2, 20, TFT_BLACK);
         M5.Lcd.setTextColor(color, TFT_BLACK);
@@ -138,7 +138,7 @@ public:
         M5.Lcd.print(text);
     }
 
-    // ─── Tela cheia (detonação/desarme) ──────────────────────────────
+    // ─── Full screen (detonation/defusal) ─────────────────────────────
     void drawFullScreenMsg(const char* line1, const char* line2, uint16_t color) {
         M5.Lcd.fillScreen(TFT_BLACK);
         M5.Lcd.setTextColor(color, TFT_BLACK);
@@ -158,7 +158,7 @@ public:
         }
     }
 
-    // ─── Código de desarme (modo CODE, DSEG14) ──────────────────────
+    // ─── Defuse code (CODE mode, DSEG14) ─────────────────────────────
     void drawCodeEntry(const char digits[4], int currentDigit) {
         M5.Lcd.fillRect(0, TIMER_Y, w_, 52, TFT_BLACK);
         M5.Lcd.setFont(&DSEG14Classic_Regular20pt7b);
@@ -168,9 +168,9 @@ public:
         int startX = (w_ - totalW) / 2;
         if (startX < 0) startX = 0;
 
-        // Y do dígito (mesmo do timer)
+        // Digit Y (same as the timer)
         int digitY = TIMER_Y + 4;
-        // Y do cursor (traço horizontal na base do dígito)
+        // Cursor Y (horizontal dash at the base of the digit)
         int cursorY = digitY + 36;
 
         for (int i = 0; i < 4; i++) {
@@ -188,7 +188,7 @@ public:
         M5.Lcd.setFont(&fonts::Font0);
     }
 
-    // ─── Limpeza seletiva ────────────────────────────────────────────
+    // ─── Selective clearing ──────────────────────────────────────────
     void clearScreen() { M5.Lcd.fillScreen(TFT_BLACK); }
     void clearTimerArea() { M5.Lcd.fillRect(0, TIMER_Y, w_, 54, TFT_BLACK); }
     void clearStatusBar() { M5.Lcd.fillRect(w_ - 80, 0, 80, 14, TFT_BLACK); }
@@ -199,6 +199,6 @@ private:
     int h_ = 135;
     int dsegHeight_ = 42;
 
-    static constexpr int TIMER_Y = 34;  // início da área do timer (+10 da altura original)
-    static constexpr int SEC_Y   = 88;  // início da área dos segundos
+    static constexpr int TIMER_Y = 34;  // start of the timer area (+10 from the original height)
+    static constexpr int SEC_Y   = 88;  // start of the seconds area
 };

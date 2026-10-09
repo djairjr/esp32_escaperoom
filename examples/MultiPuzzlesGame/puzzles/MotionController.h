@@ -1,14 +1,14 @@
-// MotionController.h - Controle de motores e atuadores via PCA9685
-// Gerencia: servos (plataformas, tampa), atuadores lineares, reles
+// MotionController.h - Motor and actuator control via PCA9685
+// Manages: servos (platforms, lid), linear actuators, relays
 //
-// Hardware: PCA9685 (I2C 0x40) + modulos reles 5V
+// Hardware: PCA9685 (I2C 0x40) + 5V relay modules
 //
-// Mapeamento de canais:
-//   CH0: Servo plataforma A (estender/retrair)
-//   CH1: Servo plataforma B
-//   CH2: Servo plataforma C
-//   CH3: Servo abertura da tampa
-//   CH4-CH7: Reles para atuadores lineares (direcao)
+// Channel mapping:
+//   CH0: Platform A servo (extend/retract)
+//   CH1: Platform B servo
+//   CH2: Platform C servo
+//   CH3: Lid opening servo
+//   CH4-CH7: Relays for linear actuators (direction)
 
 #pragma once
 
@@ -22,12 +22,12 @@ public:
 
     void begin() {
         if (!hw.hasPwmDriver()) {
-            Serial.println("[MOTION] PCA9685 nao detectado!");
+            Serial.println("[MOTION] PCA9685 not detected!");
             return;
         }
 
-        // PCA9685 ja inicializado por Hardware::begin()
-        // Seta frequencia para servos (50Hz)
+        // PCA9685 already initialized by Hardware::begin()
+        // Set the frequency for servos (50Hz)
         hw.pwmDriver().setToServoFrequency();
 
         Serial.println("[MOTION] PCA9685 OK");
@@ -63,7 +63,7 @@ public:
         }
     }
 
-    // --- Atuadores Lineares (PWM + Reles) ---
+    // --- Linear Actuators (PWM + Relays) ---
     void linearExtend(uint8_t pwmChannel, uint8_t relayFwd, uint8_t relayBwd, uint8_t speed = 100) {
         if (!hw.hasPwmDriver()) return;
         hw.digitalWrite(relayBwd, HIGH);
@@ -85,7 +85,7 @@ public:
         hw.pwmDriver().setChannelDutyCycle(pwmChannel, 0);
     }
 
-    // --- Atalhos ---
+    // --- Shortcuts ---
     void extendAllPlatforms(uint8_t chA = 0, uint8_t chB = 1, uint8_t chC = 2) {
         extendPlatform(chA);
         extendPlatform(chB);

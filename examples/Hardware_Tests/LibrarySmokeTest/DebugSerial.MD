@@ -10,8 +10,8 @@
 [HARDWARE] Init I2C Bus
 [HARDWARE] Scanning I2C Bus and initializing devices...
   - Found device at 0x18 (LIS3DH Accelerometer) - INITIALIZED
-  - Found device at 0x20 (PCF857x) - DETECTED (use hw.addPcf8574(0x20) ou hw.addPcf8575)
-  - Found device at 0x21 (PCF857x) - DETECTED (use hw.addPcf8574(0x21) ou hw.addPcf8575)
+  - Found device at 0x20 (PCF857x) - DETECTED (use hw.addPcf8574(0x20) or hw.addPcf8575)
+  - Found device at 0x21 (PCF857x) - DETECTED (use hw.addPcf8574(0x21) or hw.addPcf8575)
   - Found device at 0x70 (HT16K33 Display @0x70) - INITIALIZED
 [HARDWARE] =========================================
 [HARDWARE] Hardware Detection Summary:
@@ -22,7 +22,7 @@
   - RTC PCF8563: NOT FOUND
   - OLED SSD1306: NOT FOUND
   - ADC (ADS1115): NOT FOUND
-  - System Healthy: YES << INCLUIR AMOSTRA DE TENSÃO DA BATERIA USANDO NOVO MÉTODO PARA LOWPOWER
+  - System Healthy: YES << INCLUDE A BATTERY VOLTAGE SAMPLE USING THE NEW METHOD FOR LOWPOWER
 [HARDWARE] =========================================
 [HARDWARE] Init SPI Bus
 [HARDWARE] External Power: ON

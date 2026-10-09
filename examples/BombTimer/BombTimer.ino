@@ -1,18 +1,18 @@
 /**
- * BombTimerPro v. 2.0 - Portado para ESP32-S3 (XIAO)
- * Por Djair Guilherme - (Nicolau dos Brinquedos)
- * do original Game Timer Pro, da nootropic design
+ * BombTimerPro v. 2.0 - Ported to ESP32-S3 (XIAO)
+ * By Djair Guilherme - (Nicolau dos Brinquedos)
+ * from the original Game Timer Pro, by nootropic design
  *
  * Hardware: Seeed XIAO ESP32-S3 + Expansion Board
  * - Engine ESP32EscapeRoom + ArduinoHA + ConfigManager
- * - Configuracao via LittleFS (JSON) - arquivo bomb.json
- * - Entradas via PCF8575 (I2C) usando IoAbstraction (Fios, Botoes e Keypad)
- * - Display HT16K33 14 segmentos e 4 Digitos
- * - Audio MP3 via Arduino-Audio-Tools (I2S) com Codec Helix MP3
- * - NeoPixel para efeitos visuais (BOM 48 Leds Neopixel)
- * - Leitor NFC/RFID PN532 (I2C) para desarme ou detonacao via tag
- * - Comunicacao com Home Assistant via MQTT (ArduinoHA)
- * - RS485 removido, Acelerometro removido, Servo removido
+ * - Configuration via LittleFS (JSON) - file bomb.json
+ * - Inputs via PCF8575 (I2C) using IoAbstraction (Wires, Buttons and Keypad)
+ * - HT16K33 14-segment and 4-digit Display
+ * - MP3 Audio via Arduino-Audio-Tools (I2S) with Helix MP3 Codec
+ * - NeoPixel for visual effects (BOM 48 NeoPixel Leds)
+ * - NFC/RFID PN532 (I2C) reader for defuse or detonation via tag
+ * - Communication with Home Assistant via MQTT (ArduinoHA)
+ * - RS485 removed, Accelerometer removed, Servo removed
  */
 
 #include <ESP32EscapeRoom.h>
@@ -61,7 +61,7 @@ HASwitch haSwitchTick("tick_sound");
 // DEFINES
 // ============================================================================
 
-// Modos de desarme
+// Defuse modes
 #define DEFUSE_WIRE_CODE    0
 #define DEFUSE_WIRE_ORDER   1
 #define DEFUSE_WIRE_RAND    6
@@ -76,14 +76,14 @@ HASwitch haSwitchTick("tick_sound");
 #define RFID_OFF            0
 #define RFID_ON             1
 
-// Modos do acelerometro (REMOVIDO no ESP32, mantidos p/ compilacao)
+// Accelerometer modes (REMOVED on ESP32, kept for compilation)
 #define ACCEL_OFF           0
 #define ACCEL_START         1
 #define ACCEL_SPEED2X       2
 #define ACCEL_PAUSE         3
 #define ACCEL_DETONATE      4
 
-// Efeitos NeoPixel
+// NeoPixel effects
 #define NEOFX_OFF           0
 #define NEOFX_NORMAL        1
 #define NEOFX_COUNTING      2
@@ -92,7 +92,7 @@ HASwitch haSwitchTick("tick_sound");
 #define NEOFX_EXPLOSION     5
 #define NEOFX_RADIATION     6
 
-// Pinos no PCF8575 (IoAbstraction: 0-7=P0-P7, 8-15=P10-P17)
+// Pins on the PCF8575 (IoAbstraction: 0-7=P0-P7, 8-15=P10-P17)
 #define BUTTON_LEFT_PIN     8
 #define BUTTON_SELECT_PIN   9
 #define BUTTON_RIGHT_PIN    10
@@ -102,12 +102,12 @@ HASwitch haSwitchTick("tick_sound");
 #define WIRE3_PIN           14
 #define WIRE4_PIN           15
 
-// Configuracao JSON
+// JSON configuration
 #define CONFIG_FILE         "/bomb.json"
 
 // ============================================================================
-// WRAPPER ROBUSTO DO DISPLAY
-// Se display nao detectado, redireciona para Serial.print
+// ROBUST DISPLAY WRAPPER
+// If display not detected, redirects to Serial.print
 // ============================================================================
 class DisplayWrapper {
 public:
@@ -125,7 +125,7 @@ public:
     if (checkDisplay()) {
       hw.display().printNum(num);
     } else {
-      Serial.printf("[DISPLAY] Numero: %d\n", num);
+      Serial.printf("[DISPLAY] Number: %d\n", num);
     }
   }
 
@@ -133,7 +133,7 @@ public:
     if (checkDisplay()) {
       hw.display().printTime(min, sec);
     } else {
-      Serial.printf("[DISPLAY] Tempo: %02d:%02d\n", min, sec);
+      Serial.printf("[DISPLAY] Time: %02d:%02d\n", min, sec);
     }
   }
 
@@ -141,7 +141,7 @@ public:
     if (checkDisplay()) {
       hw.display().printString(str);
     } else {
-      Serial.printf("[DISPLAY] Texto: %s\n", str);
+      Serial.printf("[DISPLAY] Text: %s\n", str);
     }
   }
 
@@ -149,7 +149,7 @@ public:
     if (checkDisplay()) {
       hw.display().writeDigitAscii(digit, c);
     } else {
-      Serial.printf("[DISPLAY] Digito %d: %c\n", digit, c);
+      Serial.printf("[DISPLAY] Digit %d: %c\n", digit, c);
     }
   }
 
@@ -157,7 +157,7 @@ public:
     if (checkDisplay()) {
       hw.display().clear();
     } else {
-      Serial.println(F("[DISPLAY] Limpar"));
+      Serial.println(F("[DISPLAY] Clear"));
     }
   }
 
@@ -165,20 +165,20 @@ public:
     if (checkDisplay()) {
       hw.display().setBrightness(b);
     } else {
-      Serial.printf("[DISPLAY] Brilho: %d (display nao detectado)\n", b);
+      Serial.printf("[DISPLAY] Brightness: %d (display not detected)\n", b);
     }
   }
 };
 DisplayWrapper display;
 
-// Tag RFID em formato binário (UID armazenado como bytes)
+// RFID Tag in binary format (UID stored as bytes)
 struct RfidTagBin {
   uint8_t bytes[7];
   uint8_t len;
   bool valid;
 };
 
-// Configuração (estrutura igual ao original, removidos rs485/accel/servo)
+// Configuration (structure identical to the original, rs485/accel/servo removed)
 struct Config {
   int countdownSeconds = 600;
   int defuseMode = DEFUSE_WIRE_CODE;
@@ -202,36 +202,36 @@ struct Config {
   int detonateTagCount = 0;
 } config;
 
-// Estado do timer
+// Timer state
 bool countdownRunning = false;
 bool doubleSpeed = false;
-bool pcfPresent = false;       // estado do PCF8575 para hot-plug
-unsigned long lastPcfPoll = 0; // timestamp da última verificação
+bool pcfPresent = false;       // PCF8575 state for hot-plug
+unsigned long lastPcfPoll = 0; // timestamp of the last check
 int countdownSeconds = 600;
 bool isDefused = false;
 bool updateDisplayFlag = false;
 
-// Configuração dos fios (sorteados ou fixos)
+// Wire configuration (drawn or fixed)
 int activeDetWire = 0;
 int activeDefuseWire = 0;
 int activeSpeedupWire = 0;
 int activePauseWire = 0;
 
-// Estado dos fios
+// Wire state
 bool wireCutState[4] = {false, false, false, false};
 bool pauseDone = false;
 
-// Modo ORDER
+// ORDER mode
 int wireOrderPos = 0;
 int nextWire = 0;
 int sequence[4];
 
-// Estado do keypad
+// Keypad state
 int digits[4];
 int currentDigit = 0;
 bool enteringCode = false;
-int currentCode = 1; // Tentativa atual
-int maxCode = 3; // Máximo de tentativas
+int currentCode = 1; // Current attempt
+int maxCode = 3; // Maximum attempts
 
 // Timing
 unsigned long lastTickAt = 0;
@@ -243,13 +243,13 @@ int neoEffect = NEOFX_NORMAL;
 unsigned long neoLastUpdate = 0;
 int neoStep = 0;
 
-// Efeitos
+// Effects
 enum class EffectState { IDLE, RUNNING, FINISHED };
 EffectState explosionEffect = EffectState::IDLE;
 EffectState defuseEffect = EffectState::IDLE;
 unsigned long effectStartTime = 0;
 
-// Menu principal — 7 itens (SHAK e NET removidos)
+// Main menu — 7 items (SHAK and NET removed)
 int menuItem = 0;
 bool inMenu = false;
 bool inAdjustMode = false;
@@ -259,17 +259,17 @@ bool selectWasPressed = false;
 #define SELECT_LONG_PRESS_MS 800
 #define MENU_ITEMS_COUNT 7
 
-// Submenu WIRE (5 itens: ORDR, DET, DEF, SPD, PAUS)
+// WIRE submenu (5 items: ORDR, DET, DEF, SPD, PAUS)
 bool inWireSubmenu = false;
 int wireSubItem = 0;
 #define WIRE_SUBITEMS_COUNT 5
 
-// Submenu RELE (2 itens: TDET, TDEF)
+// RELE submenu (2 items: TDET, TDEF)
 bool inReleSubmenu = false;
 int releSubItem = 0;
 #define RELE_SUBITEMS_COUNT 2
 
-// Submenu RFID (2 itens: DEFU, DETO)
+// RFID submenu (2 items: DEFU, DETO)
 bool inRfidSubmenu = false;
 int rfidSubItem = 0;
 #define RFID_SUBITEMS_COUNT 2
@@ -292,11 +292,11 @@ public:
 static KeypadListener keypadListener;
 static MatrixKeyboardManager keypadManager;
 
-// Variaveis de estado dos botoes e fios
+// Button and wire state variables
 extern volatile bool btnPressed[4];
 extern volatile bool wireCutFlag[4];
 
-// Declaracoes forward
+// Forward declarations
 void onButtonPressed(pinid_t pin, bool held);
 void onWireCut(pinid_t pin, bool held);
 
@@ -306,20 +306,20 @@ public:
   GameTimerPuzzle() : PuzzleBase(1) {}
 
   void setupHardware() override {
-    Serial.println(F("[GameTimer] Setup iniciado"));
+    Serial.println(F("[GameTimer] Setup started"));
 
-    // Carrega configuracao
+    // Loads configuration
     loadConfig();
-    Serial.printf("[GameTimer] Config: %ds, modo=%d, code=%04d\n",
+    Serial.printf("[GameTimer] Config: %ds, mode=%d, code=%04d\n",
                   config.countdownSeconds, config.defuseMode, config.defuseCode);
 
-    // Aplica configuracoes
+    // Applies settings
     display.setBrightness(config.brightness);
     hw.sound().setVolume(config.volume);
 
-    // Inicializa SwitchInput para botoes e fios via PCF8575
+    // Initializes SwitchInput for buttons and wires via PCF8575
     if (hw.hasExpander()) {
-      Serial.println(F("[GameTimer] Inicializando SwitchInput via IoAbstraction..."));
+      Serial.println(F("[GameTimer] Initializing SwitchInput via IoAbstraction..."));
       switches.init(hw.io(), SWITCHES_POLL_KEYS_ONLY, true);
 
       switches.addSwitch(BUTTON_LEFT_PIN, onButtonPressed, NO_REPEAT, false);
@@ -332,17 +332,17 @@ public:
       switches.addSwitch(WIRE3_PIN, onWireCut, NO_REPEAT, true);
       switches.addSwitch(WIRE4_PIN, onWireCut, NO_REPEAT, true);
 
-      Serial.println(F("[GameTimer] SwitchInput OK: 4 botoes + 4 fios"));
+      Serial.println(F("[GameTimer] SwitchInput OK: 4 buttons + 4 wires"));
     } else {
-      Serial.println(F("[GameTimer] ERRO: PCF8575 nao detectado!"));
+      Serial.println(F("[GameTimer] ERROR: PCF8575 not detected!"));
     }
 
-    // Inicializa keypad
+    // Initializes keypad
     for (int i = 0; i < 4; i++) keypadLayout.setRowPin(i, rowPins[i]);
     for (int i = 0; i < 3; i++) keypadLayout.setColPin(i, colPins[i]);
     keypadManager.initialise(hw.io(), &keypadLayout, &keypadListener, false);
 
-    // Inicializa NFC Reader
+    // Initializes NFC Reader
     if (hw.hasNfc()) {
       nfc_ = hw.createNfcReader();
       if (nfc_) {
@@ -355,20 +355,20 @@ public:
       Serial.println(F("[RFID] No NFC hardware"));
     }
 
-    // Configura saidas
+    // Configures outputs
     pinMode(PUZZLE_PIN_RELAY, OUTPUT);
     digitalWrite(PUZZLE_PIN_RELAY, HIGH);
     pinMode(PIN_EXTERNAL_POWER, OUTPUT);
     digitalWrite(PIN_EXTERNAL_POWER, HIGH);
 
-    // Estado inicial
+    // Initial state
     countdownSeconds = config.countdownSeconds;
     if (hw.hasDisplay()) {
       display.printTime(countdownSeconds / 60, countdownSeconds % 60);
     }
     setNeoEffect(NEOFX_NORMAL);
 
-    // Som de inicializacao
+    // Startup sound
     hw.sound().playOnceBlocking("/armed.mp3");
     Serial.println(F("[GameTimer] Self Destruction Initiated"));
 
@@ -382,7 +382,7 @@ public:
     switches.runLoop();
     updateNeoEffect();
 
-    // Keypad hot-plug: verifica PCF8575 a cada 2s
+    // Keypad hot-plug: checks the PCF8575 every 2s
     if (millis() - lastPcfPoll > 2000) {
       lastPcfPoll = millis();
       bool nowPresent = hw.hasExpander();
@@ -425,53 +425,53 @@ public:
   // ========================================================================
   void setupHA() {
     // Sensors
-    haSensorState.setName("Estado da Bomba");
+    haSensorState.setName("Bomb State");
     haSensorState.setIcon("mdi:bomb");
-    haSensorTime.setName("Tempo Restante");
+    haSensorTime.setName("Remaining Time");
     haSensorTime.setUnitOfMeasurement("s");
     haSensorTime.setIcon("mdi:timer");
-    haSensorWires.setName("Fios Cortados");
+    haSensorWires.setName("Wires Cut");
     haSensorWires.setIcon("mdi:cable-data");
-    haSensorMode.setName("Modo de Desarme");
+    haSensorMode.setName("Defuse Mode");
     haSensorMode.setIcon("mdi:shield-key");
-    haSensorCodeAttempts.setName("Tentativas de Código");
+    haSensorCodeAttempts.setName("Code Attempts");
     haSensorCodeAttempts.setIcon("mdi:counter");
-    haSensorBrightness.setName("Brilho");
+    haSensorBrightness.setName("Brightness");
     haSensorBrightness.setUnitOfMeasurement("");
 
     haSensorVolume.setName("Volume");
     haSensorVolume.setUnitOfMeasurement("%");
     haSensorVolume.setIcon("mdi:volume-high");
-    haSensorTick.setName("Som Tick");
+    haSensorTick.setName("Tick Sound");
     haSensorTick.setIcon("mdi:music-note");
 
     // Lock
-    haLockRelay.setName("Relé de Explosão");
+    haLockRelay.setName("Explosion Relay");
     haLockRelay.setIcon("mdi:lightning-bolt");
     haLockRelay.onCommand(onRelayCmd);
 
     // Buttons
-    haBtnStart.setName("Iniciar Contagem");
+    haBtnStart.setName("Start Countdown");
     haBtnStart.setIcon("mdi:play");
     haBtnStart.onCommand(onStartBtn);
-    haBtnReset.setName("Resetar");
+    haBtnReset.setName("Reset");
     haBtnReset.setIcon("mdi:restart");
     haBtnReset.onCommand(onResetBtn);
-    haBtnDetonate.setName("Explodir");
+    haBtnDetonate.setName("Explode");
     haBtnDetonate.setIcon("mdi:alert-circle");
     haBtnDetonate.onCommand(onDetonateBtn);
-    haBtnDefuse.setName("Desarmar");
+    haBtnDefuse.setName("Defuse");
     haBtnDefuse.setIcon("mdi:shield-check");
     haBtnDefuse.onCommand(onDefuseBtn);
 
     // Select
-    haSelectMode.setName("Modo de Desarme");
+    haSelectMode.setName("Defuse Mode");
     haSelectMode.setIcon("mdi:tune");
     haSelectMode.setOptions("CODE;WIRE;ORDER");
     haSelectMode.onCommand(onModeSelect);
 
     // Numbers
-    haNumCountdown.setName("Tempo (segundos)");
+    haNumCountdown.setName("Time (seconds)");
     haNumCountdown.setIcon("mdi:timer-outline");
     haNumCountdown.setMin(10);
     haNumCountdown.setMax(5999);
@@ -480,7 +480,7 @@ public:
     haNumCountdown.onCommand(onCountdownNum);
     haNumCountdown.setState((int32_t)config.countdownSeconds);
 
-    haNumDefuseCode.setName("Código de Desarme");
+    haNumDefuseCode.setName("Defuse Code");
     haNumDefuseCode.setIcon("mdi:lock");
     haNumDefuseCode.setMin(0);
     haNumDefuseCode.setMax(9999);
@@ -489,11 +489,11 @@ public:
     haNumDefuseCode.setState((int32_t)config.defuseCode);
 
     // Switch
-    haSwitchTick.setName("Som Tick");
+    haSwitchTick.setName("Tick Sound");
     haSwitchTick.setIcon("mdi:volume-mute");
     haSwitchTick.onCommand(onTickSwitch);
 
-    // Estado inicial
+    // Initial state
     publishAllHA();
   }
 
@@ -533,7 +533,7 @@ public:
   }
 
   // ========================================================================
-  // CALLBACKS HA (estáticos)
+  // HA CALLBACKS (static)
   // ========================================================================
   static void onRelayCmd(HALock::LockCommand cmd, HALock*) {
     if (cmd == HALock::CommandLock) puzzle.detonate();
@@ -583,15 +583,15 @@ private:
       unsigned long pressDuration = millis() - selectEnterStart;
 
       if (pressDuration < SELECT_LONG_PRESS_MS) {
-        Serial.println(F("[INPUT] SELECT CURTO -> entrando no menu"));
+        Serial.println(F("[INPUT] SELECT SHORT -> entering menu"));
         inMenu = true; menuItem = 0; inAdjustMode = false;
         showMenuItem();
       } else {
-        Serial.println(F("[INPUT] SELECT LONGO -> salvando configuracao"));
+        Serial.println(F("[INPUT] SELECT LONG -> saving configuration"));
         saveConfig();
         display.printString("-OK-");
         hw.sound().playOnce("/keypress.mp3");
-        Serial.printf("[INPUT] Tempo salvo: %d segundos\n", config.countdownSeconds);
+        Serial.printf("[INPUT] Time saved: %d seconds\n", config.countdownSeconds);
         delay(800);
       }
       return;
@@ -601,7 +601,7 @@ private:
 
     if (buttonPressed(BUTTON_DET_PIN)) {
       lastBtnCheck = millis();
-      Serial.println(F("[INPUT] DET -> iniciando countdown"));
+      Serial.println(F("[INPUT] DET -> starting countdown"));
       checkDetButton(0);
       return;
     }
@@ -665,13 +665,13 @@ private:
 
     if (timeChanged && (now - lastAdjTime >= TIME_AUTO_SAVE_MS)) {
       saveConfig(); timeChanged = false;
-      Serial.printf("[TIME] Auto-salvo: %d segundos\n", config.countdownSeconds);
+      Serial.printf("[TIME] Auto-saved: %d seconds\n", config.countdownSeconds);
     }
   }
 
   void checkDetButton(int trigger) {
     if (trigger == 0x10 || countdownRunning) return;
-    Serial.println(F("[GameTimer] Iniciando countdown"));
+    Serial.println(F("[GameTimer] Starting countdown"));
     countdownRunning = true;
 
     for (int i = 0; i < 3; i++) {
@@ -843,7 +843,7 @@ private:
   }
 
   void defused() {
-    Serial.println(F("\n[defused] ========== BOMBA DESARMADA =========="));
+    Serial.println(F("\n[defused] ========== BOMB DEFUSED =========="));
     setState(PuzzleState::Solved);
     haSensorState.setValue("solved");
     haSensorTime.setValue("0");
@@ -894,7 +894,7 @@ private:
   }
 
   void startCountdown() {
-    Serial.printf("[startCountdown] Tempo: %ds, modo: %d\n", config.countdownSeconds, config.defuseMode);
+    Serial.printf("[startCountdown] Time: %ds, mode: %d\n", config.countdownSeconds, config.defuseMode);
     getRandomWire();
     lastRfidPoll_ = 0; lastRfidUidLen_ = 0;
     countdownSeconds = config.countdownSeconds;
@@ -950,7 +950,7 @@ private:
     if (!switches.isSwitchPressed(BUTTON_SELECT_PIN) && selectWasPressed) {
       selectWasPressed = false;
       unsigned long pressDuration = millis() - selectPressStart;
-      if (pressDuration >= SELECT_LONG_PRESS_MS) { Serial.println(F("[CONFIG] SELECT LONGO")); handleSelectLong(); }
+      if (pressDuration >= SELECT_LONG_PRESS_MS) { Serial.println(F("[CONFIG] SELECT LONG")); handleSelectLong(); }
       else { handleSelectShort(); }
       lastBtnCheck = millis(); return;
     }
@@ -959,7 +959,7 @@ private:
 
     if (buttonPressed(BUTTON_DET_PIN)) {
       lastBtnCheck = millis();
-      Serial.println(F("[CONFIG] DET -> saindo e iniciando countdown"));
+      Serial.println(F("[CONFIG] DET -> exiting and starting countdown"));
       exitAllMenus(); checkDetButton(0); return;
     }
 
@@ -978,7 +978,7 @@ private:
     } else handleMainMenuNavigation();
   }
 
-  void exitAllMenus() { inMenu = false; inAdjustMode = false; inWireSubmenu = false; inReleSubmenu = false; inRfidSubmenu = false; Serial.println(F("[CONFIG] Menu fechado")); }
+  void exitAllMenus() { inMenu = false; inAdjustMode = false; inWireSubmenu = false; inReleSubmenu = false; inRfidSubmenu = false; Serial.println(F("[CONFIG] Menu closed")); }
 
   void handleSelectShort() {
     if (inAdjustMode) {
@@ -1055,7 +1055,7 @@ private:
     }
   }
 
-  // Menu 7 itens: 0=BRIGHT, 1=VOL, 2=TICK, 3=WIRE, 4=CODE, 5=RELE, 6=RFID
+  // Menu 7 items: 0=BRIGHT, 1=VOL, 2=TICK, 3=WIRE, 4=CODE, 5=RELE, 6=RFID
   void showMenuItem() { display.clear(); display.setDisplayColon(false);
     switch (menuItem) {
       case 0: display.printString("BRIG"); break; case 1: display.printString("VOL "); break;
@@ -1301,7 +1301,7 @@ private:
 
   void loadConfig() {
     if (!LittleFS.exists(CONFIG_FILE)) {
-      Serial.println(F("[GameTimer] Arquivo de config nao existe, criando padrao..."));
+      Serial.println(F("[GameTimer] Config file does not exist, creating default..."));
       saveConfig(); return;
     }
     File f = LittleFS.open(CONFIG_FILE, "r");
@@ -1335,10 +1335,10 @@ private:
     }
     f.close();
 
-    Serial.println(F("[GameTimer] CONFIGURACAO CARREGADA:"));
-    Serial.printf("  Countdown: %ds, Modo: %d, Codigo: %04d\n", config.countdownSeconds, config.defuseMode, config.defuseCode);
-    Serial.printf("  Fios: Det=%d Def=%d Spd=%d Paus=%d\n", config.detWire, config.defuseWire, config.speedupWire, config.pauseWire);
-    Serial.printf("  Brilho: %d/15, Volume: %d/255\n", config.brightness, config.volume);
+    Serial.println(F("[GameTimer] CONFIGURATION LOADED:"));
+    Serial.printf("  Countdown: %ds, Mode: %d, Code: %04d\n", config.countdownSeconds, config.defuseMode, config.defuseCode);
+    Serial.printf("  Wires: Det=%d Def=%d Spd=%d Paus=%d\n", config.detWire, config.defuseWire, config.speedupWire, config.pauseWire);
+    Serial.printf("  Brightness: %d/15, Volume: %d/255\n", config.brightness, config.volume);
     Serial.printf("  Trigger TDet=%ds TDef=%ds\n", config.detTriggerSec, config.defuseTriggerSec);
     Serial.printf("  Tick: %s, RFID: %s\n", config.tickEnabled ? "ON" : "OFF", config.rfidEnabled ? "ON" : "OFF");
   }
@@ -1363,12 +1363,12 @@ private:
       if (config.detonateTags[i].valid) { char hexBuf[22]; bytesToHexString(config.detonateTags[i].bytes, config.detonateTags[i].len, hexBuf); oTagArr.add(hexBuf); }
     }
     serializeJson(doc, f); f.close();
-    Serial.println(F("[GameTimer] Config salva"));
+    Serial.println(F("[GameTimer] Config saved"));
   }
 };
 
 // ============================================================================
-// CALLBACKS SwitchInput (fora da classe)
+// SwitchInput CALLBACKS (outside the class)
 // ============================================================================
 
 volatile bool btnPressed[4] = {false, false, false, false};
@@ -1390,7 +1390,7 @@ int wirePinToIndex(pinid_t pin) {
 
 void onWireCut(pinid_t pin, bool held) {
   int wireNum = wirePinToIndex(pin);
-  if (wireNum >= 0 && wireNum < 4) { wireCutFlag[wireNum] = true; Serial.printf("[WIRE] P%d (Fio %d) CORTADO\n", pin, wireNum + 1); }
+  if (wireNum >= 0 && wireNum < 4) { wireCutFlag[wireNum] = true; Serial.printf("[WIRE] P%d (Wire %d) CUT\n", pin, wireNum + 1); }
 }
 
 // ============================================================================
@@ -1430,11 +1430,11 @@ void setup() {
   haDevice.setName("bomb-timer");
   haMqtt.begin(netConfig.mqttBroker(), netConfig.mqttUser(), netConfig.mqttPass());
 
-  // Inicializa puzzle
+  // Initializes puzzle
   puzzle.setupHardware();
   puzzle.setupHA();
 
-  Serial.println(F("[Main] Sistema pronto"));
+  Serial.println(F("[Main] System ready"));
 }
 
 void loop() {

@@ -1,8 +1,8 @@
 /**
- * EXEMPLO: MASTERMIND - JOGO DE ADIVINHACAO DE CORES
- * ----------------------------------------------------
- * Jogador deve adivinhar uma sequencia de 4 cores (1-6).
- * Portado para ESP32-S3 + Home Assistant (ArduinoHA).
+ * EXAMPLE: MASTERMIND - COLOR GUESSING GAME
+ * ------------------------------------------
+ * The player must guess a sequence of 4 colors (1-6).
+ * Ported to ESP32-S3 + Home Assistant (ArduinoHA).
  */
 
 #include <ESP32EscapeRoom.h>
@@ -14,7 +14,7 @@
 using namespace esp32_escaperoom;
 
 // ============================================================================
-// CONFIGURACAO JSON
+// JSON CONFIGURATION
 // ============================================================================
 struct MastermindConfig {
   uint8_t codeLength = 4;
@@ -114,13 +114,13 @@ public:
     disp.print("CodE");
     randomSeed(analogRead(28));
     newGame();
-    Serial.printf("[MM] Cores: 1=Verm 2=Azul 3=Verde 4=Amarelo 5=Magenta 6=Ciano\n");
+    Serial.printf("[MM] Colors: 1=Red 2=Blue 3=Green 4=Yellow 5=Magenta 6=Cyan\n");
   }
 
   void setupHA() {
-    haSensorState_.setName("Estado");        haSensorState_.setIcon("mdi:gamepad");
-    haSensorAttempts_.setName("Tentativas");  haSensorAttempts_.setIcon("mdi:counter");
-    haBtnReset_.setName("Resetar");          haBtnReset_.setIcon("mdi:restart");
+    haSensorState_.setName("State");        haSensorState_.setIcon("mdi:gamepad");
+    haSensorAttempts_.setName("Attempts");  haSensorAttempts_.setIcon("mdi:counter");
+    haBtnReset_.setName("Reset");          haBtnReset_.setIcon("mdi:restart");
     haBtnReset_.onCommand(haResetCallback);
     publishAllHA();
   }
@@ -265,7 +265,7 @@ private:
 };
 
 // ============================================================================
-// INSTANCIAS GLOBAIS
+// GLOBAL INSTANCES
 // ============================================================================
 LogicManager master(17);
 MastermindPuzzle puzzle;

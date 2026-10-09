@@ -4,9 +4,9 @@
 #include "Config.h"
 
 // ============================================================================
-// TARGET STATUS — Status do dispositivo alvo (simulado)
+// TARGET STATUS — Target device status (simulated)
 // ============================================================================
-// Lê estado do alvo — atualmente simulado, futuramente via MQTT real
+// Reads target state — currently simulated, later via real MQTT
 // ============================================================================
 
 class BombStatus {

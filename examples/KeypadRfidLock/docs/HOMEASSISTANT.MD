@@ -1,32 +1,32 @@
-# KeypadRfidLock — Entidades Home Assistant
+# KeypadRfidLock — Home Assistant Entities
 
-## Sensores
-| Nome | ID | Valores |
+## Sensors
+| Name | ID | Values |
 |---|---|---|
-| Estado | `state` | idle, authenticating, solved |
-| Última Tag | `last_tag` | texto (UID hex) |
+| State | `state` | idle, authenticating, solved |
+| Last Tag | `last_tag` | text (hex UID) |
 
-## Binários
-| Nome | ID |
+## Binaries
+| Name | ID |
 |---|---|
-| Trava | `lock` | locked, unlocked |
+| Lock | `lock` | locked, unlocked |
 
-## Botões
-| Nome | ID |
+## Buttons
+| Name | ID |
 |---|---|
-| Destravar | `unlock` |
-| Resetar | `reset` |
+| Unlock | `unlock` |
+| Reset | `reset` |
 
-## Seletores
-| Nome | ID | Opções |
+## Selectors
+| Name | ID | Options |
 |---|---|---|
-| Modo | `mode` | KEYPAD, RFID, BOTH |
+| Mode | `mode` | KEYPAD, RFID, BOTH |
 
-## Números
-| Nome | ID | Range |
+## Numbers
+| Name | ID | Range |
 |---|---|---|
-| Código | `code` | 0-9999 |
-| Timeout Trava | `lock_timeout` | 1-30s |
+| Code | `code` | 0-9999 |
+| Lock Timeout | `lock_timeout` | 1-30s |
 
 ## AP Mode
-Rede WiFi "RfidLock-XXXX" + portal em 192.168.4.1.
+WiFi network "RfidLock-XXXX" + portal at 192.168.4.1.

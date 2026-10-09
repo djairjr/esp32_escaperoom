@@ -1,35 +1,35 @@
-# ReactorControl — Algoritmo do Jogo
+# ReactorControl — Game Algorithm
 
-## Visão Geral
+## Overview
 
-Painel de controle de reator nuclear. O jogador deve manter temperatura e pressão dentro de limites seguros usando botões de controle. Se os parâmetros saírem dos limites ou o jogador falhar na confirmação (pressionar dois botões simultaneamente), o reator "explode" (puzzle falha).
+Nuclear reactor control panel. The player must keep temperature and pressure within safe limits using the control buttons. If the parameters go out of bounds or the player fails the confirmation (pressing two buttons simultaneously), the reactor "explodes" (the puzzle fails).
 
-## Configuração (JSON: reactor.json)
+## Configuration (JSON: reactor.json)
 
-- **Limites**: maxTemperature, maxPressure
-- **Taxas**: tempRiseRate, pressureRiseRate, coolingRate
+- **Limits**: maxTemperature, maxPressure
+- **Rates**: tempRiseRate, pressureRiseRate, coolingRate
 - **Hardware**: lockPin, neoCount, volume
-- **Áudio**: sfxAlarm, sfxVent, sfxScram, sfxStable
+- **Audio**: sfxAlarm, sfxVent, sfxScram, sfxStable
 
-## Estados
+## States
 
 IDLE → RUNNING → STABLE / WARNING / CRITICAL → SOLVED / MELTDOWN
 
-## Fluxo
+## Flow
 
-1. IDLE: aguardando início
+1. IDLE: waiting to start
 2. RUNNING:
-   - Temperatura e pressão sobem continuamente
-   - Botão ESQUERDO: reduz temperatura (ventilação)
-   - Botão DIREITO: reduz pressão (válvula)
-   - Ambos simultâneos: SCRAM (desligamento de emergência)
-3. STABLE: parâmetros dentro dos limites
-4. WARNING: um parâmetro excedeu 80%
-5. CRITICAL: parâmetro excedeu limite → timer de confirmação
-   - Jogador deve pressionar ambos os botões em X segundos
-   - Falha → MELTDOWN
-6. Tempo total decorrido sem meltdown → SOLVED
+   - Temperature and pressure rise continuously
+   - LEFT button: reduces temperature (venting)
+   - RIGHT button: reduces pressure (valve)
+   - Both simultaneous: SCRAM (emergency shutdown)
+3. STABLE: parameters within limits
+4. WARNING: one parameter exceeded 80%
+5. CRITICAL: parameter exceeded the limit → confirmation timer
+   - Player must press both buttons within X seconds
+   - Failure → MELTDOWN
+6. Total elapsed time without meltdown → SOLVED
 
 ## AP Mode + WiFi
 
-Configuração de rede via portal web em 192.168.4.1.
+Network configuration via web portal at 192.168.4.1.

@@ -1,53 +1,53 @@
-# Manual do Mastermind - Jogo de Adivinhacao de Cores
+# Mastermind Manual - Color Guessing Game
 
-Guia para donos de sala, game masters e jogadores.
+Guide for room owners, game masters and players.
 
 ---
 
-## 1. Visao Geral
+## 1. Overview
 
-### O que e este dispositivo?
+### What is this device?
 
-O **Mastermind** e a versao eletronica do classico jogo de tabuleiro. O sistema gera uma sequencia secreta de 4 cores. O jogador faz palpites usando o teclado e recebe dicas sobre quantas cores estao na posicao correta (P) e quantas cores existem mas em posicao errada (E). O jogador tem 10 tentativas para acertar.
+**Mastermind** is the electronic version of the classic board game. The system generates a secret sequence of 4 colors. The player makes guesses using the keypad and receives hints about how many colors are in the correct position (P) and how many colors are present but in the wrong position (E). The player has 10 attempts to get it right.
 
-### Como funciona no jogo?
+### How does it work in the game?
 
-- Os jogadores encontram um teclado numerico e um display
-- Cada tecla de 1 a 6 representa uma cor
-- O jogador digita 4 numeros (seu palpite de cores) e confirma
-- O display mostra "P=1 E=2" significando: 1 cor na posicao certa, 2 cores certas em posicao errada
-- Os LEDs mostram as cores do palpite e o feedback
-- O jogador tem 10 tentativas para adivinhar a sequencia correta
+- Players find a numeric keypad and a display
+- Each key from 1 to 6 represents a color
+- The player enters 4 numbers (their guess of colors) and confirms
+- The display shows "P=1 E=2" meaning: 1 color in the correct position, 2 correct colors in the wrong position
+- The LEDs show the colors of the guess and the feedback
+- The player has 10 attempts to guess the correct sequence
 
-### Mapa de Cores
+### Color Map
 
-| Tecla | Cor | Cor no LED |
+| Key | Color | LED Color |
 |-------|-----|------------|
-| **1** | Vermelho | Vermelho |
-| **2** | Azul | Azul |
-| **3** | Verde | Verde |
-| **4** | Amarelo | Amarelo |
-| **5** | Magenta | Rosa/Magenta |
-| **6** | Ciano | Azul claro |
+| **1** | Red | Red |
+| **2** | Blue | Blue |
+| **3** | Green | Green |
+| **4** | Yellow | Yellow |
+| **5** | Magenta | Pink/Magenta |
+| **6** | Cyan | Light blue |
 
 ---
 
-## 2. Componentes do Jogo
+## 2. Game Components
 
-| Componente | Descricao |
+| Component | Description |
 |------------|-----------|
-| **Teclado numerico** | Teclas 1-6 para cores, * para limpar, # para confirmar |
-| **Display 4 digitos** | Mostra status do jogo e feedback P/E |
-| **LEDs NeoPixel** | 4 primeiros LEDs mostram as cores do palpite, 4 seguintes mostram feedback |
-| **Alto-falante** | Sons de tecla, acerto, erro e vitoria |
+| **Numeric keypad** | Keys 1-6 for colors, * to clear, # to confirm |
+| **4-digit display** | Shows the game status and P/E feedback |
+| **NeoPixel LEDs** | The first 4 LEDs show the colors of the guess, the following 4 show feedback |
+| **Speaker** | Key, hit, miss and victory sounds |
 
 ---
 
-## 3. Configuracao Inicial
+## 3. Initial Setup
 
-### Ajuste de dificuldade
+### Difficulty adjustment
 
-Edite o arquivo `/mastermind.json`:
+Edit the file `/mastermind.json`:
 
 ```json
 {
@@ -57,15 +57,15 @@ Edite o arquivo `/mastermind.json`:
 }
 ```
 
-| Parametro | O que faz | Facil | Dificil |
+| Parameter | What it does | Easy | Hard |
 |-----------|-----------|-------|---------|
-| `codeLength` | Quantas cores na sequencia | 3 | 6 |
-| `maxColors` | Quantas cores disponiveis | 4 | 8 |
-| `maxAttempts` | Quantas tentativas | 15 | 6 |
+| `codeLength` | How many colors in the sequence | 3 | 6 |
+| `maxColors` | How many colors available | 4 | 8 |
+| `maxAttempts` | How many attempts | 15 | 6 |
 
-### Combinacoes possiveis
+### Possible combinations
 
-| codeLength | maxColors | Combinacoes |
+| codeLength | maxColors | Combinations |
 |------------|-----------|-------------|
 | 3 | 4 | 64 |
 | 4 | 6 | 1296 |
@@ -73,117 +73,117 @@ Edite o arquivo `/mastermind.json`:
 
 ---
 
-## 4. Como Jogar
+## 4. How to Play
 
-### Para o Game Master
+### For the Game Master
 
-1. Defina a dificuldade no JSON
-2. Explique o mapa de cores aos jogadores
-3. Tecla * limpa o palpite atual
-4. Tecla # confirma e envia o palpite
+1. Set the difficulty in the JSON
+2. Explain the color map to the players
+3. The * key clears the current guess
+4. The # key confirms and submits the guess
 
-### Para os jogadores
+### For the players
 
-1. **Veja** o display: mostra "CodE" (pronto)
-2. **Digite 4 numeros** de 1 a 6 para formar seu palpite
-3. **Veja as cores** nos LEDs - cada LED mostra a cor escolhida
-4. **Confirme** com a tecla #
-5. **Leia o feedback**:
-   - **P=1** = 1 cor esta na posicao correta
-   - **E=2** = 2 cores estao corretas mas em posicao errada
-6. **Use a logica** para deduzir a sequencia correta
-7. **Acertou?** O puzzle resolve!
-8. **Errou?** Tente de novo (veja quantas tentativas restam)
+1. **Look** at the display: it shows "CodE" (ready)
+2. **Enter 4 numbers** from 1 to 6 to form your guess
+3. **Look at the colors** on the LEDs - each LED shows the chosen color
+4. **Confirm** with the # key
+5. **Read the feedback**:
+   - **P=1** = 1 color is in the correct position
+   - **E=2** = 2 colors are correct but in the wrong position
+6. **Use logic** to deduce the correct sequence
+7. **Got it right?** The puzzle is solved!
+8. **Got it wrong?** Try again (see how many attempts remain)
 
-### Exemplo de jogo
+### Example game
 
 ```
-Secreto: [2, 4, 1, 3]  (Azul, Amarelo, Vermelho, Verde)
+Secret: [2, 4, 1, 3]  (Blue, Yellow, Red, Green)
 
-Palpite 1: [1, 2, 3, 4] -> P=0 E=3
-  (cores 1,2,4 existem mas em posicao errada; cor 3 nao existe)
+Guess 1: [1, 2, 3, 4] -> P=0 E=3
+  (colors 1,2,4 exist but in the wrong position; color 3 does not exist)
 
-Palpite 2: [2, 1, 4, 3] -> P=2 E=2
-  (posicoes 1 e 4 corretas; cores 1 e 4 trocadas)
+Guess 2: [2, 1, 4, 3] -> P=2 E=2
+  (positions 1 and 4 correct; colors 1 and 4 swapped)
 
-Palpite 3: [2, 4, 1, 3] -> P=4 E=0 -> RESOLVIDO!
+Guess 3: [2, 4, 1, 3] -> P=4 E=0 -> SOLVED!
 ```
 
-### Estrategia
+### Strategy
 
-- Comece com todas as cores diferentes para descobrir quais estao presentes
-- Preste atencao ao P (posicao correta) - significa que aquela cor ja esta no lugar certo
-- Use o E (cor existe) para saber quais cores fazerem parte do codigo
-- Processo de eliminacao e a chave
+- Start with all different colors to find out which ones are present
+- Pay attention to P (correct position) - it means that color is already in the right place
+- Use E (color exists) to know which colors are part of the code
+- Process of elimination is the key
 
 ---
 
-## 5. O que acontece ao resolver
+## 5. What happens when solved
 
-1. O display mostra "donE"
-2. O som de vitoria toca
-3. Os LEDs ficam verdes
-4. A trava e liberada
+1. The display shows "donE"
+2. The victory sound plays
+3. The LEDs turn green
+4. The lock is released
 
-### Se esgotar as tentativas
+### If the attempts run out
 
-1. O display mostra "noPE"
-2. O som de erro toca
-3. Os LEDs ficam vermelhos
-4. O codigo secreto e revelado no Serial (para debug)
+1. The display shows "noPE"
+2. The error sound plays
+3. The LEDs turn red
+4. The secret code is revealed on the Serial (for debug)
 
 ---
 
-## 6. Checklist de Audio
+## 6. Audio Checklist
 
-| Arquivo | Quando Toca | Obrigatorio? |
+| File | When it plays | Required? |
 |---------|-------------|--------------|
-| `beep.mp3` | Ao pressionar tecla | Sim |
-| `magic.mp3` | Codigo descoberto | Sim |
-| `error.mp3` | Tentativas esgotadas | Sim |
-| `cancel.mp3` | Limpou palpite | Nao |
+| `beep.mp3` | When pressing a key | Yes |
+| `magic.mp3` | Code discovered | Yes |
+| `error.mp3` | Attempts exhausted | Yes |
+| `cancel.mp3` | Guess cleared | No |
 
-Formato: MP3, 128kbps, 44.1kHz, stereo, sem ID3 tags.
-
----
-
-## 7. Solucao de Problemas
-
-### Teclado nao responde
-
-1. Verifique o PCF8575 no endereco 0x20
-2. Teste com `hw.test()` via Serial
-
-### Display nao mostra nada
-
-1. Verifique HT16K33 no endereco 0x70
-2. Ajuste o brilho no JSON
-
-### As cores do LED nao correspondem
-
-As cores sao aproximadas. O vermelho e FF0000, azul e 0000FF, etc. Ajuste no codigo se necessario.
+Format: MP3, 128kbps, 44.1kHz, stereo, no ID3 tags.
 
 ---
 
-## Resumo Rapido
+## 7. Troubleshooting
 
-| Tecla | Funcao |
+### Keypad does not respond
+
+1. Check the PCF8575 at address 0x20
+2. Test with `hw.test()` via Serial
+
+### Display shows nothing
+
+1. Check the HT16K33 at address 0x70
+2. Adjust the brightness in the JSON
+
+### The LED colors do not match
+
+The colors are approximate. Red is FF0000, blue is 0000FF, etc. Adjust in the code if necessary.
+
+---
+
+## Quick Summary
+
+| Key | Function |
 |-------|--------|
-| **1-6** | Seleciona uma cor |
-| ***** | Limpa o palpite |
-| **#** | Confirma o palpite |
+| **1-6** | Selects a color |
+| ***** | Clears the guess |
+| **#** | Confirms the guess |
 
-### Entendendo o feedback
+### Understanding the feedback
 
-| Display | Significado |
+| Display | Meaning |
 |---------|-------------|
-| "CodE" | Jogo pronto, aguardando palpite |
-| "P2E1" | 2 cores na posicao certa, 1 cor certa em posicao errada |
-| "donE" | Puzzle resolvido! |
-| "noPE" | Tentativas esgotadas |
+| "CodE" | Game ready, waiting for a guess |
+| "P2E1" | 2 colors in the correct position, 1 correct color in the wrong position |
+| "donE" | Puzzle solved! |
+| "noPE" | Attempts exhausted |
 
 ---
 
-*Boa sorte! Use a logica...*
+*Good luck! Use logic...*
 
-*Manual Mastermind - Versao 1.0 para biblioteca PropMaker EscapeRoom*
+*Mastermind Manual - Version 1.0 for the PropMaker EscapeRoom library*

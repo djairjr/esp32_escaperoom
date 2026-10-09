@@ -1,28 +1,28 @@
 /*
   BatteryLowPower
 
-  Demonstra o Battery Monitoring e LowPower Mode da biblioteca ESP32EscapeRoom.
+  Demonstrates the Battery Monitoring and LowPower Mode of the ESP32EscapeRoom library.
 
-  Hardware necessario:
+  Required hardware:
   - Seeed XIAO ESP32-S3
-  - Fita NeoPixel externa (opcional)
-  - Display HT16K33 (opcional)
-  - Divisor de tensao 2:1 (2x 100Kohm) entre BAT e GND,
-    com o centro ligado ao pino A0 (GPIO1 / D0)
+  - External NeoPixel strip (optional)
+  - HT16K33 display (optional)
+  - 2:1 voltage divider (2x 100Kohm) between BAT and GND,
+    with the center connected to pin A0 (GPIO1 / D0)
 
-  Comportamento:
-  - Exibe tensao da bateria no display e Serial
-  - Anima NeoPixels em arco-iris
-  - Com LowPower ativo, brilho e volume acompanham
-    a queda da bateria (dimming proporcional)
-  - Abaixo de 3.5V, EXTERNAL_POWER e cortado
+  Behavior:
+  - Shows the battery voltage on the display and Serial
+  - Animates NeoPixels in rainbow
+  - With LowPower active, brightness and volume follow
+    the battery drop (proportional dimming)
+  - Below 3.5V, EXTERNAL_POWER is cut
 
-  Monte o divisor no A0 (GPIO1 / D0):
+  Assemble the divider on A0 (GPIO1 / D0):
     BAT ---[100K]---[100K]--- GND
                       |
                       A0
 
-  Use fonte variavel para simular descarga da bateria.
+  Use a variable supply to simulate battery discharge.
 */
 
 #include <ESP32EscapeRoom.h>
@@ -33,7 +33,7 @@
 using namespace esp32_escaperoom;
 
 // ============================================================================
-// HOME ASSISTANT + WIFI (adicionado pelo port ESP32)
+// HOME ASSISTANT + WIFI (added by the ESP32 port)
 // ============================================================================
 ConfigManager netConfig;
 WiFiClient wifiClient;
@@ -48,7 +48,7 @@ void initHA() {
   haDevice.setUniqueId(mac, sizeof(mac));
   haDevice.setName(netConfig.devName());
   haDevice.setSoftwareVersion("1.0.0");
-  haSensorState.setName("Estado");
+  haSensorState.setName("State");
   haSensorState.setIcon("mdi:puzzle");
   haMqtt.begin(netConfig.mqttBroker(), netConfig.mqttUser(), netConfig.mqttPass());
 }
@@ -60,40 +60,40 @@ void loopHA() {
 
 
 // ============================================
-// Gerenciamento de bateria + power save
+// Battery management + power save
 // ============================================
 class BatteryDemo {
 public:
   void begin() {
     hw.begin();
 
-    // Expansores (ajuste conforme seu hardware)
+    // Expanders (adjust according to your hardware)
     if (hw.hasExpander() == false) {
       hw.addPcf8575(0x20);
     }
 
-    // Inicia monitoramento no A0 (GPIO1 = D0, usar pino ADC)
+    // Starts monitoring on A0 (GPIO1 = D0, use the ADC pin)
     hw.beginBatteryMonitor();
 
-    // Configura thresholds (mais agressivos para demo)
+    // Configure thresholds (more aggressive for the demo)
     hw.setPowerSaveThresholds(3.8, 3.5);
 
-    // Ativa power save
+    // Enable power save
     hw.setLowPowerMode(true);
 
     Serial.println(F("[DEMO] Battery LowPower demo started"));
-    Serial.println(F("[DEMO] Conecte fonte variavel ao A0 (GPIO1)"));
-    Serial.println(F("[DEMO] Ajuste entre 0-4.2V para simular bateria\n"));
+    Serial.println(F("[DEMO] Connect a variable supply to A0 (GPIO1)"));
+    Serial.println(F("[DEMO] Adjust between 0-4.2V to simulate the battery\n"));
     report();
   }
 
   void update() {
     unsigned long now = millis();
 
-    // Power save (dimming proporcional)
+    // Power save (proportional dimming)
     hw.updatePowerSave();
 
-    // Animacao NeoPixel
+    // NeoPixel animation
     if (now - lastAnim_ > animInterval_) {
       lastAnim_ = now;
       hue_ = (hue_ + 5) % 360;
@@ -102,7 +102,7 @@ public:
       hw.setLightInternal(0, hw.pixelsInternal().ColorHSV((hue_ + 180) * 182, 255, currentBrightness()));
     }
 
-    // Atualiza display cada 2s
+    // Update the display every 2s
     if (now - lastDisplay_ > 2000) {
       lastDisplay_ = now;
       if (hw.hasDisplay()) {
@@ -140,7 +140,7 @@ private:
 
     Serial.printf("[DEMO] BAT=%.2fV (%d%%) %s | LowPower=%s | NeoBri=%d\n",
       v, pct,
-      bat ? "BATERIA" : "USB    ",
+      bat ? "BATTERY" : "USB    ",
       lp ? "ON " : "OFF",
       currentBrightness());
   }

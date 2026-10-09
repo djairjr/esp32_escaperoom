@@ -1,33 +1,33 @@
 // ============================================================================
 // Nuclear Reactor Escape Room - Multi-Puzzle Game
 // ============================================================================
-// Demonstra o sistema de Game Levels do LogicManager com 5 niveis e 9 puzzles.
+// Demonstrates the LogicManager Game Levels system with 5 levels and 9 puzzles.
 //
-// Arquitetura: 1 PropMaker RP2040, 5 PCF8575, 1 PN532, 2 ADS1115,
-//              1 PCA9685, 1 strip NeoPixel 48 LEDs, 1 TM1637, audio I2S
+// Architecture: 1 PropMaker RP2040, 5 PCF8575, 1 PN532, 2 ADS1115,
+//               1 PCA9685, 1 NeoPixel strip of 48 LEDs, 1 TM1637, I2S audio
 //
-// RFID readers: modulo CH552G + MFRC522 por base (sensor digital LOW=tag OK).
-// Nao usa multiplos PN532 no I2C - cada CH552G vira uma entrada digital no PCF.
+// RFID readers: CH552G module + MFRC522 per base (digital sensor LOW=tag OK).
+// Does not use multiple PN532 on the I2C bus - each CH552G becomes a digital input on the PCF.
 //
 // Game Levels:
-//   Level 0 (ACESSO - PARALLEL):    P1 KeypadRFID + P2 CoolantValves + P3 ElectricalPanel
-//   Level 1 (POSICIONAMENTO - PAR): P4 PositionRFID
-//   Level 2 (REATOR - PAR):         P5 ReactorControl
-//   Level 3 (TAMPA - PAR):          P6 LidSimonSays
+//   Level 0 (ACCESS - PARALLEL):    P1 KeypadRFID + P2 CoolantValves + P3 ElectricalPanel
+//   Level 1 (POSITIONING - PAR):    P4 PositionRFID
+//   Level 2 (REACTOR - PAR):        P5 ReactorControl
+//   Level 3 (LID - PAR):            P6 LidSimonSays
 //   Level 4 (INTERIOR - SEQUENCE):  P7 RadioRepair -> P8 RotaryDial -> P9 BombTimer
 //
-// Hardware Mapeamento I2C:
-//   PCF8575 0x20 - Puzzle 1 (KeypadRFID keypad matrix + lock) (16 pinos)
+// Hardware I2C Mapping:
+//   PCF8575 0x20 - Puzzle 1 (KeypadRFID keypad matrix + lock) (16 pins)
 //   PCF8575 0x21 - Puzzle 2 (CoolantValves switches + lock)
-//   PCF8575 0x22 - Puzzle 3 (ElectricalPanel switches + lock + gaveta)
-//   PCF8575 0x23 - Puzzle 6 (SimonSays botoes + lock)
+//   PCF8575 0x22 - Puzzle 3 (ElectricalPanel switches + lock + drawer)
+//   PCF8575 0x23 - Puzzle 6 (SimonSays buttons + lock)
 //   PCF8575 0x25 - P4 (3x CH552G bases A/B/C) + P7 RadioRepair + P9 BombTimer
 //                  P0-P2: CH552G bases | P3-P8: RadioRepair | P9-P14: BombTimer
-//   PN532   0x24 - Puzzle 1 (cracha RFID) - via hw.createNfcReader() (unico, sem conflito)
+//   PN532   0x24 - Puzzle 1 (RFID badge) - via hw.createNfcReader() (unique, no conflict)
 //   ADS1115 0x48 - Puzzle 5 (3 pots)
-//   PCA9685 0x40 - Servos (plataformas + tampa) + atuadores
-//   TM1637       - Timer global
-//   NeoPixel     - 48 LEDs compartilhados
+//   PCA9685 0x40 - Servos (platforms + lid) + actuators
+//   TM1637       - Global timer
+//   NeoPixel     - 48 shared LEDs
 // ============================================================================
 
 #include <ESP32EscapeRoom.h>
@@ -45,7 +45,7 @@
 using namespace esp32_escaperoom;
 
 // ============================================================================
-// HOME ASSISTANT + WIFI (adicionado pelo port ESP32)
+// HOME ASSISTANT + WIFI (added by the ESP32 port)
 // ============================================================================
 ConfigManager netConfig;
 WiFiClient wifiClient;
@@ -60,7 +60,7 @@ void initHA() {
   haDevice.setUniqueId(mac, sizeof(mac));
   haDevice.setName(netConfig.devName());
   haDevice.setSoftwareVersion("1.0.0");
-  haSensorState.setName("Estado");
+  haSensorState.setName("State");
   haSensorState.setIcon("mdi:puzzle");
   haMqtt.begin(netConfig.mqttBroker(), netConfig.mqttUser(), netConfig.mqttPass());
 }
@@ -84,24 +84,24 @@ public:
 
         switch (levelIndex) {
         case 0:
-            Serial.println("[GAME] Libere os 3 tecnicos!");
+            Serial.println("[GAME] Release the 3 technicians!");
             hw.sound().playOnce("/sfx/level_acesso.mp3");
             break;
         case 1:
-            Serial.println("[GAME] Posicione os tecnicos nas plataformas!");
+            Serial.println("[GAME] Position the technicians on the platforms!");
             motion_.extendAllPlatforms(0, 1, 2);
             hw.sound().playOnce("/sfx/level_position.mp3");
             break;
         case 2:
-            Serial.println("[GAME] Estabilize o nucleo do reator!");
+            Serial.println("[GAME] Stabilize the reactor core!");
             hw.sound().playOnce("/sfx/level_reactor.mp3");
             break;
         case 3:
-            Serial.println("[GAME] SimonSays na tampa - pressurize as bombas!");
+            Serial.println("[GAME] SimonSays on the lid - pressurize the pumps!");
             hw.sound().playOnce("/sfx/level_lid.mp3");
             break;
         case 4:
-            Serial.println("[GAME] Interior - conserte, discute, desarme!");
+            Serial.println("[GAME] Interior - repair, dial, defuse!");
             hw.sound().playOnce("/sfx/level_interior.mp3");
             break;
         }
@@ -137,24 +137,24 @@ private:
 // PUZZLE INSTANCES
 // ============================================================================
 
-// Level 0: Acesso
+// Level 0: Access
 KeypadRfidPuzzle        puzzle1(0);       // PCF[0]=0x20
 CoolantValvesPuzzle     puzzle2(1);       // PCF[1]=0x21
 ElectricalPanelPuzzle   puzzle3(2);       // PCF[2]=0x22
 
-// Level 1: Posicionamento
+// Level 1: Positioning
 PositionRFIDPuzzle      puzzle4(4);       // PCF[4]=0x25 (3 CH552G bases A/B/C)
 
-// Level 2: Reator
+// Level 2: Reactor
 ReactorControlPuzzle    puzzle5;
 
-// Level 3: Tampa
+// Level 3: Lid
 LidSimonSaysPuzzle      puzzle6(3);       // PCF[3]=0x23
 
 // Level 4: Interior
-RadioRepairPuzzle       puzzle7(4);       // PCF[4]=0x25 (pinos P3-P8)
+RadioRepairPuzzle       puzzle7(4);       // PCF[4]=0x25 (pins P3-P8)
 RotaryDialPuzzle        puzzle8(16, 17);  // GPIO 16, 17
-BombTimerPuzzle         puzzle9(4);       // PCF[4]=0x25 (pinos P9-P14)
+BombTimerPuzzle         puzzle9(4);       // PCF[4]=0x25 (pins P9-P14)
 
 // ============================================================================
 // GAME MANAGER
@@ -179,11 +179,11 @@ void setup() {
     hw.begin();
 
     // ========== ADD I2C DEVICES ==========
-    hw.addPcf8575(0x20);  // Indice 0 - Puzzle 1
-    hw.addPcf8575(0x21);  // Indice 1 - Puzzle 2
-    hw.addPcf8575(0x22);  // Indice 2 - Puzzle 3
-    hw.addPcf8575(0x23);  // Indice 3 - Puzzle 6
-    hw.addPcf8575(0x25);  // Indice 4 - P4 (bases RFID) + P7 + P9
+    hw.addPcf8575(0x20);  // Index 0 - Puzzle 1
+    hw.addPcf8575(0x21);  // Index 1 - Puzzle 2
+    hw.addPcf8575(0x22);  // Index 2 - Puzzle 3
+    hw.addPcf8575(0x23);  // Index 3 - Puzzle 6
+    hw.addPcf8575(0x25);  // Index 4 - P4 (RFID bases) + P7 + P9
 
     // ========== INIT MOTION ==========
     master.motion().begin();

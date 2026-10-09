@@ -1,38 +1,38 @@
-# Cyclone — Algoritmo do Jogo
+# Cyclone — Game Algorithm
 
-## Visão Geral
+## Overview
 
-Jogo de timing. Uma luz percorre um anel de NeoPixels em velocidade crescente. O jogador pressiona SELECT para parar a luz no setor verde (alvo). Acertar N rounds resolve o puzzle.
+Timing game. A light travels around a ring of NeoPixels at increasing speed. The player presses SELECT to stop the light on the green sector (target). Hitting N rounds solves the puzzle.
 
-## Configuração (JSON: cyclone.json)
+## Configuration (JSON: cyclone.json)
 
-- **Alvo**: targetSize (largura do setor verde, 1-N), roundsToWin (acertos necessários)
-- **Velocidade**: startSpeed, speedIncrement (aumenta a cada acerto), maxSpeed
+- **Target**: targetSize (width of the green sector, 1-N), roundsToWin (hits required)
+- **Speed**: startSpeed, speedIncrement (increases with each hit), maxSpeed
 - **Hardware**: lockPin, neoCount, volume
-- **Áudio**: sfxTick (movimento), sfxHit (acerto), sfxMiss (erro), sfxSolved
+- **Audio**: sfxTick (movement), sfxHit (hit), sfxMiss (miss), sfxSolved
 
-## Estados
+## States
 
 IDLE → RUNNING → SOLVED → IDLE (auto-reset 8s)
 
-## Fluxo do Jogo
+## Game Flow
 
-1. IDLE: NeoPixel azul pulsante. SELECT inicia.
+1. IDLE: pulsing blue NeoPixel. SELECT starts the game.
 2. RUNNING:
-   a. Posição do setor alvo sorteada aleatoriamente
-   b. Luz percorre o anel a cada stepDelay = 100/speed ms
-   c. Posição atual avança 1 LED por step
-   d. SELECT pressionado → verifica se posição está dentro do setor alvo
-3. Acerto: incrementa round, aumenta speed, sorteia novo alvo
-4. Erro: mantém round atual, sorteia novo alvo
-5. Todos rounds completos → SOLVED (destrava, som de vitória)
+   a. Target sector position randomly drawn
+   b. Light travels around the ring every stepDelay = 100/speed ms
+   c. Current position advances 1 LED per step
+   d. SELECT pressed → checks whether the position is inside the target sector
+3. Hit: increments round, increases speed, draws a new target
+4. Miss: keeps the current round, draws a new target
+5. All rounds complete → SOLVED (releases lock, victory sound)
 
 ## Feedback
 
-- NeoPixel: alvo=verde dim, luz atual=branco brilhante, acerto=verde bright, erro=vermelho
-- Áudio: tick a cada movimento, som de acerto/erro
-- Display: não usado (apenas NeoPixel)
+- NeoPixel: target=dim green, current light=bright white, hit=bright green, miss=red
+- Audio: tick on each movement, hit/miss sound
+- Display: not used (NeoPixel only)
 
 ## AP Mode + WiFi
 
-Configuração de rede via portal web em 192.168.4.1.
+Network configuration via web portal at 192.168.4.1.

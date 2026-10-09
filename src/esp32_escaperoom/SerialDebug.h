@@ -54,8 +54,8 @@ public:
     }
 
     void printHelp() {
-        serial_->println(F("\n--- Comandos ---"));
-        serial_->println(F("help       Mostra esta ajuda"));
+        serial_->println(F("\n--- Commands ---"));
+        serial_->println(F("Help       Show this help."));
         for (uint8_t i = 0; i < commandCount_; i++) {
             serial_->printf("  %-10s %s\n", commands_[i].name, commands_[i].desc);
         }
@@ -103,7 +103,7 @@ private:
         }
 
         serial_->printf("Comando desconhecido: %s\n", cmd);
-        serial_->println("Digite 'help' para ver comandos disponiveis");
+        serial_->println("Type “help” to see the available commands.");
     }
 };
 

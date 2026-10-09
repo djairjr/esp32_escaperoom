@@ -12,12 +12,12 @@ typedef void (*VoidCallback)();
 // ============================================================================
 // ConfigHA — WiFi + ConfigManager (AP mode + webserver) + ArduinoHA
 // ============================================================================
-// Inclui sensores e controles para Home Assistant:
-//   - Estado, tempo, fios, tentativas
-//   - Botões: Iniciar, Resetar
-//   - Números: Código desarme, Countdown, Brilho
-//   - Select: Modo desarme, Fios (DET/SPEED/PAUSE)
-//   - Switch: Som Tick
+// Includes sensors and controls for Home Assistant:
+//   - State, time, wires, attempts
+//   - Buttons: Start, Reset
+//   - Numbers: Defuse code, Countdown, Brightness
+//   - Select: Defuse mode, Wires (DET/SPEED/PAUSE)
+//   - Switch: Tick Sound
 // ============================================================================
 
 class ConfigHA {
@@ -30,7 +30,7 @@ public:
         }
         loadConfig();
         if (strlen(wifi_.ssid) > 0) {
-            Serial.printf("[WIFI] Conectando %s... ", wifi_.ssid);
+            Serial.printf("[WIFI] Connecting %s... ", wifi_.ssid);
             WiFi.mode(WIFI_STA);
             WiFi.begin(wifi_.ssid, wifi_.pass);
             int att = 0;
@@ -57,12 +57,12 @@ public:
         }
         if (haOK_) {
             haMqtt_.loop();
-            // Publica I2C status pendente após MQTT estar rodando
+            // Publishes pending I2C status after MQTT is running
             if (i2cPending_ && strlen(i2cStatus_) > 0) {
                 haSensorI2C_.setValue(i2cStatus_);
                 i2cPending_ = false;
             }
-            // Detecta transição disconnected→connected e publica tudo
+            // Detects the disconnected→connected transition and publishes everything
             static bool lastMqttConnected = false;
             bool nowConnected = haMqtt_.isConnected();
             if (nowConnected && !lastMqttConnected) {
@@ -94,13 +94,13 @@ public:
         haNumDefuseCode_.setState((int32_t)game.config.defuseCode);
         haNumBrightness_.setState((int32_t)game.config.brightness);
         haSwitchTick_.setState(game.config.tickEnabled);
-        // Atualiza selects com índice correto
+        // Updates the selects with the correct index
         haSelectMode_.setState((int8_t)game.config.defuseMode);
         haSelectDetWire_.setState((int8_t)game.config.detWire);
         haSelectDefuseWire_.setState((int8_t)game.config.defuseWire);
         haSelectSpeedWire_.setState((int8_t)game.config.speedupWire);
         haSelectPauseWire_.setState((int8_t)game.config.pauseWire);
-        // Publica I2C status (se disponível)
+        // Publishes I2C status (if available)
         if (strlen(i2cStatus_) > 0) {
             haSensorI2C_.setValue(i2cStatus_);
         }
@@ -216,7 +216,7 @@ private:
     // ─── Load/Save ───────────────────────────────────────────────────
     void loadConfig() {
         File f = SPIFFS.open("/wifi.json", "r");
-        if (!f) { Serial.println("[CFG] No wifi.json, usando defaults"); return; }
+        if (!f) { Serial.println("[CFG] No wifi.json, using defaults"); return; }
         JsonDocument doc;
         if (deserializeJson(doc, f)) { f.close(); return; }
         f.close();
@@ -264,20 +264,20 @@ button{margin-top:20px;padding:10px 20px;background:#06c;color:white;border:none
 <form action=/save method=POST>
 <div class=s><h3>WiFi</h3><label>SSID: <input name=ws required value=')rawliteral";
             html += wifi_.ssid;
-            html += R"rawliteral('></label><label>Senha: <input name=wp type=password value=')rawliteral";
+            html += R"rawliteral('></label><label>Password: <input name=wp type=password value=')rawliteral";
             html += wifi_.pass;
             html += R"rawliteral('></label></div>
 <div class=s><h3>MQTT</h3><label>Broker: <input name=mb value=')rawliteral";
             html += mqtt_.broker;
-            html += R"rawliteral('></label><label>Porta: <input name=mp value=)rawliteral";
+            html += R"rawliteral('></label><label>Port: <input name=mp value=)rawliteral";
             html += String(mqtt_.port);
             html += R"rawliteral( type=number></label><label>User: <input name=mu value=')rawliteral";
             html += mqtt_.user;
             html += R"rawliteral('></label><label>Pass: <input name=mpw type=password></label></div>
-<div class=s><h3>Dispositivo</h3><label>Nome: <input name=dn value=')rawliteral";
+<div class=s><h3>Device</h3><label>Name: <input name=dn value=')rawliteral";
             html += dev_.name;
             html += R"rawliteral('></label></div>
-<button type=submit>Salvar e Reiniciar</button></form></body></html>)rawliteral";
+<button type=submit>Save and Restart</button></form></body></html>)rawliteral";
             apSrv_->send(200, "text/html", html);
         });
         apSrv_->on("/save", HTTP_POST, [this]() {
@@ -289,7 +289,7 @@ button{margin-top:20px;padding:10px 20px;background:#06c;color:white;border:none
             if (apSrv_->hasArg("mpw")) strlcpy(mqtt_.pass, apSrv_->arg("mpw").c_str(), sizeof(mqtt_.pass));
             if (apSrv_->hasArg("dn")) strlcpy(dev_.name, apSrv_->arg("dn").c_str(), sizeof(dev_.name));
             saveConfig();
-            apSrv_->send(200, "text/html", "<html><body><h2>Salvo! Reiniciando...</h2></body></html>");
+            apSrv_->send(200, "text/html", "<html><body><h2>Saved! Restarting...</h2></body></html>");
             delay(1000);
             ESP.restart();
         });
@@ -307,49 +307,49 @@ button{margin-top:20px;padding:10px 20px;background:#06c;color:white;border:none
         haDevice_.setName(dev_.name);
 
         // Sensors
-        haSensorState_.setName("Estado");
+        haSensorState_.setName("State");
         haSensorState_.setIcon("mdi:bomb");
-        haSensorTime_.setName("Tempo Restante");
+        haSensorTime_.setName("Remaining Time");
         haSensorTime_.setUnitOfMeasurement("s");
         haSensorTime_.setIcon("mdi:timer");
-        haSensorWiresCut_.setName("Fios Cortados");
+        haSensorWiresCut_.setName("Wires Cut");
         haSensorWiresCut_.setIcon("mdi:cable-data");
-        haSensorCodeAttempts_.setName("Tentativas");
+        haSensorCodeAttempts_.setName("Attempts");
         haSensorCodeAttempts_.setIcon("mdi:counter");
-        haSensorMode_.setName("Modo Desarme");
+        haSensorMode_.setName("Defuse Mode");
         haSensorMode_.setIcon("mdi:tune");
         haSensorI2C_.setName("I2C Devices");
         haSensorI2C_.setIcon("mdi:bus-electrical");
         for (int i = 0; i < 4; i++) {
             char name[16];
-            snprintf(name, sizeof(name), "Fio %d", i + 1);
+            snprintf(name, sizeof(name), "Wire %d", i + 1);
             wires_[i].sensor->setName(name);
             wires_[i].sensor->setIcon("mdi:cable-data");
         }
 
         // Buttons
-        haBtnStart_.setName("Iniciar");
+        haBtnStart_.setName("Start");
         haBtnStart_.setIcon("mdi:play");
         haBtnStart_.onCommand(haStartCb);
-        haBtnReset_.setName("Resetar");
+        haBtnReset_.setName("Reset");
         haBtnReset_.setIcon("mdi:restart");
         haBtnReset_.onCommand(haResetCb);
 
         // Numbers
-        haNumCountdown_.setName("Tempo (segundos)");
+        haNumCountdown_.setName("Time (seconds)");
         haNumCountdown_.setIcon("mdi:timer-outline");
         haNumCountdown_.setMin(5);
         haNumCountdown_.setMax(5999);
         haNumCountdown_.setStep(1);
         haNumCountdown_.setUnitOfMeasurement("s");
         haNumCountdown_.onCommand(haCountdownCb);
-        haNumDefuseCode_.setName("Codigo Desarme");
+        haNumDefuseCode_.setName("Defuse Code");
         haNumDefuseCode_.setIcon("mdi:lock");
         haNumDefuseCode_.setMin(0);
         haNumDefuseCode_.setMax(9999);
         haNumDefuseCode_.setStep(1);
         haNumDefuseCode_.onCommand(haDefuseCodeCb);
-        haNumBrightness_.setName("Brilho");
+        haNumBrightness_.setName("Brightness");
         haNumBrightness_.setIcon("mdi:brightness-6");
         haNumBrightness_.setMin(0);
         haNumBrightness_.setMax(15);
@@ -357,29 +357,29 @@ button{margin-top:20px;padding:10px 20px;background:#06c;color:white;border:none
         haNumBrightness_.onCommand(haBrightnessCb);
 
         // Selects
-        haSelectMode_.setName("Modo Desarme");
+        haSelectMode_.setName("Defuse Mode");
         haSelectMode_.setIcon("mdi:tune");
         haSelectMode_.setOptions("CODE;WIRE;ORDER");
         haSelectMode_.onCommand(haModeCb);
-        haSelectDetWire_.setName("Fio DET");
+        haSelectDetWire_.setName("DET Wire");
         haSelectDetWire_.setIcon("mdi:alert");
         haSelectDetWire_.setOptions("RAND;1;2;3;4;NONE");
         haSelectDetWire_.onCommand(haDetWireCb);
-        haSelectDefuseWire_.setName("Fio DEFUSE");
+        haSelectDefuseWire_.setName("DEFUSE Wire");
         haSelectDefuseWire_.setIcon("mdi:shield-check");
         haSelectDefuseWire_.setOptions("RAND;1;2;3;4;NONE");
         haSelectDefuseWire_.onCommand(haDefuseWireCb);
-        haSelectSpeedWire_.setName("Fio SPEED");
+        haSelectSpeedWire_.setName("SPEED Wire");
         haSelectSpeedWire_.setIcon("mdi:speedometer");
         haSelectSpeedWire_.setOptions("RAND;1;2;3;4;NONE");
         haSelectSpeedWire_.onCommand(haSpeedWireCb);
-        haSelectPauseWire_.setName("Fio PAUSE");
+        haSelectPauseWire_.setName("PAUSE Wire");
         haSelectPauseWire_.setIcon("mdi:pause");
         haSelectPauseWire_.setOptions("RAND;1;2;3;4;NONE");
         haSelectPauseWire_.onCommand(haPauseWireCb);
 
         // Switch
-        haSwitchTick_.setName("Som Tick");
+        haSwitchTick_.setName("Tick Sound");
         haSwitchTick_.setIcon("mdi:volume-high");
         haSwitchTick_.onCommand(haTickCb);
 

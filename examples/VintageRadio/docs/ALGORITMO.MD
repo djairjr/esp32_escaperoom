@@ -1,29 +1,29 @@
-# VintageRadio — Algoritmo do Jogo
+# VintageRadio — Game Algorithm
 
-## Visão Geral
+## Overview
 
-Rádio vintage com múltiplos modos de interação: sintonia via rotary encoder, leitura RFID para autenticação de "estações", e áudio MP3 simulando transmissões de rádio antigas.
+Vintage radio with multiple interaction modes: tuning via rotary encoder, RFID reading for "station" authentication, and MP3 audio simulating old radio broadcasts.
 
-## Configuração (JSON: vintage.json)
+## Configuration (JSON: vintage.json)
 
-- **Entrada**: Rotary Encoder (sintonia), RFID (autenticação)
-- **Modos**: TUNE (sintonizar frequência), AUTH (autenticar com tag)
+- **Input**: Rotary Encoder (tuning), RFID (authentication)
+- **Modes**: TUNE (tune frequency), AUTH (authenticate with tag)
 - **Hardware**: lockPin, neoCount, volume
-- **Áudio**: sfxStatic, sfxTune, sfxStation, sfxSolved
+- **Audio**: sfxStatic, sfxTune, sfxStation, sfxSolved
 
-## Estados
+## States
 
 IDLE → TUNING → AUTHENTICATED → SOLVED
 
-## Fluxo
+## Flow
 
-1. IDLE: rádio desligado
-2. TUNING: rotary encoder ajusta "frequência"
-   - NeoPixel mostra posição no dial
-   - Áudio toca estática entre frequências
-3. AUTHENTICATED: tag RFID correta apresentada na frequência certa
-4. SOLVED: destrava
+1. IDLE: radio off
+2. TUNING: rotary encoder adjusts the "frequency"
+   - NeoPixel shows the position on the dial
+   - Audio plays static between frequencies
+3. AUTHENTICATED: correct RFID tag presented at the right frequency
+4. SOLVED: unlocks
 
 ## AP Mode + WiFi
 
-Configuração de rede via portal web em 192.168.4.1.
+Network configuration via web portal at 192.168.4.1.

@@ -1,9 +1,9 @@
-// InteriorPuzzles.h - Puzzle 6, 7, 8, 9 do Nuclear Reactor
-// Level 3: Tampa (P6 SimonSays) - PARALLEL
+// InteriorPuzzles.h - Puzzles 6, 7, 8, 9 of the Nuclear Reactor
+// Level 3: Lid (P6 SimonSays) - PARALLEL
 // Level 4: Interior (P7 RadioRepair, P8 RotaryDial, P9 BombTimer) - SEQUENCE
 //
-// TODOS os puzzles sao NON-BLOCKING (state machines em update())
-// para rodar sob LogicManager sem travar o loop.
+// ALL puzzles are NON-BLOCKING (state machines in update())
+// so they run under LogicManager without blocking the loop.
 
 #pragma once
 
@@ -12,11 +12,11 @@
 using namespace esp32_escaperoom;
 
 // ====================================================================
-// P6: SIMON SAYS NA TAMPA - Pressurizar bombas
+// P6: SIMON SAYS ON THE LID - Pressurize pumps
 // ====================================================================
-// Hardware: 4 botoes + NeoPixels na tampa, servo para abrir
-// Mecanica: repetir sequencia de luzes. N rodadas, sequencia cresce.
-// Non-blocking: state machine com millis(), sem delay() ou while().
+// Hardware: 4 buttons + NeoPixels on the lid, servo to open
+// Mechanics: repeat the light sequence. N rounds, the sequence grows.
+// Non-blocking: state machine with millis(), no delay() or while().
 
 class LidSimonSaysPuzzle : public PuzzleBase {
 public:
@@ -24,22 +24,22 @@ public:
         : PuzzleBase(ID_P6_LID_SIMONSAYS), pcfIndex_(pcfIndex), servoCh_(servoChannel) {}
 
     void setupHardware() override {
-        setPixelRange(23, 6);  // LEDs 23-28 (4 botoes + 2 status)
+        setPixelRange(23, 6);  // LEDs 23-28 (4 buttons + 2 status)
 
         auto* pcf = hw.portExpander(pcfIndex_);
         if (!pcf) return;
 
-        // 4 botoes nos pinos 0-3
+        // 4 buttons on pins 0-3
         for (uint8_t i = 0; i < 4; i++) {
             pcf->pinMode(i, INPUT_PULLUP);
         }
 
-        // Rele tampa (ou PCA9685)
+        // Lid relay (or PCA9685)
         lockPin_ = 8;
         pcf->pinMode(lockPin_, OUTPUT);
         pcf->digitalWrite(lockPin_, HIGH);
 
-        // Gera sequencia de 5 rodadas
+        // Generate a 5-round sequence
         generateRandomSequence(sequence_, ROUNDS, 3);
         Serial.printf("[P6 SimonSays] %d rounds: ", ROUNDS);
         for (uint8_t i = 0; i < ROUNDS; i++) Serial.printf("%d ", sequence_[i]);
@@ -184,7 +184,7 @@ private:
         Serial.println("[P6] Lid OPEN via servo");
         // If PCA9685 available, use it
         if (hw.hasPwmDriver()) {
-            // Rampa de abertura (non-blocking, so set target)
+            // Opening ramp (non-blocking, so just set target)
             for (uint8_t a = 0; a <= 180; a += 5) {
                 uint16_t pulse = map(a, 0, 180, 1000, 2000);
                 hw.pwmDriver().setChannelServoPulseDuration(servoCh_, pulse);
@@ -195,14 +195,14 @@ private:
 };
 
 // ====================================================================
-// P7: RADIO REPAIR - Consertar o comunicador de campo
+// P7: RADIO REPAIR - Repair the field communicator
 // ====================================================================
-// Hardware: LCD 16x2, 2 botoes, 2 chaves toggle, NeoPixel
-// Mecanica: inserir modulos na ordem, ajustar chaves, pressionar teste
-// 3 etapas sequenciais. Ao final, radio reparado.
+// Hardware: 16x2 LCD, 2 buttons, 2 toggle switches, NeoPixel
+// Mechanics: insert modules in order, set switches, press test
+// 3 sequential steps. At the end, the radio is repaired.
 //
-// Nota: versao simplificada - usa Serial para feedback.
-// Em producao, substituir por LCD 16x2.
+// Note: simplified version - uses Serial for feedback.
+// In production, replace with a 16x2 LCD.
 
 class RadioRepairPuzzle : public PuzzleBase {
 public:
@@ -215,7 +215,7 @@ public:
         auto* pcf = hw.portExpander(pcfIndex_);
         if (!pcf) return;
 
-        // Botoes: P3, P4 | Chaves: P5, P6 | Microswitches modulos: P7, P8
+        // Buttons: P3, P4 | Switches: P5, P6 | Module microswitches: P7, P8
         for (uint8_t i = 3; i <= 8; i++) {
             pcf->pinMode(i, INPUT_PULLUP);
         }
@@ -285,13 +285,13 @@ private:
 };
 
 // ====================================================================
-// P8: ROTARY DIAL - Discar numero de emergencia
+// P8: ROTARY DIAL - Dial the emergency number
 // ====================================================================
-// Hardware: RotaryDial (pulse dial, 2 fios + GND), NeoPixel, audio MP3
-// Mecanica: disco rotativo de telefone antigo. Cada pulso = digito.
-// Discar 4 digitos corretos -> toca mensagem com ordem dos fios.
+// Hardware: RotaryDial (pulse dial, 2 wires + GND), NeoPixel, MP3 audio
+// Mechanics: old telephone rotary dial. Each pulse = one digit.
+// Dial 4 correct digits -> plays the message with the wire order.
 //
-// Usa RotaryDialReader da biblioteca (ja incluida em PropMakerEscapeRoom.h)
+// Uses the library's RotaryDialReader (already included in PropMakerEscapeRoom.h)
 
 class RotaryDialPuzzle : public PuzzleBase {
 public:
@@ -301,7 +301,7 @@ public:
     void setupHardware() override {
         setPixelRange(35, 6);  // LEDs 35-40
 
-        // RotaryDial reader nos pinos GPIO
+        // RotaryDial reader on GPIO pins
         pinMode(dataPin_, INPUT_PULLUP);
         pinMode(flickPin_, INPUT_PULLUP);
 
@@ -386,13 +386,13 @@ private:
 };
 
 // ====================================================================
-// P9: BOMB TIMER - Cortar fios na ordem correta
+// P9: BOMB TIMER - Cut wires in the correct order
 // ====================================================================
-// Hardware: 6 bornes (PCF), display TM1637, LIS3DH, NeoPixel, audio
-// Mecanica: 6 fios em bornes. Cortar na ordem revelada pelo P8.
-// Shake (LIS3DH) congela 3s e conta erro.
+// Hardware: 6 terminals (PCF), TM1637 display, LIS3DH, NeoPixel, audio
+// Mechanics: 6 wires on terminals. Cut in the order revealed by P8.
+// Shake (LIS3DH) freezes 3s and counts as an error.
 //
-// Non-blocking: state machine com millis().
+// Non-blocking: state machine with millis().
 
 class BombTimerPuzzle : public PuzzleBase {
 public:

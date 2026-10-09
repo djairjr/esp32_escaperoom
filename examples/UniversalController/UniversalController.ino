@@ -1,24 +1,24 @@
 /**
- * UNIVERSAL CONTROLLER - Controladora Universal para Escape Room
+ * UNIVERSAL CONTROLLER - Universal Escape Room Controller
  *
- * Port do RP2040 PropMaker para ESP32-S3 usando ESP32EscapeRoom
+ * Port of the RP2040 PropMaker to ESP32-S3 using ESP32EscapeRoom
  *
- * Um puzzle configurável via JSON que suporta múltiplos modos de operação:
- * - CUSTOM_SEQUENCE: Sequência customizada definida no JSON
- * - LINEAR_SEQUENCE: Ordem linear (0,1,2,3...)
- * - ALL_CONNECTED: Todas entradas ativadas, ordem não importa
- * - RANDOM: Sequência aleatória gerada no boot
+ * A JSON-configurable puzzle that supports multiple operating modes:
+ * - CUSTOM_SEQUENCE: Custom sequence defined in JSON
+ * - LINEAR_SEQUENCE: Linear order (0,1,2,3...)
+ * - ALL_CONNECTED: All inputs activated, order does not matter
+ * - RANDOM: Random sequence generated at boot
  *
  * Hardware: Seeed XIAO ESP32-S3
- * - PCF8575 para até 16 entradas digitais
- * - NeoPixel para feedback visual
- * - Saída PWM gradativa (PCA9685)
- * - Áudio MP3 via I2S
+ * - PCF8575 for up to 16 digital inputs
+ * - NeoPixel for visual feedback
+ * - Gradual PWM output (PCA9685)
+ * - MP3 audio via I2S
  *
- * Arquivo de configuração: /config.json
+ * Configuration file: /config.json
  *
- * Home Assistant: Game Master monitora estado, progresso e modo.
- * Controla START / RESET / FORCE_SOLVE remotamente.
+ * Home Assistant: Game Master monitors state, progress and mode.
+ * Controls START / RESET / FORCE_SOLVE remotely.
  */
 
 #include <ESP32EscapeRoom.h>
@@ -71,31 +71,31 @@ void initHA() {
   haDevice.setName(netConfig.devName());
   haDevice.setSoftwareVersion("1.0.0");
 
-  haState.setName("Estado");
+  haState.setName("State");
   haState.setIcon("mdi:puzzle");
 
-  haProgress.setName("Progresso");
+  haProgress.setName("Progress");
   haProgress.setUnitOfMeasurement("%");
   haProgress.setIcon("mdi:progress-check");
 
-  haMode.setName("Modo");
+  haMode.setName("Mode");
   haMode.setIcon("mdi:cog");
 
-  haStart.setName("Iniciar");
+  haStart.setName("Start");
   haStart.setIcon("mdi:play");
   haStart.onCommand([](HAButton*){ puzzle.run(); if(puzzle.engine_) puzzle.engine_->start(); });
 
-  haReset.setName("Resetar");
+  haReset.setName("Reset");
   haReset.setIcon("mdi:restart");
   haReset.onCommand([](HAButton*){ puzzle.setState(PuzzleState::Idle); if(puzzle.engine_) puzzle.engine_->reset(); });
 
-  haForceSolve.setName("Forcar Solucao");
+  haForceSolve.setName("Force Solve");
   haForceSolve.setIcon("mdi:check-bold");
   haForceSolve.onCommand([](HAButton*){ puzzle.setState(PuzzleState::Solved); });
 
   haMqtt.begin(netConfig.mqttBroker(), netConfig.mqttUser(), netConfig.mqttPass());
   haOK = true;
-  Serial.println("[HA] Conectado ao Home Assistant");
+  Serial.println("[HA] Connected to Home Assistant");
 }
 
 void loopHA() {
@@ -112,13 +112,13 @@ void publishHA() {
 }
 
 // ============================================================================
-// CONFIGURAÇÕES
+// SETTINGS
 // ============================================================================
 
-#define BUTTON_START_PIN D0   // GPIO1 - Botão de START (via PCF ou nativo)
+#define BUTTON_START_PIN D0   // GPIO1 - START button (via PCF or native)
 
 // ============================================================================
-// CLASSE PRINCIPAL DO PUZZLE
+// MAIN PUZZLE CLASS
 // ============================================================================
 
 class UniversalControllerPuzzle : public PuzzleBase {
@@ -152,54 +152,54 @@ void UniversalControllerPuzzle::setupHardware() {
     Serial.println(F("   Escape Room Configurable Puzzle"));
     Serial.println(F("========================================\n"));
 
-    // Carrega configuração
+    // Loads configuration
     configLoaded_ = configManager_.loadConfig();
     if (!configLoaded_) {
-        Serial.println("[Setup] Usando configuracao padrao");
+        Serial.println("[Setup] Using default configuration");
         configManager_.loadDefaults();
     }
 
     const auto& controller = configManager_.getControllerConfig();
-    Serial.printf("[Setup] Nome: %s | ID: %d | Habilitado: %s\n",
-                  controller.name, controller.id, controller.enabled ? "Sim" : "Nao");
+    Serial.printf("[Setup] Name: %s | ID: %d | Enabled: %s\n",
+                  controller.name, controller.id, controller.enabled ? "Yes" : "No");
 
     const auto& inputs = configManager_.getInputConfig();
-    Serial.printf("[Setup] Entradas: %d | PCF Address: 0x%02X | Debounce: %dms\n",
+    Serial.printf("[Setup] Inputs: %d | PCF Address: 0x%02X | Debounce: %dms\n",
                   inputs.count, inputs.pcfAddress, inputs.debounceMs);
 
     const auto& logic = configManager_.getLogicConfig();
-    Serial.printf("[Setup] Modo: %s | Timeout: %ds | ResetOnError: %s\n",
+    Serial.printf("[Setup] Mode: %s | Timeout: %ds | ResetOnError: %s\n",
                   ConfigManager::modeToString(logic.mode),
                   logic.timeoutSeconds,
-                  logic.resetOnError ? "Sim" : "Nao");
+                  logic.resetOnError ? "Yes" : "No");
 
-    // Configura PCF8575
+    // Configures PCF8575
     if (inputs.pcfAddress >= 0x20 && inputs.pcfAddress <= 0x27) {
         hw.addPcf8575(inputs.pcfAddress);
-        Serial.printf("[Setup] PCF8575 adicionado no endereco 0x%02X\n", inputs.pcfAddress);
+        Serial.printf("[Setup] PCF8575 added at address 0x%02X\n", inputs.pcfAddress);
 
         if (hw.hasExpander()) {
             auto* io = hw.io();
             for (uint8_t i = 0; i < inputs.count; i++) {
                 io->pinMode(inputs.pinMapping[i], INPUT_PULLUP);
             }
-            Serial.println("[Setup] Pinos configurados como INPUT_PULLUP");
+            Serial.println("[Setup] Pins configured as INPUT_PULLUP");
         }
     }
 
-    // Inicializa engine do puzzle
+    // Initializes the puzzle engine
     engine_ = new PuzzleEngine(configManager_);
     engine_->begin();
 
-    // Configura botão de start (GPIO nativo)
+    // Configures the start button (native GPIO)
     hw.pinMode(BUTTON_START_PIN, INPUT_PULLUP);
 
-    // Configura saída de trava
+    // Configures the lock output
     const auto& output = configManager_.getOutputConfig();
     hw.pinMode(output.lockPin, OUTPUT);
     hw.digitalWrite(output.lockPin, output.activeHigh ? LOW : HIGH);
 
-    Serial.println("[Setup] Hardware configurado. Aguardando inicio...");
+    Serial.println("[Setup] Hardware configured. Waiting to start...");
     printHelp();
 
     setState(PuzzleState::Idle);
@@ -209,18 +209,18 @@ void UniversalControllerPuzzle::update() {
     hw.sound().loop();
     handleSerialCommands();
 
-    // Publica estado no HA a cada 2 segundos
+    // Publishes state to HA every 2 seconds
     if (haOK && millis() - lastHAPublish_ > 2000) {
         publishHA();
         lastHAPublish_ = millis();
     }
 
-    // Verifica botão de start
+    // Checks the start button
     if (getState() == PuzzleState::Idle) {
         if (hw.digitalRead(BUTTON_START_PIN) == LOW) {
             delay(50);
             if (hw.digitalRead(BUTTON_START_PIN) == LOW) {
-                Serial.println("[Puzzle] Botao START pressionado");
+                Serial.println("[Puzzle] START button pressed");
                 run();
                 if (engine_) {
                     engine_->start();
@@ -229,12 +229,12 @@ void UniversalControllerPuzzle::update() {
         }
     }
 
-    // Atualiza engine
+    // Updates engine
     if (engine_ && getState() == PuzzleState::Running) {
         engine_->update();
         if (engine_->isSolved()) {
             setState(PuzzleState::Solved);
-            publishHA();  // publica imediatamente ao resolver
+            publishHA();  // publishes immediately upon solving
         }
     }
 
@@ -247,14 +247,14 @@ void UniversalControllerPuzzle::update() {
 void UniversalControllerPuzzle::printStatus() {
     if (!engine_) return;
     Serial.println("\n----- STATUS -----");
-    Serial.printf("Estado: %s\n", PuzzleBase::stateName(getState()));
-    Serial.printf("Progresso: %d%% (%d/%d)\n",
+    Serial.printf("State: %s\n", PuzzleBase::stateName(getState()));
+    Serial.printf("Progress: %d%% (%d/%d)\n",
                   engine_->getProgress(),
                   engine_->getCurrentStep(),
                   engine_->getTotalSteps());
     const auto& logic = configManager_.getLogicConfig();
     if (logic.timeoutSeconds > 0) {
-        Serial.printf("Tempo restante: %ds\n", engine_->getRemainingTime());
+        Serial.printf("Remaining time: %ds\n", engine_->getRemainingTime());
     }
     Serial.println("------------------\n");
 }
@@ -269,48 +269,48 @@ void UniversalControllerPuzzle::handleSerialCommands() {
         if (getState() == PuzzleState::Idle) {
             run();
             if (engine_) engine_->start();
-            Serial.println("[CMD] Puzzle iniciado");
+            Serial.println("[CMD] Puzzle started");
             publishHA();
         } else {
-            Serial.println("[CMD] Puzzle ja esta rodando ou foi resolvido");
+            Serial.println("[CMD] Puzzle is already running or was solved");
         }
     } else if (cmd == "reset") {
         if (engine_) engine_->reset();
         setState(PuzzleState::Idle);
-        Serial.println("[CMD] Puzzle resetado");
+        Serial.println("[CMD] Puzzle reset");
         publishHA();
     } else if (cmd == "status") {
         printStatus();
     } else if (cmd == "solve" || cmd == "force") {
         setState(PuzzleState::Solved);
-        Serial.println("[CMD] Puzzle forcado como resolvido");
+        Serial.println("[CMD] Puzzle forced as solved");
         publishHA();
     } else if (cmd == "config") {
         const auto& controller = configManager_.getControllerConfig();
         const auto& inputs = configManager_.getInputConfig();
         const auto& logic = configManager_.getLogicConfig();
-        Serial.println("\n----- CONFIGURACAO -----");
-        Serial.printf("Nome: %s\n", controller.name);
+        Serial.println("\n----- CONFIGURATION -----");
+        Serial.printf("Name: %s\n", controller.name);
         Serial.printf("ID: %d\n", controller.id);
-        Serial.printf("Entradas: %d\n", inputs.count);
-        Serial.printf("Modo: %s\n", ConfigManager::modeToString(logic.mode));
+        Serial.printf("Inputs: %d\n", inputs.count);
+        Serial.printf("Mode: %s\n", ConfigManager::modeToString(logic.mode));
         Serial.printf("Timeout: %ds\n", logic.timeoutSeconds);
         Serial.println("------------------------\n");
     } else if (cmd == "help" || cmd == "?") {
         printHelp();
     } else if (cmd.length() > 0) {
-        Serial.printf("[CMD] Comando desconhecido: '%s'\n", cmd.c_str());
+        Serial.printf("[CMD] Unknown command: '%s'\n", cmd.c_str());
     }
 }
 
 void UniversalControllerPuzzle::printHelp() {
-    Serial.println("\n----- COMANDOS SERIAL -----");
-    Serial.println("start    - Inicia o puzzle");
-    Serial.println("reset    - Reseta o puzzle");
-    Serial.println("status   - Mostra status atual");
-    Serial.println("solve    - Forca puzzle como resolvido");
-    Serial.println("config   - Mostra configuracao carregada");
-    Serial.println("help     - Mostra esta ajuda");
+    Serial.println("\n----- SERIAL COMMANDS -----");
+    Serial.println("start    - Starts the puzzle");
+    Serial.println("reset    - Resets the puzzle");
+    Serial.println("status   - Shows current status");
+    Serial.println("solve    - Forces puzzle as solved");
+    Serial.println("config   - Shows loaded configuration");
+    Serial.println("help     - Shows this help");
     Serial.println("--------------------------\n");
 }
 
@@ -327,15 +327,15 @@ void setup() {
 
     hw.begin();
 
-    // WiFi + MQTT (portal AP se não configurado)
+    // WiFi + MQTT (AP portal if not configured)
     netConfig.begin();
     if (netConfig.isAPMode()) {
-        Serial.println(F("[CFG] Modo AP: http://192.168.4.1"));
+        Serial.println(F("[CFG] AP Mode: http://192.168.4.1"));
     }
 
     puzzle.begin();
 
-    // Home Assistant (após WiFi conectado)
+    // Home Assistant (after WiFi is connected)
     initHA();
     publishHA();
 }

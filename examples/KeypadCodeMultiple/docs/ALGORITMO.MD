@@ -1,23 +1,23 @@
-# KeypadCodeMultiple — Algoritmo do Jogo
+# KeypadCodeMultiple — Game Algorithm
 
-## Visão Geral
+## Overview
 
-Versão multi-código do KeypadCodeEntry. Aceita múltiplos códigos configurados via JSON. Qualquer código válido resolve o puzzle. Útil para múltiplos jogadores ou múltiplas soluções.
+Multi-code version of KeypadCodeEntry. Accepts multiple codes configured via JSON. Any valid code solves the puzzle. Useful for multiple players or multiple solutions.
 
-## Configuração (JSON: keypadmulti.json)
+## Configuration (JSON: keypadmulti.json)
 
-- **codes**: array de até 8 códigos de 4 dígitos
-- **codeCount**: quantos códigos estão ativos
+- **codes**: array of up to 8 four-digit codes
+- **codeCount**: how many codes are active
 - **Hardware**: lockPin, neoCount, volume
 
-## Estados
+## States
 
 IDLE → ENTERING → SOLVED/ERROR → IDLE
 
-## Fluxo
+## Flow
 
-Igual ao KeypadCodeEntry, mas verifica contra todos os códigos no array. Qualquer match resolve.
+Same as KeypadCodeEntry, but it checks against all codes in the array. Any match solves it.
 
 ## AP Mode + WiFi
 
-Configuração de rede via portal web em 192.168.4.1.
+Network configuration via web portal at 192.168.4.1.

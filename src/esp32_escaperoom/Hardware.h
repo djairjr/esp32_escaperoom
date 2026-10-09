@@ -2,7 +2,7 @@
 
 #include <Arduino.h>
 
-#include <Adafruit_LIS3DH.h> // Importante ter o acelerômetro nativo
+#include <Adafruit_LIS3DH.h> // Important to have the native accelerometer
 #include <Adafruit_NeoPixel.h>
 #include <Adafruit_Sensor.h>
 #include <Arduino.h>
@@ -52,15 +52,15 @@ public:
     return hasPortExpander_ && hasAccelerometer_ && hasDisplay_;
   }
 
-  // Port Expander Access - com verificação de nullptr e log de erro
+  // Port Expander Access - with nullptr check and error log
 #ifndef ESP32_ESCAPEROOM_NO_IOABSTRACTION
   PCF8574IoAbstraction* portExpander(uint8_t index = 0) {
     if (expanderCount_ == 0 || expanders_[0] == nullptr) {
-      Serial.printf("[PCF857x] Desconectado - Impossível portExpander(index=%d) - chame hw.addPcf8574/8575() no setup()\n", index);
+      Serial.printf("[PCF857x] Disconnected - Cannot portExpander(index=%d) - call hw.addPcf8574/8575() in setup()\n", index);
       return nullptr;
     }
     if (index >= expanderCount_) {
-      Serial.printf("[PCF857x] Indice invalido - portExpander(%d), max=%d\n", index, expanderCount_);
+      Serial.printf("[PCF857x] Invalid index - portExpander(%d), max=%d\n", index, expanderCount_);
       return expanders_[0];
     }
     if (expanders_[index] == nullptr) {
@@ -91,7 +91,7 @@ public:
   void addPcf8574(uint8_t address) { addExpander(address, false); }
   void addPcf8575(uint8_t address) { addExpander(address, true); }
 
-  // Verificação segura antes de usar expansores
+  // Safe check before using expanders
   bool hasExpander() const { return expanderCount_ > 0 && expanders_[0] != nullptr; }
   bool hasExpander(uint8_t index) const {
     return index < expanderCount_ && expanders_[index] != nullptr;
@@ -111,7 +111,7 @@ public:
   float readBatteryPercent();
   bool isBatteryConnected();
 
-  // Low Power Mode - dimming proporcional a bateria
+  // Low Power Mode - dimming proportional to battery
   void setLowPowerMode(bool enabled);
   bool getLowPowerMode() const { return lowPowerEnabled_; }
   void updatePowerSave();
@@ -121,10 +121,10 @@ public:
   AudioPlayer &sound() { return audio_; }
 
 
-  // Display - com verificação de nullptr
+  // Display - with nullptr check
   Display14Seg &display() {
     if (!hasDisplay_) {
-      Serial.println(F("[HT16K33] Desconectado - Impossível display() - operações subsequentes falharão"));
+      Serial.println(F("[HT16K33] Disconnected - Cannot display() - subsequent operations will fail"));
     }
     return display_;
   }
@@ -158,10 +158,10 @@ public:
   // Actuators (Servo)
   void setActuator(int angle) { servo_.write(angle); }
 
-  // Analog Input (ADS1115) - Retorna milivolts
+  // Analog Input (ADS1115) - Returns millivolts
   float readVoltage(uint8_t ch) {
     if (!hasAdc_) {
-      Serial.printf("[ADS1115] Desconectado - Impossível readVoltage(ch=%d)\n", ch);
+      Serial.printf("[ADS1115] Disconnected - Cannot readVoltage(ch=%d)\n", ch);
       return 0.0f;
     }
     setAdcChannel(ch);
@@ -169,7 +169,7 @@ public:
   }
   uint16_t readAnalogRaw(uint8_t ch) {
     if (!hasAdc_) {
-      Serial.printf("[ADS1115] Desconectado - Impossível readAnalogRaw(ch=%d)\n", ch);
+      Serial.printf("[ADS1115] Disconnected - Cannot readAnalogRaw(ch=%d)\n", ch);
       return 0;
     }
     setAdcChannel(ch);
@@ -177,7 +177,7 @@ public:
   }
   void setAdcChannel(uint8_t ch) {
     if (!hasAdc_) {
-      Serial.printf("[ADS1115] Desconectado - Impossível setAdcChannel(ch=%d)\n", ch);
+      Serial.printf("[ADS1115] Disconnected - Cannot setAdcChannel(ch=%d)\n", ch);
       return;
     }
     ads_.setSingleChannel(ch);
@@ -185,10 +185,10 @@ public:
     while (ads_.isBusy()) {}
   }
 
-  // Analog Output (PCA9685) - Valor em percentual 0.0 a 100.0
+  // Analog Output (PCA9685) - Value as percentage 0.0 to 100.0
   void setAnalogOutput(uint8_t ch, float percent) {
     if (!hasPwmDriver_) {
-      Serial.printf("[PCA9685] Desconectado - Impossível setAnalogOutput(ch=%d, %.1f%%)\n", ch, percent);
+      Serial.printf("[PCA9685] Disconnected - Cannot setAnalogOutput(ch=%d, %.1f%%)\n", ch, percent);
       return;
     }
     pca_.setChannelDutyCycle(ch, percent);
@@ -201,7 +201,7 @@ public:
     return enc;
   }
 
-  // Rotary Dial Factory (disco rotativo de telefone)
+  // Rotary Dial Factory (telephone rotary dial)
   RotaryDialReader *createRotaryDial(uint8_t pin) {
     RotaryDialReader *dial = new RotaryDialReader();
     if (dial->begin(pin)) {
@@ -211,7 +211,7 @@ public:
     return nullptr;
   }
 
-  // Rotary Dial Factory — Modo Óptico com timings calibrados
+  // Rotary Dial Factory — Optical Mode with calibrated timings
   RotaryDialReader *createRotaryDialOptical(uint8_t pin,
                                               unsigned long debounce = 50,
                                               unsigned long maxgap = 0,
@@ -225,7 +225,7 @@ public:
   }
 
   // ============================================================================
-  // FACTORIES PARA DISPOSITIVOS IOABSTRACTION
+  // FACTORIES FOR IOABSTRACTION DEVICES
   // ============================================================================
 
   // PN532 - NFC/RFID Reader via I2C
@@ -252,11 +252,11 @@ public:
   // Shake / Motion (LIS3DH)
   bool isShaking(float threshold_ms2 = 15.0f) {
     if (!hasAccelerometer_) {
-      Serial.printf("[LIS3DH] Desconectado - Impossível isShaking(threshold=%.1f)\n", threshold_ms2);
+      Serial.printf("[LIS3DH] Disconnected - Cannot isShaking(threshold=%.1f)\n", threshold_ms2);
       return false;
     }
     if (!lisBegun_) {
-      Serial.println(F("[LIS3DH] Não inicializado - Impossível isShaking()"));
+      Serial.println(F("[LIS3DH] Not initialized - Cannot isShaking()"));
       return false;
     }
     sensors_event_t event;
@@ -269,11 +269,11 @@ public:
 
   uint8_t readTap() {
     if (!hasAccelerometer_) {
-      Serial.println(F("[LIS3DH] Desconectado - Impossível readTap()"));
+      Serial.println(F("[LIS3DH] Disconnected - Cannot readTap()"));
       return 0;
     }
     if (!lisBegun_) {
-      Serial.println(F("[LIS3DH] Não inicializado - Impossível readTap()"));
+      Serial.println(F("[LIS3DH] Not initialized - Cannot readTap()"));
       return 0;
     }
     // getClick() returns 8-bit register.
@@ -314,10 +314,10 @@ private:
 
   AudioPlayer audio_;
 #ifndef ESP32_ESCAPEROOM_NO_IOABSTRACTION
-  PCF8574IoAbstraction* expanders_[8];   // Suporta até 8 expansores
-  bool isPcf8575_[8];                     // Tipo de cada expander
-  uint8_t expanderAddresses_[8];          // Endereço I2C de cada expander
-  uint8_t expanderCount_ = 0;             // Quantidade de expansores detectados
+  PCF8574IoAbstraction* expanders_[8];   // Supports up to 8 expanders
+  bool isPcf8575_[8];                     // Type of each expander
+  uint8_t expanderAddresses_[8];          // I2C address of each expander
+  uint8_t expanderCount_ = 0;             // Number of detected expanders
 #endif
   Display14Seg display_;
   Adafruit_NeoPixel pixelsInternal_;

@@ -11,13 +11,13 @@ READY
 [HARDWARE]       ENGINE INITIALIZATION COMPLETE
 [HARDWARE] =========================================
 
-Iniciando PCF8575 em 0x20
+Starting PCF8575 at 0x20
 PCF857x OK
 
-=== DETECÇÃO DE PINAGEM ===
-Siga as instruções para cada tecla.
+=== PINOUT DETECTION ===
+Follow the instructions for each key.
 
-Pressione e SEGURE a tecla '1'...
+Press and HOLD the key '1'...
 
 ========================================
   KEYPAD TESTER - PropMaker EscapeRoom
@@ -34,13 +34,13 @@ Pressione e SEGURE a tecla '1'...
 [HARDWARE] Init I2C Bus
 [HARDWARE] Scanning I2C Bus and initializing devices...
   - Found device at 0x18 (LIS3DH Accelerometer) - INITIALIZED
-  - Found device at 0x20 (PCF8575 - 16 channels) - DETECTED << Detecção correta. Muito bom.
+  - Found device at 0x20 (PCF8575 - 16 channels) - DETECTED << Correct detection. Very good.
   - Found device at 0x48 (ADS1115 I2C) - DETECTED
   - Found device at 0x70 (HT16K33 Display @0x70) - INITIALIZED
   - ADS1115 (I2C): INITIALIZED
 [HARDWARE] =========================================
 [HARDWARE] Hardware Detection Summary:
-  - Port Expander (PCF857x): FOUND << Aqui deveria mostrar o nome correto (PCF8575 ou PCF8574)
+  - Port Expander (PCF857x): FOUND << Here it should show the correct name (PCF8575 or PCF8574)
   - LIS3DH Accelerometer: FOUND
   - PCA9685 PWM Driver: NOT FOUND
   - HT16K33 Display: FOUND
@@ -77,13 +77,13 @@ READY
 [HARDWARE]       ENGINE INITIALIZATION COMPLETE
 [HARDWARE] =========================================
 
-Iniciando PCF8575 em 0x20
-PCF857x OK << Aqui deveria mostrar o nome correto ou apenas OK depois da String acima.
+Starting PCF8575 at 0x20
+PCF857x OK << Here it should show the correct name, or just OK after the String above.
 
-=== DETECÇÃO DE PINAGEM ===
-Siga as instruções para cada tecla.
+=== PINOUT DETECTION ===
+Follow the instructions for each key.
 
-Pressione e SEGURE a tecla '1'... << Não avança deste ponto, isto é, não detecta. 
+Press and HOLD the key '1'... << Does not advance from this point, that is, it does not detect. 
 
-Verifique como foi feito no exemplo <projeto local de deteccao de pinagem de keypad>
-sem o uso da Biblioteca e replique a mesma lógica.
+Check how it was done in the example <local keypad pinout detection project>
+without using the Library and replicate the same logic.

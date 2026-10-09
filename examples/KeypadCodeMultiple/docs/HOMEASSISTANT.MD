@@ -1,26 +1,26 @@
-# KeypadCodeMultiple — Entidades Home Assistant
+# KeypadCodeMultiple — Home Assistant Entities
 
-## Sensores
-| Nome | ID | Valores |
+## Sensors
+| Name | ID | Values |
 |---|---|---|
-| Estado | `state` | idle, entering, solved, error |
-| Tentativas | `attempts` | 0-max |
-| Códigos Ativos | `active_codes` | 1-8 |
+| State | `state` | idle, entering, solved, error |
+| Attempts | `attempts` | 0-max |
+| Active Codes | `active_codes` | 1-8 |
 
-## Botões
-| Nome | ID |
+## Buttons
+| Name | ID |
 |---|---|
-| Resetar | `reset` |
+| Reset | `reset` |
 
-## Seletores
-| Nome | ID | Opções |
+## Selectors
+| Name | ID | Options |
 |---|---|---|
-| Código Ativo | `active_code` | 1..8 |
+| Active Code | `active_code` | 1..8 |
 
-## Números
-| Nome | ID | Range |
+## Numbers
+| Name | ID | Range |
 |---|---|---|
-| Código N | `code_1`..`code_8` | 0-9999 |
+| Code N | `code_1`..`code_8` | 0-9999 |
 
 ## AP Mode
-Rede WiFi "KeypadMulti-XXXX" + portal em 192.168.4.1.
+WiFi network "KeypadMulti-XXXX" + portal at 192.168.4.1.

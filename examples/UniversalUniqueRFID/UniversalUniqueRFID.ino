@@ -1,17 +1,17 @@
 /**
- * UNIVERSAL UNIQUE RFID - Leitor RFID Universal Configuravel
+ * UNIVERSAL UNIQUE RFID - Universal Configurable RFID Reader
  *
- * Port do RP2040 PropMaker para ESP32-S3 usando ESP32EscapeRoom
+ * Port of the RP2040 PropMaker to ESP32-S3 using ESP32EscapeRoom
  *
  * Hardware: Seeed XIAO ESP32-S3
  * - PN532 NFC/RFID via I2C (hw.createNfcReader())
- * - NeoPixel para feedback visual
- * - Audio MP3 via I2S
+ * - NeoPixel for visual feedback
+ * - MP3 audio via I2S
  *
- * Arquivo de configuracao: /config.json
+ * Configuration file: /config.json
  *
- * Home Assistant: Game Master monitora estado, progresso, modo e ultima tag.
- * Controla START / RESET / FORCE_SOLVE remotamente.
+ * Home Assistant: Game Master monitors state, progress, mode and last tag.
+ * Controls START / RESET / FORCE_SOLVE remotely.
  */
 
 #include <ESP32EscapeRoom.h>
@@ -69,34 +69,34 @@ void initHA() {
   haDevice.setName(netConfig.devName());
   haDevice.setSoftwareVersion("1.0.0");
 
-  haState.setName("Estado");
+  haState.setName("State");
   haState.setIcon("mdi:puzzle");
 
-  haProgress.setName("Progresso");
+  haProgress.setName("Progress");
   haProgress.setUnitOfMeasurement("%");
   haProgress.setIcon("mdi:progress-check");
 
-  haMode.setName("Modo");
+  haMode.setName("Mode");
   haMode.setIcon("mdi:cog");
 
-  haLastTag.setName("Ultima Tag");
+  haLastTag.setName("Last Tag");
   haLastTag.setIcon("mdi:nfc");
 
-  haStart.setName("Iniciar");
+  haStart.setName("Start");
   haStart.setIcon("mdi:play");
   haStart.onCommand([](HAButton*){ puzzle.run(); if(puzzle.engine_) puzzle.engine_->start(); });
 
-  haReset.setName("Resetar");
+  haReset.setName("Reset");
   haReset.setIcon("mdi:restart");
   haReset.onCommand([](HAButton*){ if(puzzle.engine_) puzzle.engine_->reset(); puzzle.setState(PuzzleState::Idle); });
 
-  haForceSolve.setName("Forcar Solucao");
+  haForceSolve.setName("Force Solve");
   haForceSolve.setIcon("mdi:check-bold");
   haForceSolve.onCommand([](HAButton*){ puzzle.setState(PuzzleState::Solved); });
 
   haMqtt.begin(netConfig.mqttBroker(), netConfig.mqttUser(), netConfig.mqttPass());
   haOK = true;
-  Serial.println("[HA] Conectado ao Home Assistant");
+  Serial.println("[HA] Connected to Home Assistant");
 }
 
 void loopHA() {
@@ -110,17 +110,17 @@ void publishHA() {
   if (puzzle.engine_) haProgress.setValue(String(puzzle.engine_->getProgress()).c_str());
   const auto& rfid = puzzle.configManager_.getRfidConfig();
   haMode.setValue(ConfigManager::modeToString(rfid.mode));
-  // lastTag seria atualizada pelo engine quando uma tag é lida
+  // lastTag would be updated by the engine when a tag is read
 }
 
 // ============================================================================
-// CONFIGURACOES
+// SETTINGS
 // ============================================================================
 
 #define BUTTON_START_PIN D0   // GPIO1
 
 // ============================================================================
-// CLASSE PRINCIPAL DO PUZZLE
+// MAIN PUZZLE CLASS
 // ============================================================================
 
 static bool cmdStart(const char*);
@@ -158,20 +158,20 @@ void UniversalUniqueRFIDPuzzle::setupHardware() {
     Serial.println(F("========================================\n"));
 
     if (!configManager_.begin()) {
-        Serial.println("[Setup] ERRO: Falha LittleFS");
+        Serial.println("[Setup] ERROR: LittleFS failure");
     }
 
     configLoaded_ = configManager_.loadConfig();
     if (!configLoaded_) {
-        Serial.println("[Setup] Usando configuracao padrao");
+        Serial.println("[Setup] Using default configuration");
         configManager_.loadDefaults();
     }
 
     const auto& controller = configManager_.getControllerConfig();
-    Serial.printf("[Setup] Nome: %s | ID: %d\n", controller.name, controller.id);
+    Serial.printf("[Setup] Name: %s | ID: %d\n", controller.name, controller.id);
 
     const auto& rfid = configManager_.getRfidConfig();
-    Serial.printf("[Setup] Modo: %s | Tags: %d | Timeout: %ds\n",
+    Serial.printf("[Setup] Mode: %s | Tags: %d | Timeout: %ds\n",
                   ConfigManager::modeToString(rfid.mode), rfid.tagCount, rfid.timeoutSeconds);
 
     engine_ = new PuzzleEngine(configManager_);
@@ -184,12 +184,12 @@ void UniversalUniqueRFIDPuzzle::setupHardware() {
     hw.digitalWrite(output.lockPin, output.activeHigh ? LOW : HIGH);
 
     dbg_.begin();
-    dbg_.addCommand("start",  "  Inicia o puzzle",                   cmdStart);
-    dbg_.addCommand("reset",  "  Reseta o puzzle",                   cmdReset);
-    dbg_.addCommand("status", "  Mostra status atual",               cmdStatus);
-    dbg_.addCommand("solve",  "  Forca puzzle resolvido",            cmdSolve);
-    dbg_.addCommand("config", "  Mostra configuracao",               cmdConfig);
-    dbg_.addCommand("tags",   "  Lista tags programadas",            cmdTags);
+    dbg_.addCommand("start",  "  Starts the puzzle",                   cmdStart);
+    dbg_.addCommand("reset",  "  Resets the puzzle",                    cmdReset);
+    dbg_.addCommand("status", "  Shows current status",                cmdStatus);
+    dbg_.addCommand("solve",  "  Forces puzzle solved",                cmdSolve);
+    dbg_.addCommand("config", "  Shows configuration",                 cmdConfig);
+    dbg_.addCommand("tags",   "  Lists programmed tags",               cmdTags);
     dbg_.printHelp();
 
     setState(PuzzleState::Idle);
@@ -199,7 +199,7 @@ void UniversalUniqueRFIDPuzzle::update() {
     hw.sound().loop();
     dbg_.update();
 
-    // Publica estado no HA a cada 2 segundos
+    // Publishes state to HA every 2 seconds
     if (haOK && millis() - lastHAPublish_ > 2000) {
         publishHA();
         lastHAPublish_ = millis();
@@ -209,7 +209,7 @@ void UniversalUniqueRFIDPuzzle::update() {
         if (hw.digitalRead(BUTTON_START_PIN) == LOW) {
             delay(50);
             if (hw.digitalRead(BUTTON_START_PIN) == LOW) {
-                Serial.println("[Puzzle] Botao START pressionado");
+                Serial.println("[Puzzle] START button pressed");
                 run();
                 if (engine_) engine_->start();
                 publishHA();
@@ -234,34 +234,34 @@ void UniversalUniqueRFIDPuzzle::update() {
 void UniversalUniqueRFIDPuzzle::printStatus() {
     if (!engine_) return;
     Serial.println("\n----- STATUS -----");
-    Serial.printf("Estado: %s\n", PuzzleBase::stateName(getState()));
-    Serial.printf("Progresso: %d%% (%d/%d)\n", engine_->getProgress(),
+    Serial.printf("State: %s\n", PuzzleBase::stateName(getState()));
+    Serial.printf("Progress: %d%% (%d/%d)\n", engine_->getProgress(),
                   engine_->getCurrentStep(), engine_->getTotalSteps());
     const auto& rfid = configManager_.getRfidConfig();
     if (rfid.timeoutSeconds > 0)
-        Serial.printf("Tempo restante: %ds\n", engine_->getRemainingTime());
+        Serial.printf("Remaining time: %ds\n", engine_->getRemainingTime());
     Serial.println("------------------\n");
 }
 
 UniversalUniqueRFIDPuzzle puzzle;
 
 // ============================================================================
-// COMANDOS SERIAL
+// SERIAL COMMANDS
 // ============================================================================
 static bool cmdStart(const char*) {
     if (puzzle.getState() == PuzzleState::Idle) {
         puzzle.run();
         if (puzzle.engine_) puzzle.engine_->start();
-        Serial.println("[CMD] Puzzle iniciado");
+        Serial.println("[CMD] Puzzle started");
         publishHA();
-    } else Serial.println("[CMD] Puzzle ja rodando");
+    } else Serial.println("[CMD] Puzzle already running");
     return true;
 }
 
 static bool cmdReset(const char*) {
     if (puzzle.engine_) puzzle.engine_->reset();
     puzzle.setState(PuzzleState::Idle);
-    Serial.println("[CMD] Puzzle resetado");
+    Serial.println("[CMD] Puzzle reset");
     publishHA();
     return true;
 }
@@ -270,7 +270,7 @@ static bool cmdStatus(const char*) { puzzle.printStatus(); return true; }
 
 static bool cmdSolve(const char*) {
     puzzle.setState(PuzzleState::Solved);
-    Serial.println("[CMD] Puzzle forcado resolvido");
+    Serial.println("[CMD] Puzzle forced solved");
     publishHA();
     return true;
 }
@@ -278,14 +278,14 @@ static bool cmdSolve(const char*) {
 static bool cmdConfig(const char*) {
     const auto& ctrl = puzzle.configManager_.getControllerConfig();
     const auto& rfid = puzzle.configManager_.getRfidConfig();
-    Serial.println("\n----- CONFIGURACAO -----");
-    Serial.printf("Nome: %s\n", ctrl.name);
-    Serial.printf("Modo: %s\n", ConfigManager::modeToString(rfid.mode));
+    Serial.println("\n----- CONFIGURATION -----");
+    Serial.printf("Name: %s\n", ctrl.name);
+    Serial.printf("Mode: %s\n", ConfigManager::modeToString(rfid.mode));
     Serial.printf("Tags: %d\n", rfid.tagCount);
     for (uint8_t i = 0; i < rfid.tagCount; i++)
         Serial.printf("  [%d] %s -> %s\n", i, rfid.tags[i].name, rfid.tags[i].uid);
     if (rfid.mode == RfidMode::SEQUENCE) {
-        Serial.print("Sequencia:");
+        Serial.print("Sequence:");
         for (uint8_t i = 0; i < rfid.sequenceLength; i++) Serial.printf(" %d", rfid.sequence[i]);
         Serial.println();
     }
@@ -294,10 +294,10 @@ static bool cmdConfig(const char*) {
 
 static bool cmdTags(const char*) {
     const auto& rfid = puzzle.configManager_.getRfidConfig();
-    Serial.printf("\nTags programadas (%d):\n", rfid.tagCount);
+    Serial.printf("\nProgrammed tags (%d):\n", rfid.tagCount);
     for (uint8_t i = 0; i < rfid.tagCount; i++)
         Serial.printf("  [%d] %s -> %s\n", i, rfid.tags[i].name, rfid.tags[i].uid);
-    Serial.printf("\nTags validas (%d):\n", rfid.validTagCount);
+    Serial.printf("\nValid tags (%d):\n", rfid.validTagCount);
     for (uint8_t i = 0; i < rfid.validTagCount; i++)
         Serial.printf("  [%d] %s -> %s\n", i, rfid.validTags[i].name, rfid.validTags[i].uid);
     return true;
@@ -317,7 +317,7 @@ void setup() {
     // WiFi + MQTT
     netConfig.begin();
     if (netConfig.isAPMode()) {
-        Serial.println(F("[CFG] Modo AP: http://192.168.4.1"));
+        Serial.println(F("[CFG] AP Mode: http://192.168.4.1"));
     }
 
     puzzle.begin();

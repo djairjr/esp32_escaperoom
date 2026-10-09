@@ -70,13 +70,13 @@ class LogicManager {
   static const uint8_t MAX_LEVELS = 8;
   uint8_t levelCount_ = 0;
   GameLevelConfig levels_[MAX_LEVELS];
-  uint8_t levelPosition_[MAX_LEVELS];          // Puzzle ativo dentro do nivel (SEQUENCE)
-  uint8_t puzzleLevelMap_[MAX_PUZZLES];        // puzzleIndex -> levelIndex (0xFF se sem nivel)
+  uint8_t levelPosition_[MAX_LEVELS];          // Active puzzle within the level (SEQUENCE)
+  uint8_t puzzleLevelMap_[MAX_PUZZLES];        // puzzleIndex -> levelIndex (0xFF for no level)
   uint8_t currentLevel_ = 0;
   bool gameStarted_ = false;
   bool gameComplete_ = false;
 
-  // Poll fallback para transicoes de estado
+  // Poll fallback for state transitions
   PuzzleState previousStates_[MAX_PUZZLES];
 
   // Timer State

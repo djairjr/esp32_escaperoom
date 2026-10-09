@@ -1,163 +1,163 @@
-# BombTimer — Algoritmo do Jogo
+# BombTimer — Game Algorithm
 
-## Visão Geral
+## Overview
 
-BombTimer é um cronômetro de contagem regressiva com múltiplos modos de desarme. O jogador deve desarmar a bomba antes que o tempo zere, usando um dos modos configurados: código numérico via teclado, corte de fio específico, ou corte de fios em ordem correta.
+BombTimer is a countdown timer with multiple defuse modes. The player must defuse the bomb before time runs out, using one of the configured modes: numeric code via keypad, cutting a specific wire, or cutting wires in the correct order.
 
-## Configuração Inicial
+## Initial Configuration
 
-O jogo carrega um arquivo JSON (`bomb.json`) com os seguintes parâmetros:
+The game loads a JSON file (`bomb.json`) with the following parameters:
 
-- **countdownSeconds**: tempo inicial da contagem regressiva (5-5999 segundos)
-- **defuseMode**: modo de desarme (CODE=0, WIRE=1, ORDER=2)
-- **defuseCode**: código de 4 dígitos para o modo CODE
-- **defuseOrder**: sequência de 4 dígitos (1-4) para o modo ORDER
-- **detWire**: fio detonador (0=ALEATÓRIO, 1-4=fio específico, 5=NENHUM)
-- **defuseWire**: fio desarmador (0=ALEATÓRIO, 1-4=fio específico, 5=NENHUM)
-- **speedupWire**: fio acelerador (dobra velocidade da contagem)
-- **pauseWire**: fio pausador (pausa a contagem por 2 segundos)
-- **brightness**: brilho do display (0-15)
-- **volume**: volume do áudio (0-255)
-- **tickEnabled**: som de tick a cada segundo
-- **accelMode**: modo do acelerômetro (OFF=0, START=1, SPEED2X=2, PAUSE=3, DETONATE=4)
-- **rfidEnabled**: leitura de tags RFID para desarme/detonação
-- **defuseTags**: até 4 UIDs de tags RFID que desarmam a bomba
-- **detonateTags**: até 4 UIDs de tags RFID que detonam a bomba
-- **maxCodeAttempts**: tentativas máximas de código (padrão 3)
-- **detTriggerSec**: tempo que o relé de detonação fica ativo (1-10s)
-- **defuseTriggerSec**: tempo que o relé de desarme fica ativo (1-10s)
+- **countdownSeconds**: initial countdown time (5-5999 seconds)
+- **defuseMode**: defuse mode (CODE=0, WIRE=1, ORDER=2)
+- **defuseCode**: 4-digit code for CODE mode
+- **defuseOrder**: 4-digit sequence (1-4) for ORDER mode
+- **detWire**: detonation wire (0=RANDOM, 1-4=specific wire, 5=NONE)
+- **defuseWire**: defuse wire (0=RANDOM, 1-4=specific wire, 5=NONE)
+- **speedupWire**: accelerator wire (doubles countdown speed)
+- **pauseWire**: pause wire (pauses the countdown for 2 seconds)
+- **brightness**: display brightness (0-15)
+- **volume**: audio volume (0-255)
+- **tickEnabled**: tick sound every second
+- **accelMode**: accelerometer mode (OFF=0, START=1, SPEED2X=2, PAUSE=3, DETONATE=4)
+- **rfidEnabled**: reading of RFID tags for defuse/detonation
+- **defuseTags**: up to 4 RFID tag UIDs that defuse the bomb
+- **detonateTags**: up to 4 RFID tag UIDs that detonate the bomb
+- **maxCodeAttempts**: maximum code attempts (default 3)
+- **detTriggerSec**: how long the detonation relay stays active (1-10s)
+- **defuseTriggerSec**: how long the defuse relay stays active (1-10s)
 
-## Estados do Jogo
+## Game States
 
 ```
-IDLE       → Aguardando início. Jogador ajusta tempo e configurações.
-RUNNING    → Contagem regressiva ativa. Jogador tenta desarmar.
-DEFUSED    → Bomba desarmada com sucesso. Relé de desarme ativo por X segundos.
-DETONATED  → Bomba explodiu (tempo zerou ou fio errado). Relé de detonação ativo.
-MENU       → Menu de configuração local (display + botões).
-ALARM      → Alarme RTC disparou em horário programado.
+IDLE       → Waiting to start. Player adjusts time and settings.
+RUNNING    → Countdown active. Player tries to defuse.
+DEFUSED    → Bomb defused successfully. Defuse relay active for X seconds.
+DETONATED  → Bomb exploded (time ran out or wrong wire). Detonation relay active.
+MENU       → Local configuration menu (display + buttons).
+ALARM      → RTC alarm triggered at a scheduled time.
 ```
 
-### Transições
+### Transitions
 
-- **IDLE → RUNNING**: botão START pressionado, ou shake no acelerômetro (modo ACCEL_START), ou comando HA/MQTT
-- **RUNNING → DEFUSED**: código correto inserido, fio desarmador cortado, sequência ORDER completa, tag RFID de desarme lida
-- **RUNNING → DETONATED**: tempo zerou, fio detonador cortado, código errado excedeu tentativas, tag RFID de detonação lida, shake no modo ACCEL_DETONATE
-- **DEFUSED/DETONATED → IDLE**: botão START pressionado para reset
-- **IDLE → MENU**: botão MENU pressionado (long press no SELECT)
-- **MENU → IDLE**: timeout 15s sem input, ou botão START
+- **IDLE → RUNNING**: START button pressed, or accelerometer shake (ACCEL_START mode), or HA/MQTT command
+- **RUNNING → DEFUSED**: correct code entered, defuse wire cut, ORDER sequence completed, defuse RFID tag read
+- **RUNNING → DETONATED**: time ran out, detonation wire cut, wrong code exceeded attempts, detonation RFID tag read, shake in ACCEL_DETONATE mode
+- **DEFUSED/DETONATED → IDLE**: START button pressed to reset
+- **IDLE → MENU**: MENU button pressed (long press on SELECT)
+- **MENU → IDLE**: 15s timeout without input, or START button
 
-## Modos de Desarme
+## Defuse Modes
 
-### Modo CODE (0)
-1. Durante RUNNING, o jogador digita números no teclado
-2. Ao pressionar o primeiro dígito, o display mostra underscores para as 4 posições
-3. Cada dígito aparece no display
-4. Após 4 dígitos, o sistema compara com **defuseCode**
-5. Se correto → DEFUSED
-6. Se errado → incrementa tentativa. Se excedeu **maxCodeAttempts** → DETONATED
-7. Teclas `*` ou `#` cancelam a entrada atual
+### CODE Mode (0)
+1. During RUNNING, the player types numbers on the keypad
+2. On pressing the first digit, the display shows underscores for the 4 positions
+3. Each digit appears on the display
+4. After 4 digits, the system compares with **defuseCode**
+5. If correct → DEFUSED
+6. If wrong → increments the attempt count. If it exceeded **maxCodeAttempts** → DETONATED
+7. The `*` or `#` keys cancel the current entry
 
-### Modo WIRE (1)
-1. Ao iniciar, os fios são sorteados (se configurados como ALEATÓRIO)
-2. Fio **detWire**: se cortado → DETONATED
-3. Fio **defuseWire**: se cortado → DEFUSED
-4. Fio **speedupWire**: se cortado → dobra velocidade da contagem (cada segundo real vale 2)
-5. Fio **pauseWire**: se cortado → pausa contagem por 2 segundos
-6. Se todos os 4 fios forem cortados → DETONATED
+### WIRE Mode (1)
+1. On start, the wires are drawn at random (if configured as RANDOM)
+2. **detWire** wire: if cut → DETONATED
+3. **defuseWire** wire: if cut → DEFUSED
+4. **speedupWire** wire: if cut → doubles countdown speed (each real second counts as 2)
+5. **pauseWire** wire: if cut → pauses countdown for 2 seconds
+6. If all 4 wires are cut → DETONATED
 
-### Modo ORDER (2)
-1. O jogador deve cortar os fios na sequência exata definida por **defuseOrder**
-2. A ordem é um número de 4 dígitos onde cada dígito (1-4) representa um fio
-3. Exemplo: ordem "1324" significa cortar primeiro fio 1, depois fio 3, depois fio 2, depois fio 4
-4. Se cortar na ordem correta até o 4º fio → DEFUSED
-5. Se cortar um fio fora da ordem esperada → DETONATED
+### ORDER Mode (2)
+1. The player must cut the wires in the exact sequence defined by **defuseOrder**
+2. The order is a 4-digit number where each digit (1-4) represents a wire
+3. Example: order "1324" means cut wire 1 first, then wire 3, then wire 2, then wire 4
+4. If cut in the correct order up to the 4th wire → DEFUSED
+5. If a wire is cut out of the expected order → DETONATED
 
-### Modo NET (3 — apenas RS485)
-1. O desarme depende de N outros puzzles na rede RS485 reportarem estado SOLVED
-2. **netPuzzlesCount** define quantos puzzles precisam estar resolvidos
-3. Quando o número necessário atinge a contagem → DEFUSED
+### NET Mode (3 — RS485 only)
+1. The defusal depends on N other puzzles on the RS485 network reporting SOLVED state
+2. **netPuzzlesCount** defines how many puzzles need to be solved
+3. When the required number reaches the count → DEFUSED
 
-## Funcionalidades Auxiliares
+## Auxiliary Features
 
-### Fios
-- 4 fios físicos conectados a entradas digitais
-- Estado: CONECTADO (circuito fechado, LOW) ou CORTADO (circuito aberto, HIGH)
-- O sistema detecta transição CONECTADO→CORTADO como evento de corte
-- Wire conflict detection: o menu impede que o mesmo fio seja atribuído a duas funções diferentes
+### Wires
+- 4 physical wires connected to digital inputs
+- State: CONNECTED (closed circuit, LOW) or CUT (open circuit, HIGH)
+- The system detects the CONNECTED→CUT transition as a cut event
+- Wire conflict detection: the menu prevents the same wire from being assigned to two different functions
 
-### Acelerômetro (LIS3DH)
-- **OFF**: sem efeito
-- **START**: shake inicia o countdown a partir do IDLE
-- **SPEED2X**: shake durante RUNNING dobra a velocidade
-- **PAUSE**: shake durante RUNNING pausa por 2 segundos
-- **DETONATE**: shake forte durante RUNNING causa detonação imediata
+### Accelerometer (LIS3DH)
+- **OFF**: no effect
+- **START**: shake starts the countdown from IDLE
+- **SPEED2X**: shake during RUNNING doubles the speed
+- **PAUSE**: shake during RUNNING pauses for 2 seconds
+- **DETONATE**: strong shake during RUNNING causes immediate detonation
 
 ### RFID/NFC (PN532)
-- Tags de desarme: até 4 UIDs que, ao serem lidas durante RUNNING, causam DEFUSED
-- Tags de detonação: até 4 UIDs que, ao serem lidas durante RUNNING, causam DETONATED
-- Aprendizado de tags via menu local ou HA
+- Defuse tags: up to 4 UIDs that, when read during RUNNING, cause DEFUSED
+- Detonation tags: up to 4 UIDs that, when read during RUNNING, cause DETONATED
+- Tag learning via local menu or HA
 
-### Relés
-- 2 relés de detonação: ativados por **detTriggerSec** segundos ao detonar
-- 2 relés de desarme: ativados por **defuseTriggerSec** segundos ao desarmar
-- Ambos desligam automaticamente após o tempo configurado
+### Relays
+- 2 detonation relays: activated for **detTriggerSec** seconds on detonation
+- 2 defuse relays: activated for **defuseTriggerSec** seconds on defusal
+- Both turn off automatically after the configured time
 
-### Áudio
-- `/armed.mp3`: tocado ao iniciar contagem
-- `/tick.mp3`: tocado a cada segundo (se tickEnabled)
-- `/boom.mp3`: tocado na detonação
-- `/sucess.mp3`: tocado no desarme
-- `/keypress.mp3`: feedback de tecla pressionada
-- `/error.mp3`: feedback de erro
+### Audio
+- `/armed.mp3`: played when the countdown starts
+- `/tick.mp3`: played every second (if tickEnabled)
+- `/boom.mp3`: played on detonation
+- `/sucess.mp3`: played on defusal
+- `/keypress.mp3`: key press feedback
+- `/error.mp3`: error feedback
 
-### NeoPixel (LED RGB)
-- **NORMAL**: pulso suave branco (IDLE)
-- **COUNTING**: pulso vermelho (RUNNING)
-- **DOUBLE_SPEED**: pisca rápido vermelho (speedup ativo)
-- **DEFUSED**: pulso verde (desarmado)
-- **EXPLOSION**: animação de explosão (detonado)
-- **RADIATION**: flicker aleatório verde/azul
+### NeoPixel (RGB LED)
+- **NORMAL**: soft white pulse (IDLE)
+- **COUNTING**: red pulse (RUNNING)
+- **DOUBLE_SPEED**: fast red blink (speedup active)
+- **DEFUSED**: green pulse (defused)
+- **EXPLOSION**: explosion animation (detonated)
+- **RADIATION**: random green/blue flicker
 
-### Display (HT16K33 14 segmentos)
-- IDLE: mostra tempo configurado (MM:SS)
-- RUNNING: contagem regressiva com dois pontos piscando
-- Menu: nomes de 4 caracteres (BRIG, VOL, TICK, SHAK, NET, WIRE, CODE, RELE, RFID)
-- Código: dígitos inseridos com underscores para posições vazias
+### Display (HT16K33 14-segment)
+- IDLE: shows configured time (MM:SS)
+- RUNNING: countdown with blinking colon
+- Menu: 4-character names (BRIG, VOL, TICK, SHAK, NET, WIRE, CODE, RELE, RFID)
+- Code: entered digits with underscores for empty positions
 - DEFUSED: "SAFE"
 - DETONATED: "boom"
 
-## Menu de Configuração Local
+## Local Configuration Menu
 
-Navegação por botões físicos (LEFT/RIGHT para navegar, SELECT para entrar/confirmar):
+Navigation via physical buttons (LEFT/RIGHT to navigate, SELECT to enter/confirm):
 
-1. **COUNTDOWN**: ajuste de tempo (5-5999s, step 1 curto / 5 longo)
-2. **MODE**: seleção do modo de desarme (CODE/WIRE/ORDER)
-3. **CODE**: entrada de código de 4 dígitos via teclado
-4. **ORDER**: entrada da ordem dos fios (sequência de 4 dígitos 1-4)
-5. **DET WIRE**: fio detonador (RAND/1/2/3/4/NONE)
-6. **SPD WIRE**: fio acelerador (RAND/1/2/3/4/NONE)
-7. **PAUSE WIRE**: fio pausador (RAND/1/2/3/4/NONE)
-8. **BRIGHT**: brilho do display (0-15)
-9. **TICK**: som de tick (ON/OFF)
-10. **RFID**: habilita RFID (ON/OFF)
-11. **RF DEFU**: aprender tag de desarme (até 4)
-12. **RF DETO**: aprender tag de detonação (até 4)
-13. **CLR DEFU**: limpar tags de desarme
-14. **CLR DETO**: limpar tags de detonação
-15. **TDET**: tempo do trigger de detonação (1-10s)
-16. **TDEF**: tempo do trigger de desarme (1-10s)
-17. **ALARM H**: hora do alarme RTC (0-23)
-18. **ALARM M**: minuto do alarme RTC (0-59)
+1. **COUNTDOWN**: time adjustment (5-5999s, step 1 short / 5 long)
+2. **MODE**: defuse mode selection (CODE/WIRE/ORDER)
+3. **CODE**: 4-digit code entry via keypad
+4. **ORDER**: wire order entry (4-digit sequence 1-4)
+5. **DET WIRE**: detonation wire (RAND/1/2/3/4/NONE)
+6. **SPD WIRE**: accelerator wire (RAND/1/2/3/4/NONE)
+7. **PAUSE WIRE**: pause wire (RAND/1/2/3/4/NONE)
+8. **BRIGHT**: display brightness (0-15)
+9. **TICK**: tick sound (ON/OFF)
+10. **RFID**: enables RFID (ON/OFF)
+11. **RF DEFU**: learn defuse tag (up to 4)
+12. **RF DETO**: learn detonation tag (up to 4)
+13. **CLR DEFU**: clear defuse tags
+14. **CLR DETO**: clear detonation tags
+15. **TDET**: detonation trigger time (1-10s)
+16. **TDEF**: defuse trigger time (1-10s)
+17. **ALARM H**: RTC alarm hour (0-23)
+18. **ALARM M**: RTC alarm minute (0-59)
 
-Timeout de 15 segundos sem input volta ao IDLE.
+A 15-second timeout without input returns to IDLE.
 
-## Configuração de Rede (AP Mode + WiFi)
+## Network Configuration (AP Mode + WiFi)
 
-1. Na primeira inicialização, cria rede WiFi aberta "BombTimer-STAMPLC"
-2. Acessando `http://192.168.4.1`, o GameMaster configura:
-   - SSID e senha do WiFi
-   - Broker MQTT (IP, porta, usuário, senha)
-   - Nome do dispositivo no Home Assistant
-3. Ao salvar, reinicia e conecta à rede configurada
-4. Se não conseguir conectar, volta ao modo AP
+1. On first boot, creates an open WiFi network "BombTimer-STAMPLC"
+2. Accessing `http://192.168.4.1`, the GameMaster configures:
+   - WiFi SSID and password
+   - MQTT broker (IP, port, user, password)
+   - Device name in Home Assistant
+3. On saving, it reboots and connects to the configured network
+4. If it cannot connect, it returns to AP mode

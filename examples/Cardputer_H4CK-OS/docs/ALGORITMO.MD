@@ -1,107 +1,107 @@
-# H4CK-OS — Plano de Desenvolvimento (v3)
+# H4CK-OS — Development Plan (v3)
 
-## 1. Visão Geral
+## 1. Overview
 
-### Conceito
-O M5Stack Cardputer se passa por um **computador hacker minúsculo** escondido na sala.
-O jogador encontra o dispositivo, faz login, e usa ferramentas de pentest simuladas para
-desarmar a bomba (BombTimer StamPLC).
+### Concept
+The M5Stack Cardputer poses as a **tiny hacker computer** hidden in the room.
+The player finds the device, logs in, and uses simulated pentest tools to
+defuse the bomb (BombTimer StamPLC).
 
-### Ciclo de Funcionamento
+### Operating Cycle
 
 ```
 [POWER ON]
     │
     ▼
-[BOOT SCREEN]   ← animação estilo H4CK-OS bootando (2-3s)
+[BOOT SCREEN]   ← H4CK-OS-style boot animation (2-3s)
     │
     ▼
-[LOGIN SCREEN]  ← login: root / password: (encontrada na sala)
+[LOGIN SCREEN]  ← login: root / password: (found in the room)
     │
     ▼
-[SHELL]         ← bash-like com comandos
+[SHELL]         ← bash-like with commands
     │
-    ├── scan        — descobrir dispositivos na rede
-    ├── tapscan     — interceptar conversas telefônicas (MP3 do SD)
-    ├── nmap        — escaneamento detalhado de um alvo
-    ├── hydra       — força bruta de senhas
-    ├── sniff       — capturar código da bomba via IP (pista na sala)
-    ├── exploit     — gerar payload RF433
-    ├── rfcomm      — transmitir comando RF433 real
-    ├── ha          — controlar dispositivos da sala
-    ├── status      — mostrar status da bomba
-    ├── clear       — limpar terminal
-    └── logout      — voltar ao login
+    ├── scan        — discover devices on the network
+    ├── tapscan     — intercept phone conversations (MP3 from SD)
+    ├── nmap        — detailed scan of a target
+    ├── hydra       — password brute force
+    ├── sniff       — capture the bomb code via IP (clue in the room)
+    ├── exploit     — generate RF433 payload
+    ├── rfcomm      — transmit a real RF433 command
+    ├── ha          — control the room devices
+    ├── status      — show the bomb status
+    ├── clear       — clear the terminal
+    └── logout      — return to login
 ```
 
 ---
 
 ## 2. Hardware
 
-| Componente | Função | Interface |
+| Component | Function | Interface |
 |------------|--------|-----------|
-| **M5Stack Cardputer** | Terminal hacker | ESP32-S3, TFT 240×135, teclado QWERTY 56 teclas, I2S speaker NS4168 |
-| **SYN531R RF433 TX** no Grove | Transmissão do comando de desarme | GPIO G2 (DATA) |
-| **microSD Card** | Áudio MP3 (conversas) + assets | SPI (G12 CS, G14 MOSI, G40 CLK, G39 MISO) |
+| **M5Stack Cardputer** | Hacker terminal | ESP32-S3, TFT 240×135, 56-key QWERTY keyboard, NS4168 I2S speaker |
+| **SYN531R RF433 TX** on Grove | Transmission of the defuse command | GPIO G2 (DATA) |
+| **microSD Card** | MP3 audio (conversations) + assets | SPI (G12 CS, G14 MOSI, G40 CLK, G39 MISO) |
 
-### Pinagem Cardputer
+### Cardputer Pinout
 
 ```
 PORT.CUSTOM (Grove HY2.0-4P):
-  Amarelo = G2  → RF433 DATA (SYN531R Transmitter)
-  Branco  = G1  → livre (reserva)
-  Vermelho = 5V → VCC SYN531R
-  Preto    = GND → GND SYN531R
+  Yellow = G2  → RF433 DATA (SYN531R Transmitter)
+  White  = G1  → free (reserve)
+  Red    = 5V → VCC SYN531R
+  Black  = GND → GND SYN531R
 
 SD Card: G12(CS) G14(MOSI) G40(CLK) G39(MISO)
 Speaker: NS4168 I2S (G41 BCLK, G42 DATA, G44 LRCLK)
 Display: ST7789V2 SPI (G38 BL, G33 RST, G34 RS, G35 DAT, G36 SCK, G37 CS)
-Teclado: Matriz 4×14 via TCA8418 (I2C interno)
+Keyboard: 4×14 matrix via TCA8418 (internal I2C)
 ```
 
 ---
 
-## 3. Arquitetura de Software
+## 3. Software Architecture
 
-### 3.1 Estrutura de Arquivos
+### 3.1 File Structure
 
 ```
 ~/shared_files/Code/ESP32_Projects/Cardputer_H4CK-OS/
 ├── H4CK-OS.ino                  ← setup() + loop()
 ├── src/
-│   ├── Shell.h / .cpp           ← parser de comandos + dispatch
-│   ├── BootScreen.h             ← animação de boot H4CK-OS
-│   ├── LoginScreen.h            ← login + senha
-│   ├── Scanner.h                ← scan + nmap (simulados)
-│   ├── TapScanner.h             ← tapscan: MP3 do SD (EscapeRoomPhone pattern)
-│   ├── Cracker.h                ← hydra (força bruta simulada)
-│   ├── Sniffer.h                ← sniff: captura código configurado pelo GM
-│   ├── Exploit.h                ← gera payload RF
-│   ├── Transmitter.h            ← rfcomm via RF433 real (rc-switch)
-│   ├── BombStatus.h             ← status da bomba via WiFi
-│   ├── HAClient.h               ← ha + entidades HA do próprio Cardputer
+│   ├── Shell.h / .cpp           ← command parser + dispatch
+│   ├── BootScreen.h             ← H4CK-OS boot animation
+│   ├── LoginScreen.h            ← login + password
+│   ├── Scanner.h                ← scan + nmap (simulated)
+│   ├── TapScanner.h             ← tapscan: MP3 from SD (EscapeRoomPhone pattern)
+│   ├── Cracker.h                ← hydra (simulated brute force)
+│   ├── Sniffer.h                ← sniff: captures the code configured by the GM
+│   ├── Exploit.h                ← generates RF payload
+│   ├── Transmitter.h            ← rfcomm via real RF433 (rc-switch)
+│   ├── BombStatus.h             ← bomb status via WiFi
+│   ├── HAClient.h               ← ha + HA entities for the Cardputer itself
 │   ├── SoundManager.h           ← beeps + playOnceBlocking
-│   ├── ConfigManager.h          ← config JSON em SPIFFS/LittleFS
-│   └── Config.h                 ← pinos, constantes
+│   ├── ConfigManager.h          ← JSON config in SPIFFS/LittleFS
+│   └── Config.h                 ← pins, constants
 ├── data/
 │   ├── taps/
-│   │   ├── channel1.mp3         ← conversa interceptada 1
-│   │   ├── channel2.mp3         ← conversa interceptada 2
-│   │   ├── channel3.mp3         ← conversa interceptada 3
-│   │   └── channel4.mp3         ← conversa interceptada 4
-│   ├── scan.mp3                 ← som de scan
-│   ├── exploit.mp3              ← som de payload gerado
-│   ├── transmit.mp3             ← som de transmissão RF
-│   ├── success.mp3              ← puzzle resolvido
-│   └── error.mp3                ← erro / acesso negado
-├── config.json                  ← configuração padrão (SPIFFS)
+│   │   ├── channel1.mp3         ← intercepted conversation 1
+│   │   ├── channel2.mp3         ← intercepted conversation 2
+│   │   ├── channel3.mp3         ← intercepted conversation 3
+│   │   └── channel4.mp3         ← intercepted conversation 4
+│   ├── scan.mp3                 ← scan sound
+│   ├── exploit.mp3              ← payload generated sound
+│   ├── transmit.mp3             ← RF transmission sound
+│   ├── success.mp3              ← puzzle solved
+│   └── error.mp3                ← error / access denied
+├── config.json                  ← default configuration (SPIFFS)
 ├── docs/
-│   ├── ALGORITMO.MD             ← este documento
-│   └── USER_MANUAL.MD           ← manual do jogador (futuro)
-└── ALGORITMO.MD                 ← cópia na raiz
+│   ├── ALGORITMO.MD             ← this document
+│   └── USER_MANUAL.MD           ← player manual (future)
+└── ALGORITMO.MD                 ← copy at the root
 ```
 
-### 3.2 Máquina de Estados
+### 3.2 State Machine
 
 ```
 [POWER ON] → [BOOT] (3s) → [LOGIN] → [SHELL]
@@ -109,45 +109,45 @@ Teclado: Matriz 4×14 via TCA8418 (I2C interno)
             ┌──────────┬──────────┬─────┼─────┬──────────┬──────────┐
             ▼          ▼          ▼     ▼     ▼          ▼          ▼
        [STAGE A]  [STAGE B]  [STAGE C] [HA] [SNIFF]  [TAPSCAN]  [STATUS]
-       scan/nmap    hydra     exploit   cmd   codigo   MP3 SD    bomba
+       scan/nmap    hydra     exploit   cmd   code     MP3 SD    bomb
 ```
 
 ---
 
-## 4. Integração Home Assistant — Entidades do Cardputer
+## 4. Home Assistant Integration — Cardputer Entities
 
-**O jogador NÃO acessa MQTT diretamente.** O `sniff` usa um IP pre-configurado
-(pista na sala) e dados simulados — não é conexão MQTT real.
+**The player does NOT access MQTT directly.** The `sniff` uses a pre-configured IP
+(clue in the room) and simulated data — it is not a real MQTT connection.
 
-**Mas o próprio Cardputer expõe entidades no Home Assistant** para o Game Master
-configurar o puzzle remotamente:
+**But the Cardputer itself exposes entities in Home Assistant** so the Game Master
+can configure the puzzle remotely:
 
-### Entidades HA do Cardputer (para o GM)
+### Cardputer HA Entities (for the GM)
 
-| Tipo | ID | Descrição | Uso |
+| Type | ID | Description | Use |
 |------|----|-----------|-----|
-| **Text** | `h4ckos_login_password` | Senha do login | GM define a senha |
-| **Text** | `h4ckos_sniff_ip` | IP alvo do sniff | GM define qual IP o jogador precisa "invadir" |
-| **Number** | `h4ckos_defuse_code` | Código de desarme | GM define o código que o sniff revela |
-| **Select** | `h4ckos_sniff_channel` | Canal de áudio do sniff | GM troca qual MP3 toca (1-4) |
-| **Select** | `h4ckos_stage` | Estágio atual | GM avança/reseta estágios manualmente |
-| **Sensor** | `h4ckos_status` | Status do terminal | "login", "shell", "defused" |
-| **Switch** | `h4ckos_rf433_enable` | Habilita RF433 | GM libera/bloqueia transmissão RF |
+| **Text** | `h4ckos_login_password` | Login password | GM sets the password |
+| **Text** | `h4ckos_sniff_ip` | Target IP for sniff | GM sets which IP the player needs to "invade" |
+| **Number** | `h4ckos_defuse_code` | Defuse code | GM sets the code that sniff reveals |
+| **Select** | `h4ckos_sniff_channel` | Sniff audio channel | GM switches which MP3 plays (1-4) |
+| **Select** | `h4ckos_stage` | Current stage | GM advances/resets stages manually |
+| **Sensor** | `h4ckos_status` | Terminal status | "login", "shell", "defused" |
+| **Switch** | `h4ckos_rf433_enable` | Enables RF433 | GM allows/blocks RF transmission |
 
-### Exemplo de configuração:
+### Example configuration:
 
 ```
-GM no HA:
+GM in HA:
   h4ckos_login_password = "kali"
   h4ckos_sniff_ip = "10.0.0.5"
   h4ckos_defuse_code = "7391"
   h4ckos_sniff_channel = "2"
-  → jogador descobre IP "10.0.0.5" na sala
-  → sniff revela código "7391"
-  → pode desarmar pelo keypad da bomba
+  → player discovers IP "10.0.0.5" in the room
+  → sniff reveals code "7391"
+  → can defuse via the bomb keypad
 ```
 
-### Comunicação: ArduinoHA (igual ao BombTimer)
+### Communication: ArduinoHA (same as BombTimer)
 
 ```cpp
 // HAClient.h
@@ -160,16 +160,16 @@ HASelect haStage("h4ckos_stage");
 HASensor haStatus("h4ckos_status");
 HASwitch haRFEnable("h4ckos_rf433_enable");
 
-// Callbacks salvam em SPIFFS JSON
-void haLoginPasswordCb(const char* val, HAText*) { /* salva em config.json */ }
-void haSniffIpCb(const char* val, HAText*)       { /* salva em config.json */ }
+// Callbacks save to the SPIFFS JSON
+void haLoginPasswordCb(const char* val, HAText*) { /* saves to config.json */ }
+void haSniffIpCb(const char* val, HAText*)       { /* saves to config.json */ }
 ```
 
 ---
 
-## 5. Configuração via SPIFFS (config.json)
+## 5. Configuration via SPIFFS (config.json)
 
-### 5.1 Formato
+### 5.1 Format
 
 ```json
 {
@@ -206,18 +206,18 @@ void haSniffIpCb(const char* val, HAText*)       { /* salva em config.json */ }
 }
 ```
 
-### 5.2 Ciclo de Configuração
+### 5.2 Configuration Cycle
 
 ```
 Boot → SPIFFS.begin() → load /config.json
                           │
                     ┌─────┴─────┐
                     │           │
-               Existe?    Não existe?
+               Exists?    Doesn't exist?
                     │           │
                     ▼           ▼
-               Carrega     Cria com defaults
-               valores     Salva no SPIFFS
+               Loads       Creates with defaults
+               values      Saves to SPIFFS
                     │           │
                     └─────┬─────┘
                           ▼
@@ -228,29 +228,29 @@ Boot → SPIFFS.begin() → load /config.json
                   BOOT SCREEN → LOGIN
 ```
 
-### 5.3 GM altera via HA → SPIFS
+### 5.3 GM changes via HA → SPIFFS
 
 ```
-GM altera "h4ckos_login_password" no HA
-    → callback salva em config.json
-    → na próxima vez que o jogador fizer logout,
-      a nova senha já está valendo
+GM changes "h4ckos_login_password" in HA
+    → callback saves to config.json
+    → the next time the player logs out,
+      the new password is already in effect
 ```
 
 ---
 
-## 6. Comandos em Detalhe
+## 6. Commands in Detail
 
-### 6.1 `tapscan` — Interceptador de Chamadas (MP3 do SD)
+### 6.1 `tapscan` — Call Interceptor (MP3 from SD)
 
 ```
 root@h4ck-os:~$ tapscan
 [HACK] Scanning cellular frequencies...
 [HACK] 4 active channels found.
 
-Channel 1: [BUSY]  — "o código de desarme é 7391..."
+Channel 1: [BUSY]  — "the defuse code is 7391..."
 Channel 2: [IDLE]  — no traffic
-Channel 3: [BUSY]  — "a senha do sistema é kali"
+Channel 3: [BUSY]  — "the system password is kali"
 Channel 4: [IDLE]  — no traffic
 
 root@h4ck-os:~$ tapscan listen 1
@@ -258,12 +258,12 @@ root@h4ck-os:~$ tapscan listen 1
 ▶ Playing: /sd/taps/channel1.mp3
 ```
 
-**Implementação:** idêntica ao EscapeRoomPhone:
-- `tapscan` → lista canais com status (BUSY/IDLE) baseado em config.json
+**Implementation:** identical to EscapeRoomPhone:
+- `tapscan` → lists channels with status (BUSY/IDLE) based on config.json
 - `tapscan listen <n>` → `hw.sound().playOnceBlocking("/sd/taps/channelN.mp3")`
-- GM configura qual canal está ativo via HA (`h4ckos_sniff_channel`)
+- GM configures which channel is active via HA (`h4ckos_sniff_channel`)
 
-### 6.2 `sniff` — Captura o Código (sem MQTT real)
+### 6.2 `sniff` — Captures the Code (no real MQTT)
 
 ```
 root@h4ck-os:~$ sniff 10.0.0.5
@@ -277,14 +277,14 @@ root@h4ck-os:~$ sniff code
 [HACK] Current defuse code: 7391
 ```
 
-**Implementação:** o `sniff` NÃO faz conexão MQTT real.
-Ele simplesmente lê o `defuse_code` do `config.json`, que foi
-configurado pelo GM via HA. O IP é uma pista na sala.
+**Implementation:** `sniff` does NOT make a real MQTT connection.
+It simply reads `defuse_code` from `config.json`, which was
+configured by the GM via HA. The IP is a clue in the room.
 
-**Mas parece real:** o comando mostra progresso, conexão,
-"pacotes interceptados", etc.
+**But it looks real:** the command shows progress, connection,
+"intercepted packets", etc.
 
-### 6.3 `scan` / `nmap` — Stage A (simulado)
+### 6.3 `scan` / `nmap` — Stage A (simulated)
 
 ```
 root@h4ck-os:~$ scan
@@ -302,7 +302,7 @@ root@h4ck-os:~$ nmap 192.168.1.100
   7070/tcp open   ENCRYPTER
 ```
 
-### 6.4 `hydra` — Stage B (força bruta)
+### 6.4 `hydra` — Stage B (brute force)
 
 ```
 root@h4ck-os:~$ hydra 192.168.1.100 -P passwords.txt
@@ -322,7 +322,7 @@ root@h4ck-os:~$ exploit -k 0x7A3F -p 8080
 [HACK] Use 'rfcomm send 0x89ABCD' to transmit
 ```
 
-### 6.6 `rfcomm` — Stage D (RF433 REAL)
+### 6.6 `rfcomm` — Stage D (REAL RF433)
 
 ```
 root@h4ck-os:~$ rfcomm send 0x89ABCD
@@ -330,9 +330,9 @@ root@h4ck-os:~$ rfcomm send 0x89ABCD
 [HACK] Code 0x89ABCD sent!
 ```
 
-**RF433 é real:** SYN531R transmite via G2. BombTimer recebe.
+**RF433 is real:** SYN531R transmits via G2. BombTimer receives.
 
-### 6.7 `ha` — Controle da Sala
+### 6.7 `ha` — Room Control
 
 ```
 root@h4ck-os:~$ ha list
@@ -344,9 +344,9 @@ root@h4ck-os:~$ ha toggle light.living_room
   → light.living_room toggled
 ```
 
-**MQTT real:** conecta ao broker HA e envia comandos.
+**Real MQTT:** connects to the HA broker and sends commands.
 
-### 6.8 `status` — Status da Bomba
+### 6.8 `status` — Bomb Status
 
 ```
 root@h4ck-os:~$ status
@@ -359,75 +359,75 @@ root@h4ck-os:~$ status
 
 ---
 
-## 7. Áudio
+## 7. Audio
 
-### 7.1 MP3 do SD (tapscan)
+### 7.1 MP3 from SD (tapscan)
 
-Padrão EscapeRoomPhone:
+EscapeRoomPhone pattern:
 ```cpp
 // Play MP3 from SD, blocking until done
 hw.sound().playOnceBlocking("/sd/taps/channel2.mp3");
 
-// Sound loop no loop() principal
+// Sound loop in the main loop()
 hw.sound().loop();
 ```
 
-### 7.2 Beeps Sintetizados
+### 7.2 Synthesized Beeps
 
 ```cpp
-M5Cardputer.Speaker.tone(4000, 50);   // tecla
-M5Cardputer.Speaker.tone(3000, 30);   // comando
-M5Cardputer.Speaker.tone(800, 150);   // erro
+M5Cardputer.Speaker.tone(4000, 50);   // key
+M5Cardputer.Speaker.tone(3000, 30);   // command
+M5Cardputer.Speaker.tone(800, 150);   // error
 ```
 
 ---
 
-## 8. Múltiplos Caminhos para o Jogador
+## 8. Multiple Paths for the Player
 
-| Estratégia | Ferramentas | Depende de |
+| Strategy | Tools | Depends on |
 |------------|-------------|------------|
-| **RF433** | scan → nmap → hydra → exploit → rfcomm | Pistas na sala (senhas) |
-| **Código via sniff** | sniff <IP> → digitar no keypad da bomba | Pista do IP na sala |
-| **Pista por áudio** | tapscan → escutar conversas | Conteúdo dos MP3 |
-| **Controle da sala** | ha → interagir com dispositivos | Nenhum (sempre disponível) |
+| **RF433** | scan → nmap → hydra → exploit → rfcomm | Clues in the room (passwords) |
+| **Code via sniff** | sniff <IP> → type on the bomb keypad | IP clue in the room |
+| **Audio clue** | tapscan → listen to conversations | Content of the MP3s |
+| **Room control** | ha → interact with devices | None (always available) |
 
 ---
 
-## 9. Fluxo de Configuração pelo Game Master
+## 9. Game Master Configuration Flow
 
 ```
-1. GM acessa Home Assistant
-2. Encontra entidades do Cardputer:
-   - h4ckos_login_password → define senha
-   - h4ckos_sniff_ip → define IP pista
-   - h4ckos_defuse_code → define código revelado
-   - h4ckos_sniff_channel → define qual canal de áudio ativo
-3. Coloca pistas na sala:
-   - Post-it com IP: "10.0.0.5"
-   - Documento com senhas pro hydra
-   - Pendrive com arquivos MP3 no SD
-4. Liga o Cardputer
-5. Ciclo: boot → login → shell → jogador explora
+1. GM accesses Home Assistant
+2. Finds the Cardputer entities:
+   - h4ckos_login_password → sets password
+   - h4ckos_sniff_ip → sets clue IP
+   - h4ckos_defuse_code → sets revealed code
+   - h4ckos_sniff_channel → sets which audio channel is active
+3. Places clues in the room:
+   - Post-it with IP: "10.0.0.5"
+   - Document with passwords for hydra
+   - Pendrive with MP3 files on the SD
+4. Turns on the Cardputer
+5. Cycle: boot → login → shell → player explores
 ```
 
 ---
 
-## 10. Cronograma
+## 10. Schedule
 
-| Fase | Descrição | Horas |
+| Phase | Description | Hours |
 |------|-----------|-------|
-| 1 | Setup projeto + ConfigManager (SPIFFS JSON) | 2 |
+| 1 | Project setup + ConfigManager (SPIFFS JSON) | 2 |
 | 2 | Boot screen + Login screen | 2 |
-| 3 | Shell bash (parser + help + dispatch) | 3 |
-| 4 | tapscan (MP3 do SD) | 2 |
+| 3 | bash Shell (parser + help + dispatch) | 3 |
+| 4 | tapscan (MP3 from SD) | 2 |
 | 5 | Stage A: scan/nmap | 2 |
 | 6 | Stage B: hydra | 2 |
-| 7 | sniff (código do config.json) | 1 |
+| 7 | sniff (code from config.json) | 1 |
 | 8 | Stage C: exploit | 1 |
-| 9 | Stage D: rfcomm (RF433 real) | 2 |
-| 10 | HA entities do Cardputer + ConfigHA | 3 |
+| 9 | Stage D: rfcomm (real RF433) | 2 |
+| 10 | Cardputer HA entities + ConfigHA | 3 |
 | 11 | BombStatus WiFi | 2 |
 | 12 | HAClient (ha commands) | 2 |
-| 13 | Áudio (beeps + triggers MP3) | 1 |
-| 14 | Integração + testes | 3 |
+| 13 | Audio (beeps + MP3 triggers) | 1 |
+| 14 | Integration + tests | 3 |
 | **Total** | | **~28h** |

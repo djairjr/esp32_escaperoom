@@ -1,72 +1,72 @@
 # UniversalUniqueRFID
 
-Leitor RFID Universal Configuravel para Escape Room usando a biblioteca PropMaker EscapeRoom.
+Universal Configurable RFID Reader for Escape Room using the PropMaker EscapeRoom library.
 
-## Visao Geral
+## Overview
 
-O UniversalUniqueRFID e um puzzle RFID configuravel via arquivo JSON que suporta dois modos de operacao com feedback audiovisual e comunicacao RS485 opcional.
+The UniversalUniqueRFID is a JSON-configurable RFID puzzle that supports two operating modes with audiovisual feedback and optional RS485 communication.
 
-## Modos de Puzzle
+## Puzzle Modes
 
-### 1. UNIQUE (Unico)
+### 1. UNIQUE (Unique)
 
-Qualquer tag RFID programada no JSON resolve o puzzle.
+Any RFID tag programmed in the JSON solves the puzzle.
 
-**Comportamento:**
-- Aproxime qualquer tag cadastrada
-- Puzzle resolvido imediatamente
-- Ideal para puzzles de "chave unica"
+**Behavior:**
+- Present any registered tag
+- Puzzle solved immediately
+- Ideal for "single key" puzzles
 
-### 2. SEQUENCE (Sequencia)
+### 2. SEQUENCE (Sequence)
 
-Tags devem ser lidas em ordem especifica.
+Tags must be read in a specific order.
 
-**Exemplo:** `sequence: [0, 2, 1]` significa Tag 0 -> Tag 2 -> Tag 1
+**Example:** `sequence: [0, 2, 1]` means Tag 0 -> Tag 2 -> Tag 1
 
-**Comportamento:**
-- Ordem obrigatoria conforme sequencia
-- Tag errada: toca som de erro (reseta se configurado)
-- Ideal para puzzles de "codigo RFID"
+**Behavior:**
+- Mandatory order according to the sequence
+- Wrong tag: plays error sound (resets if configured)
+- Ideal for "RFID code" puzzles
 
 ## Hardware
 
-### Requisitos
+### Requirements
 - Adafruit PropMaker Feather RP2040
 - PN532 NFC/RFID module (I2C)
-- NeoPixel (LEDs enderecaveis)
-- SD Card (para sons MP3)
-- Tags RFID (MIFARE Classic, NTAG, etc.)
+- NeoPixel (addressable LEDs)
+- SD Card (for MP3 sounds)
+- RFID Tags (MIFARE Classic, NTAG, etc.)
 
-### Conexoes
+### Connections
 ```
 PN532 (I2C):
 - SDA -> GPIO 24 (I2C SDA)
 - SCL -> GPIO 25 (I2C SCL)
 - VCC -> 3.3V
 - GND -> GND
-- IRQ  -> (opcional, nao conectado por padrao)
+- IRQ  -> (optional, not connected by default)
 
 NeoPixel:
 - Data -> GPIO 21 (EXTERNAL_NEOPIXEL)
 - VCC -> 5V (via POWER_EXT)
 - GND -> GND
 
-Saida Rele/Trava:
-- Pino 10 (RELAY)
+Relay/Lock Output:
+- Pin 10 (RELAY)
 ```
 
-## Configuracao
+## Configuration
 
-### Arquivo config.json
+### config.json File
 
-O arquivo `data/config.json` deve ser gravado no LittleFS da placa.
+The `data/config.json` file must be written to the board's LittleFS.
 
-#### Estrutura
+#### Structure
 
 ```json
 {
   "controller": {
-    "name": "Nome do Puzzle",
+    "name": "Puzzle Name",
     "id": 2,
     "enabled": true
   },
@@ -74,15 +74,15 @@ O arquivo `data/config.json` deve ser gravado no LittleFS da placa.
   "rfid": {
     "mode": "UNIQUE",
     "tags": [
-      { "uid": "A1B2C3D4", "name": "Tag Vermelha" },
-      { "uid": "E5F6A7B8", "name": "Tag Azul" },
-      { "uid": "9A0B1C2D", "name": "Tag Verde" }
+      { "uid": "A1B2C3D4", "name": "Red Tag" },
+      { "uid": "E5F6A7B8", "name": "Blue Tag" },
+      { "uid": "9A0B1C2D", "name": "Green Tag" }
     ],
     "validTags": [
-      { "uid": "A1B2C3D4", "name": "Tag Vermelha" },
-      { "uid": "E5F6A7B8", "name": "Tag Azul" },
-      { "uid": "9A0B1C2D", "name": "Tag Verde" },
-      { "uid": "11223344", "name": "Tag Amarela" }
+      { "uid": "A1B2C3D4", "name": "Red Tag" },
+      { "uid": "E5F6A7B8", "name": "Blue Tag" },
+      { "uid": "9A0B1C2D", "name": "Green Tag" },
+      { "uid": "11223344", "name": "Yellow Tag" }
     ],
     "sequence": [0, 1, 2],
     "timeoutSeconds": 300,
@@ -118,72 +118,72 @@ O arquivo `data/config.json` deve ser gravado no LittleFS da placa.
 }
 ```
 
-### Obtendo UIDs das Tags
+### Obtaining Tag UIDs
 
-Para descobrir o UID de uma tag:
-1. Compile e faca upload do sketch
-2. Abra o monitor serial (115200 baud)
-3. Aproxime a tag do leitor PN532
-4. O UID sera exibido no formato hexadecimal
+To find a tag's UID:
+1. Compile and upload the sketch
+2. Open the serial monitor (115200 baud)
+3. Bring the tag close to the PN532 reader
+4. The UID will be displayed in hexadecimal format
 
 ## Audio
 
-### Arquivos Necessarios (raiz do LittleFS ou SD Card)
+### Required Files (LittleFS or SD Card root)
 
-| Arquivo | Descricao |
+| File | Description |
 |---------|-----------|
-| `tag.mp3` | Som ao detectar qualquer tag |
-| `correct.mp3` | Som quando tag correta |
-| `wrong.mp3` | Som quando tag errada |
-| `unlock.mp3` | Som quando puzzle resolvido |
-| `error.mp3` | Som de erro |
-| `reset.mp3` | Som de reset |
+| `tag.mp3` | Sound when any tag is detected |
+| `correct.mp3` | Sound when tag is correct |
+| `wrong.mp3` | Sound when tag is wrong |
+| `unlock.mp3` | Sound when puzzle solved |
+| `error.mp3` | Error sound |
+| `reset.mp3` | Reset sound |
 
-### Formato MP3
+### MP3 Format
 - Bitrate: 128 Kbps
 - Sample rate: 44.1 kHz
 - Stereo
-- Sem tags ID3 (remover com: `ffmpeg -map_metadata -1`)
+- No ID3 tags (remove with: `ffmpeg -map_metadata -1`)
 
-## Comandos Serial
+## Serial Commands
 
-| Comando | Descricao |
+| Command | Description |
 |---------|-----------|
-| `start` / `run` | Inicia o puzzle |
-| `reset` | Reseta o puzzle para estado inicial |
-| `status` | Mostra status atual |
-| `solve` / `force` | Forca puzzle como resolvido (debug) |
-| `config` | Mostra configuracao carregada |
-| `tags` | Lista tags programadas |
-| `help` | Mostra ajuda |
+| `start` / `run` | Starts the puzzle |
+| `reset` | Resets the puzzle to its initial state |
+| `status` | Shows current status |
+| `solve` / `force` | Forces puzzle as solved (debug) |
+| `config` | Shows loaded configuration |
+| `tags` | Lists programmed tags |
+| `help` | Shows help |
 
-## Estados do Puzzle
+## Puzzle States
 
 ```
 IDLE -> RUNNING -> SOLVED
               -> TAG_WRONG -> (resetOnError? ?) -> RUNNING/IDLE
 ```
 
-- **IDLE**: Aguardando inicio
-- **RUNNING**: Processando leitura de tags
-- **TAG_CORRECT**: Feedback de tag correta
-- **TAG_WRONG**: Feedback de tag errada
-- **SOLVED**: Puzzle completo
-- **TIMEOUT**: Tempo esgotado
+- **IDLE**: Waiting to start
+- **RUNNING**: Processing tag reads
+- **TAG_CORRECT**: Correct tag feedback
+- **TAG_WRONG**: Wrong tag feedback
+- **SOLVED**: Puzzle complete
+- **TIMEOUT**: Time elapsed
 
-## Compilacao
+## Compilation
 
 ```bash
 arduino-cli compile --fqbn rp2040:rp2040:adafruit_feather_prop_maker UniversalUniqueRFID.ino
 ```
 
-## Upload do Sketch
+## Sketch Upload
 
 ```bash
 arduino-cli upload --fqbn rp2040:rp2040:adafruit_feather_prop_maker --port COM3 UniversalUniqueRFID.ino
 ```
 
-## Dependencias
+## Dependencies
 
 - PropMakerEscapeRoom
 - ArduinoJson
@@ -194,6 +194,6 @@ arduino-cli upload --fqbn rp2040:rp2040:adafruit_feather_prop_maker --port COM3 
 - TaskManager
 - SwitchInput
 
-## Licenca
+## License
 
-MIT License - Mesma da biblioteca PropMakerEscapeRoom.
+MIT License - Same as the PropMakerEscapeRoom library.

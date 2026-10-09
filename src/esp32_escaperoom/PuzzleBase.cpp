@@ -2,10 +2,10 @@
 
 namespace esp32_escaperoom {
 
-// ===== GESTÃO DE PIXELS =====
+// ===== PIXEL MANAGEMENT =====
 
 void PuzzleBase::setPixelRange(uint8_t offset, uint8_t count) {
-    // Limpa view anterior se existir
+    // Clears previous view if it exists
     if (pixelView_ != nullptr) {
         delete pixelView_;
     }
@@ -13,14 +13,14 @@ void PuzzleBase::setPixelRange(uint8_t offset, uint8_t count) {
     pixelOffset_ = offset;
     pixelCount_ = count;
 
-    // Cria nova view sobre o strip externo
+    // Creates a new view over the external strip
     pixelView_ = new PuzzlePixelView(&hw.pixelsExternal(), offset, count);
 
     Serial.printf("[PUZZLE %d] Pixel range: offset=%d, count=%d (LEDs %d-%d)\n",
                   id_, offset, count, offset, offset + count - 1);
 }
 
-// ===== MÉTODOS DE SEQUÊNCIA =====
+// ===== SEQUENCE METHODS =====
 
 void PuzzleBase::generateRandomSequence(uint8_t* sequence, uint8_t count, uint8_t maxInput) {
     if (!sequence || count == 0 || maxInput == 0) return;
@@ -29,7 +29,7 @@ void PuzzleBase::generateRandomSequence(uint8_t* sequence, uint8_t count, uint8_
         sequence[i] = random(0, maxInput + 1);
     }
 
-    Serial.printf("[PuzzleBase] Sequência aleatória gerada: ");
+    Serial.printf("[PuzzleBase] Random sequence generated: ");
     for (uint8_t i = 0; i < count; i++) {
         Serial.printf("%d ", sequence[i]);
     }
@@ -38,9 +38,9 @@ void PuzzleBase::generateRandomSequence(uint8_t* sequence, uint8_t count, uint8_
 
 void PuzzleBase::generateRandomSequenceNoRepeat(uint8_t* sequence, uint8_t count, uint8_t maxInput) {
     if (!sequence || count == 0 || maxInput == 0) return;
-    if (count > maxInput + 1) count = maxInput + 1;  // Limita ao máximo possível
+    if (count > maxInput + 1) count = maxInput + 1;  // Clamps to the maximum possible
 
-    // Array temporário alocado dinamicamente
+    // Temporary array allocated dynamically
     uint8_t* available = new uint8_t[maxInput + 1];
     if (!available) { Serial.println(F("[PuzzleBase] ERROR: alloc fail")); return; }
 
@@ -48,7 +48,7 @@ void PuzzleBase::generateRandomSequenceNoRepeat(uint8_t* sequence, uint8_t count
         available[i] = i;
     }
 
-    // Fisher-Yates shuffle parcial
+    // Partial Fisher-Yates shuffle
     for (uint8_t i = 0; i < count; i++) {
         uint8_t j = random(i, maxInput + 1);
         uint8_t temp = available[i];
@@ -59,7 +59,7 @@ void PuzzleBase::generateRandomSequenceNoRepeat(uint8_t* sequence, uint8_t count
 
     delete[] available;
 
-    Serial.printf("[PuzzleBase] Sequência aleatória (sem repetição): ");
+    Serial.printf("[PuzzleBase] Random sequence (no repetition): ");
     for (uint8_t i = 0; i < count; i++) {
         Serial.printf("%d ", sequence[i]);
     }
@@ -70,7 +70,7 @@ void PuzzleBase::generateRandomPairs(uint8_t* pairs, uint8_t pairCount, uint8_t 
     if (!pairs || pairCount == 0 || maxInput == 0) return;
     if (pairCount * 2 > maxInput + 1) pairCount = (maxInput + 1) / 2;
 
-    // Gera sequência sem repetição e agrupa em pares
+    // Generates a sequence without repetition and groups it into pairs
     uint8_t* temp = new uint8_t[pairCount * 2];
     if (!temp) { Serial.println(F("[PuzzleBase] ERROR: alloc fail")); return; }
 
@@ -83,7 +83,7 @@ void PuzzleBase::generateRandomPairs(uint8_t* pairs, uint8_t pairCount, uint8_t 
 
     delete[] temp;
 
-    Serial.printf("[PuzzleBase] Pares aleatórios: ");
+    Serial.printf("[PuzzleBase] Random pairs: ");
     for (uint8_t i = 0; i < pairCount; i++) {
         Serial.printf("(%d-%d) ", pairs[i*2], pairs[i*2+1]);
     }
@@ -98,7 +98,7 @@ bool PuzzleBase::areInputsActive(uint8_t* inputs, uint8_t count) {
     if (!io) return false;
 
     for (uint8_t i = 0; i < count; i++) {
-        // Assume INPUT_PULLUP: LOW = ativo
+        // Assumes INPUT_PULLUP: LOW = active
         if (io->digitalRead(inputs[i]) != LOW) {
             return false;
         }
@@ -125,7 +125,7 @@ bool PuzzleBase::areNInputsActive(uint8_t n, uint8_t maxInput) {
 
 bool PuzzleBase::checkSequence(uint8_t* sequence, uint8_t sequenceLen, uint8_t* currentInputs, uint8_t currentLen) {
     if (!sequence || !currentInputs) return false;
-    if (currentLen == 0) return true;  // Sequência vazia ainda é válida
+    if (currentLen == 0) return true;  // An empty sequence is still valid
     if (currentLen > sequenceLen) return false;
 
     for (uint8_t i = 0; i < currentLen; i++) {
@@ -144,7 +144,7 @@ bool PuzzleBase::advanceSequence(uint8_t expectedInput, uint8_t actualInput) {
     return true;
 }
 
-// ===== HELPERS DE INPUT =====
+// ===== INPUT HELPERS =====
 
 bool PuzzleBase::readInputDebounce(uint8_t pin, uint16_t debounceMs) {
     if (!hw.hasPortExpander()) return false;
@@ -152,14 +152,14 @@ bool PuzzleBase::readInputDebounce(uint8_t pin, uint16_t debounceMs) {
     auto* io = hw.io();
     if (!io) return false;
 
-    uint8_t reading = (io->digitalRead(pin) == LOW) ? 1 : 0;  // LOW = ativo com PULLUP
+    uint8_t reading = (io->digitalRead(pin) == LOW) ? 1 : 0;  // LOW = active with PULLUP
 
     if (reading != lastInputState_[pin]) {
         lastDebounceTime_[pin] = millis();
     }
 
     if ((millis() - lastDebounceTime_[pin]) > debounceMs) {
-        // Estado estabilizado
+        // Stabilized state
         if (reading != currentInputState_[pin]) {
             currentInputState_[pin] = reading;
             return (reading == 1);
@@ -180,7 +180,7 @@ bool PuzzleBase::detectRisingEdge(uint8_t pin) {
     uint8_t previous = edgeLastState_[pin];
     edgeLastState_[pin] = current;
 
-    // Borda de subida: 0 -> 1 (inativo -> ativo, considerando PULLUP)
+    // Rising edge: 0 -> 1 (inactive -> active, considering PULLUP)
     return (previous == 0 && current == 1);
 }
 
@@ -194,7 +194,7 @@ bool PuzzleBase::detectFallingEdge(uint8_t pin) {
     uint8_t previous = edgeLastState_[pin];
     edgeLastState_[pin] = current;
 
-    // Borda de descida: 1 -> 0 (ativo -> inativo)
+    // Falling edge: 1 -> 0 (active -> inactive)
     return (previous == 1 && current == 0);
 }
 
@@ -210,10 +210,10 @@ int8_t PuzzleBase::waitForInput(uint8_t* inputs, uint8_t count, uint16_t timeout
     while (timeoutMs == 0 || (millis() - startTime) < timeoutMs) {
         for (uint8_t i = 0; i < count; i++) {
             if (io->digitalRead(inputs[i]) == LOW) {
-                return i;  // Retorna índice do input ativado
+                return i;  // Returns the index of the activated input
             }
         }
-        delay(10);  // Pequeno delay para não saturar
+        delay(10);  // Small delay to avoid saturation
     }
 
     return -1;  // Timeout
@@ -230,7 +230,7 @@ int8_t PuzzleBase::waitForAnyInput(uint8_t maxInput, uint16_t timeoutMs) {
     while (timeoutMs == 0 || (millis() - startTime) < timeoutMs) {
         for (uint8_t i = 0; i <= maxInput; i++) {
             if (io->digitalRead(i) == LOW) {
-                return i;  // Retorna número do input ativado
+                return i;  // Returns the number of the activated input
             }
         }
         delay(10);
@@ -239,7 +239,7 @@ int8_t PuzzleBase::waitForAnyInput(uint8_t maxInput, uint16_t timeoutMs) {
     return -1;  // Timeout
 }
 
-// ===== HELPERS DE PROGRESSO =====
+// ===== PROGRESS HELPERS =====
 
 uint8_t PuzzleBase::calculateProgressPercent(uint8_t currentStep, uint8_t totalSteps) {
     if (totalSteps == 0) return 100;

@@ -1,8 +1,8 @@
 {
-  "_comment": "Configuração da UniversalController - Puzzle Configurável para Escape Room",
+  "_comment": "UniversalController Configuration - Configurable Escape Room Puzzle",
 
   "controller": {
-    "name": "Puzzle Sequencial",
+    "name": "Sequential Puzzle",
     "id": 1,
     "enabled": true
   },

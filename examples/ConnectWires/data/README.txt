@@ -1,5 +1,5 @@
-Inclua os seguintes arquivos na memória LittleFS para o funcionamento deste exemplo:
+Include the following files in LittleFS memory for this example to work:
 
-- sfx/lock_open.mp3   (Som de abertura da trava/sockets)
+- sfx/lock_open.mp3   (Lock/socket opening sound)
 
-Nota: O código espera que este arquivo esteja dentro de uma subpasta chamada 'sfx'.
+Note: The code expects this file to be inside a subfolder named 'sfx'.

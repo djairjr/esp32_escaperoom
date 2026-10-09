@@ -1,36 +1,36 @@
-# MasterController — Algoritmo do Jogo
+# MasterController — Game Algorithm
 
-## Visão Geral
+## Overview
 
-Controlador central da sala de escape. Gerencia o timer global da sala, controla relés (porta principal, luzes, fumaça, auxiliares) e coordena os puzzles via rede RS485.
+Central controller of the escape room. Manages the global room timer, controls relays (main door, lights, smoke, auxiliary) and coordinates the puzzles via the RS485 network.
 
-## Configuração
+## Configuration
 
-- **masterId**: identificador na rede RS485
-- **totalGameTime**: tempo total da sala em segundos
-- **Relés**: MAIN_DOOR, LIGHTS, SMOKE_GEN, AUX_1..AUX_4
+- **masterId**: identifier on the RS485 network
+- **totalGameTime**: total room time in seconds
+- **Relays**: MAIN_DOOR, LIGHTS, SMOKE_GEN, AUX_1..AUX_4
 
-## Estados
+## States
 
 WAITING → RUNNING → COMPLETE/EXPIRED
 
-## Fluxo
+## Flow
 
-1. WAITING: aguardando comando para iniciar
+1. WAITING: waiting for the command to start
 2. RUNNING:
-   - Timer global decrementando
-   - Monitora puzzles via RS485 (StatusReport)
-   - GameMaster pode abrir portas via serial ('o') ou resetar timer ('r')
-3. Timer zera → abre porta principal, desliga luzes
-4. Todos puzzles resolvidos → COMPLETE
+   - Global timer counting down
+   - Monitors puzzles via RS485 (StatusReport)
+   - GameMaster can open doors via serial ('o') or reset the timer ('r')
+3. Timer reaches zero → opens the main door, turns off the lights
+4. All puzzles solved → COMPLETE
 
-## Relés
+## Relays
 
-- MAIN_DOOR: aberta quando jogo termina ou GameMaster comanda
-- LIGHTS: controle de iluminação da sala
-- SMOKE_GEN: gerador de fumaça para atmosfera
-- AUX_1..4: dispositivos auxiliares configuráveis
+- MAIN_DOOR: open when the game ends or the GameMaster commands it
+- LIGHTS: room lighting control
+- SMOKE_GEN: smoke generator for atmosphere
+- AUX_1..4: configurable auxiliary devices
 
 ## AP Mode + WiFi
 
-Portal web permite controle completo da sala: iniciar, pausar, resetar, abrir portas, ajustar timer.
+Web portal allows full control of the room: start, pause, reset, open doors, adjust timer.

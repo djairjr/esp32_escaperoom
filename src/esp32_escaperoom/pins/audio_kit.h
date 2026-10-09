@@ -3,17 +3,17 @@
 /**
  * pins/audio_kit.h — Ai-Thinker ESP32-A1S Audio Kit v2.2 (A202)
  *
- * Placa de áudio com codec ES8388 + amplificador headphone.
+ * Audio board with ES8388 codec + headphone amplifier.
  * ESP32 dual-core, 4MB Flash, 4MB PSRAM.
  *
- * Periféricos onboard:
+ * Onboard peripherals:
  *   - ES8388 codec I2S (DAC + ADC)
- *   - Amplificador headphone 3.5mm
- *   - Microfones onboard (analógico + digital)
- *   - Slot microSD SPI
- *   - Botões de volume e play
+ *   - 3.5mm headphone amplifier
+ *   - Onboard microphones (analog + digital)
+ *   - microSD slot SPI
+ *   - Volume and play buttons
  *
- * ⚠️ GPIOs 0,18,19,21,22,23,25,26,27 disponíveis. Os demais são do codec.
+ * ⚠️ GPIOs 0,18,19,21,22,23,25,26,27 available. The rest belong to the codec.
  */
 
 #include <Arduino.h>
@@ -24,19 +24,19 @@ constexpr const char* BOARD_NAME         = "Ai-Thinker ESP32-A1S Audio Kit v2.2"
 constexpr const char* BOARD_MANUFACTURER = "Ai-Thinker";
 constexpr const char* BOARD_CHIP         = "ESP32";
 
-// ── Memória ──────────────────────────────────────────────────
+// ── Memory ──────────────────────────────────────────────────
 #define BOARD_FLASH_MB  4
 #define BOARD_PSRAM_MB  4
 #define HAS_PSRAM       1
 
-// ── Periféricos onboard ──────────────────────────────────────
+// ── Onboard peripherals ──────────────────────────────────────
 
 #define HAS_ONBOARD_CODEC      1    // ES8388 I2S codec
-#define HAS_ONBOARD_HP_AMP     1    // amplificador headphone
-#define HAS_ONBOARD_MIC        1    // microfone onboard
-#define HAS_ONBOARD_SD         1    // slot microSD SPI
+#define HAS_ONBOARD_HP_AMP     1    // headphone amplifier
+#define HAS_ONBOARD_MIC        1    // onboard microphone
+#define HAS_ONBOARD_SD         1    // microSD slot SPI
 
-// I2C — compartilhado com codec ES8388 (GPIO18=SDA, GPIO23=SCL)
+// I2C — shared with the ES8388 codec (GPIO18=SDA, GPIO23=SCL)
 constexpr int PIN_I2C_SDA = 18;
 constexpr int PIN_I2C_SCL = 23;
 
@@ -52,8 +52,8 @@ constexpr int PIN_I2S_SDIN = 21;   // SDIN ← codec (mic)
 constexpr bool HAS_I2S     = true;
 
 // ── Headphone / Line Out ─────────────────────────────────────
-constexpr int PIN_HP_DETECT = 19;  // jack detect (LOW = inserido)
-constexpr int PIN_HP_SEL    = -1;  // auto pelo codec
+constexpr int PIN_HP_DETECT = 19;  // jack detect (LOW = inserted)
+constexpr int PIN_HP_SEL    = -1;  // auto by the codec
 
 // ── NeoPixel ─────────────────────────────────────────────────
 #define HAS_ONBOARD_NEOPIXEL 0
@@ -70,22 +70,22 @@ constexpr int PIN_SPI_MOSI = 13;
 constexpr int PIN_SD_CS    = 15;
 #define USE_SD_LIBRARY SD
 
-// ── Atuadores ────────────────────────────────────────────────
+// ── Actuators ────────────────────────────────────────────────
 #define HAS_ONBOARD_RELAY    0
 constexpr int PIN_RELAY      = 19;  // GPIO19
-constexpr int PIN_SERVO_PWM  = 0;   // GPIO0 (BOOT — evitar usar como servo)
+constexpr int PIN_SERVO_PWM  = 0;   // GPIO0 (BOOT — avoid using as servo)
 
-// ── Botões ───────────────────────────────────────────────────
+// ── Buttons ───────────────────────────────────────────────────
 constexpr int PIN_BTN              = 0;    // BOOT
 constexpr int PIN_EXPANSION_BUTTON = 19;   // GPIO19
-// Audio Kit tem botões dedicados via matriz de teclas (K1-K6)
-// mas esses não são mapeados como GPIOs individuais
+// The Audio Kit has dedicated buttons via a key matrix (K1-K6)
+// but those are not mapped as individual GPIOs
 
 // ── Power ────────────────────────────────────────────────────
 constexpr int PIN_EXTERNAL_POWER     = -1;
 constexpr int PIN_BATTERY_SENSE      = -1;
 
-// ── Display externo ──────────────────────────────────────────
+// ── External display ──────────────────────────────────────────
 #define HAS_ONBOARD_DISPLAY 0
 constexpr uint8_t OLED_I2C_ADDRESS = 0x3C;
 
@@ -101,12 +101,12 @@ constexpr uint8_t RTC_I2C_ADDRESS = 0x51;
 
 constexpr int PIN_BUZZER = -1;
 
-// ── IO disponíveis ───────────────────────────────────────────
+// ── Available IOs ───────────────────────────────────────────
 constexpr int PIN_IO0  = 0;    // GPIO0  (BOOT)
 constexpr int PIN_IO1  = 19;   // GPIO19
 constexpr int PIN_IO2  = 21;   // GPIO21
 constexpr int PIN_IO3  = 27;   // GPIO27
-constexpr int PIN_IO4  = 255;  // indisponível
+constexpr int PIN_IO4  = 255;  // unavailable
 constexpr int PIN_IO5  = 255;
 constexpr int PIN_IO6  = 255;
 constexpr int PIN_IO7  = 255;
@@ -116,16 +116,16 @@ constexpr int PIN_IO10 = 255;
 constexpr int PIN_IO11 = 255;
 constexpr int PIN_IO12 = 255;
 
-// ── Constantes ───────────────────────────────────────────────
+// ── Constants ───────────────────────────────────────────────
 constexpr uint8_t I2C_DEFAULT_ADDRESS = 0x20;
 constexpr unsigned long DOOR_OPEN_MS  = 5000;
 
 inline void boardInit() {
-  // ES8388 codec — configurar via I2C para modo de áudio
-  // O codec é inicializado com defaults aceitáveis para MP3 playback
+  // ES8388 codec — configure via I2C for audio mode
+  // The codec is initialized with defaults acceptable for MP3 playback
   #if HAS_ONBOARD_CODEC
-  // Volume padrão: 70% (-12dB no ES8388)
-  // O Arduino framework já configura I2S pins automaticamente
+  // Default volume: 70% (-12dB on the ES8388)
+  // The Arduino framework already configures the I2S pins automatically
   #endif
 }
 

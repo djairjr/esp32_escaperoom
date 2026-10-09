@@ -1,21 +1,21 @@
 #pragma once
 /**
- * LVGL_Display.h — Integração LVGL v9 + M5Cardputer
+ * LVGL_Display.h — LVGL v9 + M5Cardputer integration
  *
- * Conforme documentação oficial LVGL Arduino:
+ * Per the official LVGL Arduino documentation:
  * https://github.com/lvgl/lvgl/blob/master/examples/arduino/LVGL_Arduino/LVGL_Arduino.ino
  *
- * E conforme GeminiPuter (exemplo funcional Cardputer + LVGL):
+ * And per GeminiPuter (working Cardputer + LVGL example):
  * https://github.com/nishad2m8/GeminiPuter
  *
- * O teclado NÃO é gerenciado via indev — o Cardputer tem teclado matricial
- * (TCA8418 I2C) que é lido manualmente via M5Cardputer.Keyboard.
- * O LVGL só gerencia o DISPLAY.
+ * The keyboard is NOT managed via indev — the Cardputer has a matrix keyboard
+ * (TCA8418 I2C) that is read manually via M5Cardputer.Keyboard.
+ * LVGL only manages the DISPLAY.
  *
- * Uso no setup():
+ * Usage in setup():
  *   lvgl_init();
  *
- * Uso no loop():
+ * Usage in loop():
  *   lv_timer_handler();
  *   delay(5);
  */
@@ -24,7 +24,7 @@
 #include <lvgl.h>
 
 // ============================================================================
-// DRAW BUFFER — 240 × 10 linhas × 2 bytes = 4800 bytes
+// DRAW BUFFER — 240 × 10 lines × 2 bytes = 4800 bytes
 // ============================================================================
 #define LVGL_HOR_RES 240
 #define LVGL_VER_RES 135
@@ -41,7 +41,7 @@ static uint32_t lvgl_tick_cb() {
 }
 
 // ============================================================================
-// DISPLAY FLUSH CALLBACK (igual GeminiPuter)
+// DISPLAY FLUSH CALLBACK (same as GeminiPuter)
 // ============================================================================
 static void lvgl_flush_cb(lv_display_t* disp, const lv_area_t* area, uint8_t* px_map) {
     uint32_t w = area->x2 - area->x1 + 1;
@@ -54,13 +54,13 @@ static void lvgl_flush_cb(lv_display_t* disp, const lv_area_t* area, uint8_t* px
 }
 
 // ============================================================================
-// INICIALIZAÇÃO
+// INITIALIZATION
 // ============================================================================
 void lvgl_init() {
     lv_init();
     lv_tick_set_cb(lvgl_tick_cb);
 
-    // Display (sem indev de teclado — teclado lido manualmente)
+    // Display (no keyboard indev — keyboard read manually)
     lv_display_t* disp = lv_display_create(LVGL_HOR_RES, LVGL_VER_RES);
     lv_display_set_flush_cb(disp, lvgl_flush_cb);
     lv_display_set_buffers(disp, lvgl_buf_, NULL, LVGL_BUF_SIZE,

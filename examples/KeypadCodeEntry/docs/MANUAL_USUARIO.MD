@@ -1,61 +1,61 @@
-# KeypadCodeEntry — Manual do GameMaster
+# KeypadCodeEntry — GameMaster Manual
 
-## O que é este puzzle?
+## What is this puzzle?
 
-É uma fechadura eletrônica controlada por um teclado numérico. Os jogadores precisam descobrir um código de 4 dígitos e digitá-lo no teclado para abrir uma porta, gaveta ou compartimento secreto.
+It is an electronic lock controlled by a numeric keypad. Players must discover a 4-digit code and enter it on the keypad to open a door, drawer or secret compartment.
 
-## Como funciona?
+## How does it work?
 
-1. A caixa de controle exibe `----` no visor (ou no NeoPixel apagado), indicando que está pronta
-2. O jogador digita 4 números no teclado
-3. Se acertar o código, a trava elétrica abre por 5 segundos e o LED fica verde
-4. Se errar, o LED pisca vermelho e pode tentar novamente (até 3 vezes, configurável)
-5. Se errar todas as tentativas, o sistema bloqueia por 5 segundos e reinicia
+1. The control box shows `----` on the display (or the NeoPixel is off), indicating that it is ready
+2. The player enters 4 numbers on the keypad
+3. If the code is correct, the electric strike opens for 5 seconds and the LED turns green
+4. If wrong, the LED blinks red and they can try again (up to 3 times, configurable)
+5. If all attempts are wrong, the system locks for 5 seconds and restarts
 
-## O que você precisa fornecer
+## What you need to provide
 
-- **Código secreto**: um número de 4 dígitos (ex: 8671, 1945, 2001)
-- **Dica para os jogadores**: algo no cenário que leve a esse número (um quadro na parede, um bilhete, um livro com página marcada)
+- **Secret code**: a 4-digit number (e.g. 8671, 1945, 2001)
+- **Hint for the players**: something in the scenery that leads to this number (a picture on the wall, a note, a book with a marked page)
 
-## Como configurar
+## How to configure
 
-### Pelo teclado (modo local)
+### From the keypad (local mode)
 
-1. Pressione `*` para entrar no modo de configuração
-2. Digite o código atual (padrão de fábrica: 1234)
-3. Digite o novo código de 4 dígitos
-4. Pressione `#` para confirmar
+1. Press `*` to enter configuration mode
+2. Enter the current code (factory default: 1234)
+3. Enter the new 4-digit code
+4. Press `#` to confirm
 
-### Pelo celular/tablet (Home Assistant)
+### From a phone/tablet (Home Assistant)
 
-Se o sistema estiver conectado ao WiFi da sala:
+If the system is connected to the room's WiFi:
 
-1. Abra o aplicativo Home Assistant
-2. Encontre o dispositivo "KeypadCode-ESP32"
-3. Altere o campo "Código" para o novo valor
-4. Altere "Máx Tentativas" se quiser mais ou menos tentativas
-5. Use o botão "Resetar" para reiniciar o puzzle a qualquer momento
+1. Open the Home Assistant app
+2. Find the device "KeypadCode-ESP32"
+3. Change the "Code" field to the new value
+4. Change "Max Attempts" if you want more or fewer attempts
+5. Use the "Reset" button to restart the puzzle at any time
 
-### Pelo portal web (modo AP)
+### From the web portal (AP mode)
 
-Se não houver WiFi configurado:
+If there is no WiFi configured:
 
-1. Ligue o dispositivo — ele criará uma rede WiFi chamada "KeypadCode-ESP32"
-2. Conecte seu celular a essa rede
-3. Abra o navegador e acesse `http://192.168.4.1`
-4. Configure o WiFi da sala e o servidor MQTT
-5. Salve — o dispositivo reiniciará conectado à rede
+1. Turn on the device — it will create a WiFi network called "KeypadCode-ESP32"
+2. Connect your phone to this network
+3. Open the browser and go to `http://192.168.4.1`
+4. Configure the room's WiFi and the MQTT server
+5. Save — the device will restart connected to the network
 
-## Cuidados
+## Precautions
 
-- A trava elétrica funciona com 5V — use fonte adequada
-- O código NUNCA aparece no visor durante o jogo (apenas underscores)
-- Se a energia cair, o código volta ao último valor salvo
-- O relé fica ativo por 5 segundos ao abrir — tempo suficiente para puxar uma porta
+- The electric strike runs on 5V — use a suitable power supply
+- The code NEVER appears on the display during the game (only underscores)
+- If the power fails, the code returns to the last saved value
+- The relay stays active for 5 seconds when opening — enough time to pull a door
 
-## Dicas para o cenário
+## Scenery tips
 
-- Esconda o teclado atrás de um painel falso ou quadro
-- Use fios coloridos para dar pistas falsas (fio vermelho NÃO é o detonador!)
-- Combine com um timer visível para aumentar a tensão
-- Coloque um speaker com som de "acesso concedido" ao acertar o código
+- Hide the keypad behind a false panel or picture
+- Use colored wires to give false clues (the red wire is NOT the detonator!)
+- Combine it with a visible timer to increase the tension
+- Place a speaker with an "access granted" sound when the code is correct

@@ -1,31 +1,31 @@
-# UniversalController — Algoritmo do Jogo
+# UniversalController — Game Algorithm
 
-## Visão Geral
+## Overview
 
-Puzzle universal configurável via JSON. Suporta múltiplos modos de operação: sensor único, múltiplos sensores, sequência, RFID, keypad, etc. O comportamento é inteiramente definido pelo arquivo de configuração.
+Universal puzzle configurable via JSON. Supports multiple operating modes: single sensor, multiple sensors, sequence, RFID, keypad, etc. The behavior is entirely defined by the configuration file.
 
-## Configuração (JSON: universal.json)
+## Configuration (JSON: universal.json)
 
-- **mode**: tipo de puzzle (SINGLE_SENSOR, MULTI_SENSOR, SEQUENCE, RFID, KEYPAD, etc.)
-- **inputs**: pinos de entrada e seus papéis
-- **outputs**: pinos de saída (relés, NeoPixel)
+- **mode**: puzzle type (SINGLE_SENSOR, MULTI_SENSOR, SEQUENCE, RFID, KEYPAD, etc.)
+- **inputs**: input pins and their roles
+- **outputs**: output pins (relays, NeoPixel)
 - **timing**: timeouts, delays
-- **Áudio**: sfx para cada evento
+- **Audio**: sfx for each event
 
-## Estados
+## States
 
 IDLE → RUNNING → SOLVED / ERROR → IDLE
 
-## Modos Suportados
+## Supported Modes
 
-1. **SINGLE_SENSOR**: um sensor deve ser ativado
-2. **MULTI_SENSOR**: múltiplos sensores em qualquer ordem
-3. **SEQUENCE**: sensores em ordem específica
-4. **RFID**: tag RFID específica
-5. **KEYPAD**: código numérico
-6. **TOGGLE**: alternar estado de sensores
-7. **TIMER**: aguardar tempo específico
+1. **SINGLE_SENSOR**: a single sensor must be activated
+2. **MULTI_SENSOR**: multiple sensors in any order
+3. **SEQUENCE**: sensors in a specific order
+4. **RFID**: specific RFID tag
+5. **KEYPAD**: numeric code
+6. **TOGGLE**: toggle sensor state
+7. **TIMER**: wait a specific time
 
 ## AP Mode + WiFi
 
-Configuração de rede via portal web em 192.168.4.1.
+Network configuration via web portal at 192.168.4.1.

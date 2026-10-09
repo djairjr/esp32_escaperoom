@@ -3,16 +3,16 @@
 /**
  * pins/yd_esp32s3.h — VCC-GND YD-ESP32-S3 N16R8 (44P DevKitC-1 clone)
  *
- * Clone do ESP32-S3-DevKitC-1. Módulo WROOM-2-N16R8V.
- * 16MB Flash Octal + 8MB PSRAM Octal, 1.8V SPI.
+ * Clone of the ESP32-S3-DevKitC-1. Module WROOM-2-N16R8V.
+ * 16MB Octal Flash + 8MB Octal PSRAM, 1.8V SPI.
  *
- * Periféricos onboard:
+ * Onboard peripherals:
  *   - RGB LED NeoPixel (GPIO48)
  *   - 2× USB Type-C (UART + OTG/JTAG)
- *   - 44 pinos (2×22 headers)
+ *   - 44 pins (2×22 headers)
  *
- * ⚠️ GPIO35,36,37: RESERVADOS (comunicação octal flash/PSRAM).
- * ⚠️ GPIO48: NeoPixel — usar neopixelWrite(), NÃO digitalWrite().
+ * ⚠️ GPIO35,36,37: RESERVED (octal flash/PSRAM communication).
+ * ⚠️ GPIO48: NeoPixel — use neopixelWrite(), NOT digitalWrite().
  */
 
 #include <Arduino.h>
@@ -23,13 +23,13 @@ constexpr const char* BOARD_NAME         = "VCC-GND YD-ESP32-S3 N16R8";
 constexpr const char* BOARD_MANUFACTURER = "VCC-GND Studio";
 constexpr const char* BOARD_CHIP         = "ESP32-S3";
 
-// ── Memória ──────────────────────────────────────────────────
+// ── Memory ──────────────────────────────────────────────────
 #define BOARD_FLASH_MB  16
 #define BOARD_PSRAM_MB  8
 #define HAS_PSRAM       1
-#define FLASH_IS_OCTAL  1    // SPI Octal (WROOM-2)
+#define FLASH_IS_OCTAL  1    // Octal SPI (WROOM-2)
 
-// ── Periféricos onboard ──────────────────────────────────────
+// ── Onboard peripherals ──────────────────────────────────────
 
 #define HAS_ONBOARD_NEOPIXEL   1    // RGB LED GPIO48
 #define HAS_ONBOARD_USB_OTG    1    // USB OTG GPIO19/20
@@ -60,12 +60,12 @@ constexpr int PIN_SPI_MOSI = 11;  // FSPID
 constexpr int PIN_SD_CS    = 10;
 #define USE_SD_LIBRARY SD
 
-// ── Atuadores ────────────────────────────────────────────────
+// ── Actuators ────────────────────────────────────────────────
 #define HAS_ONBOARD_RELAY    0
 constexpr int PIN_RELAY      = 21;
 constexpr int PIN_SERVO_PWM  = 14;
 
-// ── Botões ───────────────────────────────────────────────────
+// ── Buttons ───────────────────────────────────────────────────
 constexpr int PIN_BTN              = 0;   // BOOT
 constexpr int PIN_EXPANSION_BUTTON = 1;
 
@@ -73,7 +73,7 @@ constexpr int PIN_EXPANSION_BUTTON = 1;
 constexpr int PIN_EXTERNAL_POWER     = 23;
 constexpr int PIN_BATTERY_SENSE      = -1;
 
-// ── Display externo ──────────────────────────────────────────
+// ── External display ──────────────────────────────────────────
 #define HAS_ONBOARD_DISPLAY 0
 constexpr uint8_t OLED_I2C_ADDRESS = 0x3C;
 
@@ -90,7 +90,7 @@ constexpr int PIN_BUZZER = 17;
 #define HAS_ONBOARD_LEDS    1
 #define HAS_ONBOARD_BUZZER  0
 
-// ── IO disponíveis (44 pinos, evitando 35-37) ────────────────
+// ── Available IOs (44 pins, avoiding 35-37) ────────────────
 constexpr int PIN_IO0  = 1;
 constexpr int PIN_IO1  = 2;
 constexpr int PIN_IO2  = 3;
@@ -118,14 +118,14 @@ constexpr int PIN_IO23 = 42;
 constexpr int PIN_IO24 = 47;
 constexpr int PIN_IO25 = 48;
 
-// ── Constantes ───────────────────────────────────────────────
+// ── Constants ───────────────────────────────────────────────
 constexpr uint8_t I2C_DEFAULT_ADDRESS = 0x20;
 constexpr unsigned long DOOR_OPEN_MS  = 5000;
 
 inline void boardInit() {
   #if HAS_ONBOARD_NEOPIXEL
   pinMode(PIN_NEOPIXEL, OUTPUT);
-  neopixelWrite(PIN_NEOPIXEL, 0, 0, 10);  // azul fraco = boot
+  neopixelWrite(PIN_NEOPIXEL, 0, 0, 10);  // weak blue = boot
   #endif
 }
 

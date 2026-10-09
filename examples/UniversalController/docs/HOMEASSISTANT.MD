@@ -1,33 +1,33 @@
-# UniversalController — Entidades Home Assistant
+# UniversalController — Home Assistant Entities
 
-## Sensores
-| Nome | ID | Valores |
+## Sensors
+| Name | ID | Values |
 |---|---|---|
-| Estado | `state` | idle, running, solved, error |
-| Modo Atual | `mode` | texto (definido por JSON) |
-| Inputs Ativos | `active_inputs` | 0-N |
+| State | `state` | idle, running, solved, error |
+| Current Mode | `mode` | text (defined by JSON) |
+| Active Inputs | `active_inputs` | 0-N |
 
-## Binários (por input)
-| Nome | ID |
+## Binary (per input)
+| Name | ID |
 |---|---|
 | Input 1..N | `input_1`..`input_N` |
 
-## Botões
-| Nome | ID |
+## Buttons
+| Name | ID |
 |---|---|
-| Iniciar | `start` |
-| Resetar | `reset` |
+| Start | `start` |
+| Reset | `reset` |
 
-## Seletores
-| Nome | ID | Opções |
+## Selectors
+| Name | ID | Options |
 |---|---|---|
-| Modo | `mode` | SINGLE, MULTI, SEQUENCE, RFID, KEYPAD, TOGGLE, TIMER |
+| Mode | `mode` | SINGLE, MULTI, SEQUENCE, RFID, KEYPAD, TOGGLE, TIMER |
 
-## Números (dinâmicos por JSON)
-| Nome | ID | Range |
+## Numbers (dynamic per JSON)
+| Name | ID | Range |
 |---|---|---|
 | Timeout | `timeout` | 1-300s |
-| Máx Tentativas | `max_attempts` | 1-9 |
+| Max Attempts | `max_attempts` | 1-9 |
 
 ## AP Mode
-Rede WiFi "Universal-XXXX" + portal em 192.168.4.1.
+WiFi network "Universal-XXXX" + portal at 192.168.4.1.

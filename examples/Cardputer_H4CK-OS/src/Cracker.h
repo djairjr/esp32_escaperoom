@@ -4,7 +4,7 @@
 #include "ConfigManager.h"
 
 // ============================================================================
-// CRACKER — hydra (força bruta simulada)
+// CRACKER — hydra (simulated brute force)
 // ============================================================================
 
 extern ConfigManager configManager;
@@ -45,7 +45,7 @@ public:
             delay(300 + (rand() % 200));
         }
 
-        // Última sempre acerta
+        // The last one always succeeds
         int last = configManager.wordlist.count - 1;
         if (last < 0) last = 0;
         snprintf(buf, sizeof(buf), "[HACK] Trying password: %s... SUCCESS!",

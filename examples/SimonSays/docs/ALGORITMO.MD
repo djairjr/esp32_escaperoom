@@ -1,30 +1,30 @@
-# SimonSays — Algoritmo do Jogo
+# SimonSays — Game Algorithm
 
-## Visão Geral
+## Overview
 
-Jogo de memória estilo Simon Says. O sistema toca uma sequência de cores/sons (4 botões coloridos). O jogador deve repetir a sequência na ordem correta. A cada round, a sequência aumenta em 1 item.
+Memory game in the Simon Says style. The system plays a sequence of colors/sounds (4 colored buttons). The player must repeat the sequence in the correct order. Each round, the sequence grows by 1 item.
 
-## Configuração (JSON: simon.json)
+## Configuration (JSON: simon.json)
 
-- **Botões**: 4 botões com cores (Vermelho, Azul, Verde, Amarelo)
-- **maxRounds**: rounds máximos (ou infinito até erro)
-- **tempoEntreNotas**: intervalo entre notas da sequência
+- **Buttons**: 4 buttons with colors (Red, Blue, Green, Yellow)
+- **maxRounds**: maximum rounds (or infinite until a mistake)
+- **timeBetweenNotes**: interval between notes of the sequence
 - **Hardware**: lockPin, neoCount, volume
-- **Áudio**: 4 tons por cor, sfxError, sfxRound, sfxSolved
+- **Audio**: 4 tones per color, sfxError, sfxRound, sfxSolved
 
-## Estados
+## States
 
 IDLE → SHOWING → WAITING → CORRECT / WRONG → SOLVED / GAMEOVER
 
-## Fluxo
+## Flow
 
-1. IDLE: START inicia
-2. SHOWING: sistema toca sequência (luz + som por cor)
-3. WAITING: jogador repete pressionando botões
-4. Se acertar sequência completa → próximo round (sequência +1)
-5. Se errar → GAMEOVER ou reinicia (dependendo de config)
-6. Se completar maxRounds → SOLVED
+1. IDLE: START starts
+2. SHOWING: system plays the sequence (light + sound per color)
+3. WAITING: player repeats by pressing buttons
+4. If the full sequence is correct → next round (sequence +1)
+5. If wrong → GAMEOVER or restart (depending on config)
+6. If maxRounds is completed → SOLVED
 
 ## AP Mode + WiFi
 
-Configuração de rede via portal web em 192.168.4.1.
+Network configuration via web portal at 192.168.4.1.

@@ -5,11 +5,11 @@
 #include "boot_animation_gif.h"
 
 // ============================================================================
-// BOOT SCREEN — Animação GIF embutida no firmware
+// BOOT SCREEN — GIF animation embedded in the firmware
 // ============================================================================
-// GIF está encapsulado no PROGMEM — sem depender de LittleFS.
-// Usa GIF_DRAW_RAW (sem framebuffer extra) → seguro para Cardputer.
-// Fallback textual se algo falhar.
+// The GIF is encapsulated in PROGMEM — no dependency on LittleFS.
+// Uses GIF_DRAW_RAW (no extra framebuffer) → safe for the Cardputer.
+// Textual fallback if something fails.
 // ============================================================================
 
 static void GIFDraw(GIFDRAW* pDraw) {
@@ -61,7 +61,7 @@ public:
 
     void play() {
         if (!gif_.getCanvasWidth()) {
-            // Fallback textual
+            // Textual fallback
             M5Cardputer.Display.fillScreen(TFT_BLACK);
             M5Cardputer.Display.setTextColor(TFT_GREEN, TFT_BLACK);
             M5Cardputer.Display.setTextSize(2);
@@ -83,7 +83,7 @@ public:
         }
 
         gif_.close();
-        // Reabre para próximo boot
+        // Reopen for the next boot
         gif_.begin(GIF_PALETTE_RGB565_LE);
         gif_.setDrawType(GIF_DRAW_RAW);
         gif_.open((uint8_t*)boot_animation_gif, boot_animation_gif_len, GIFDraw);

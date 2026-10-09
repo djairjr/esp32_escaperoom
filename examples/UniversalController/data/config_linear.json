@@ -1,5 +1,5 @@
 {
-  "_comment": "Exemplo: LINEAR_SEQUENCE - Ordem linear das entradas (0,1,2,3,4...)",
+  "_comment": "Example: LINEAR_SEQUENCE - Linear order of inputs (0,1,2,3,4...)",
 
   "controller": {
     "name": "Puzzle Linear",

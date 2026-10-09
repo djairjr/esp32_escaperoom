@@ -1,26 +1,26 @@
-# Roulette — Algoritmo do Jogo
+# Roulette — Game Algorithm
 
-## Visão Geral
+## Overview
 
-Roleta de luzes. Uma luz percorre um anel de NeoPixels. O jogador pressiona SELECT para parar a roleta. Se parar no setor vencedor, resolve o puzzle. Similar ao Cyclone mas com desaceleração simulada.
+Light roulette. A light travels around a ring of NeoPixels. The player presses SELECT to stop the roulette. If it stops on the winning sector, the puzzle is solved. Similar to Cyclone but with simulated deceleration.
 
-## Configuração (JSON: roulette.json)
+## Configuration (JSON: roulette.json)
 
-- **setores**: numSetores, setorVencedor
+- **sectors**: numSectors, winningSector
 - **Hardware**: lockPin, neoCount, volume
 
-## Estados
+## States
 
 IDLE → SPINNING → DECELERATING → SOLVED / MISS → IDLE
 
-## Fluxo
+## Flow
 
-1. IDLE: luz parada. SELECT inicia.
-2. SPINNING: luz percorre anel em velocidade máxima
-3. DECELERATING: SELECT pressionado → velocidade reduz gradualmente até parar
-4. Posição final == setorVencedor → SOLVED
-5. Posição final != setorVencedor → MISS (tenta novamente)
+1. IDLE: light stopped. SELECT starts.
+2. SPINNING: light travels around the ring at maximum speed
+3. DECELERATING: SELECT pressed → speed gradually reduces until it stops
+4. Final position == winningSector → SOLVED
+5. Final position != winningSector → MISS (tries again)
 
 ## AP Mode + WiFi
 
-Configuração de rede via portal web em 192.168.4.1.
+Network configuration via web portal at 192.168.4.1.

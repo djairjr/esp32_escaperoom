@@ -1,6 +1,6 @@
 /**
  * CONNECT WIRES - ESP32-S3 (Seeed XIAO)
- * Port do RP2040 PropMaker para ESP32-S3 usando ESP32EscapeRoom
+ * Port from RP2040 PropMaker to ESP32-S3 using ESP32EscapeRoom
  */
 
 #include <ESP32EscapeRoom.h>
@@ -11,7 +11,7 @@
 using namespace esp32_escaperoom;
 
 // ============================================================================
-// MAPEAMENTO D-PIN → GPIO
+// D-PIN → GPIO MAPPING
 // ============================================================================
 #define D0   1
 #define D1   2
@@ -28,11 +28,11 @@ using namespace esp32_escaperoom;
 #define D12  41
 
 // ============================================================================
-// PINAGEM
+// PINOUT
 // ============================================================================
-#define LOCK_PIN            D0   // Relé da trava (nativo)
+#define LOCK_PIN            D0   // Lock relay (native)
 
-// Pinos no PCF8575 (IoAbstraction: 0-7=P0-P7, 8-15=P10-P17)
+// Pins on the PCF8575 (IoAbstraction: 0-7=P0-P7, 8-15=P10-P17)
 #define BUTTON_RESET_PIN    8    // P10
 #define BUTTON_UNLOCK_PIN   9    // P11
 
@@ -41,7 +41,7 @@ using namespace esp32_escaperoom;
 const uint8_t SOCKET_PINS[NUM_SOCKETS] = {0, 1, 2, 3, 4, 5, 6, 7, 8};
 
 #define VOLTMETER_CHANNEL   0    // PCA9685
-#define GAUGE_LEDS          8    // NeoPixel para barra de progresso
+#define GAUGE_LEDS          8    // NeoPixel for the progress bar
 
 #define LOCK_ACTIVE         HIGH
 #define LOCK_INACTIVE       LOW
@@ -74,16 +74,16 @@ HANumber haNumPairs("pair_count");
 HASelect haSelectMode("pair_mode");
 
 // ============================================================================
-// CLASSE PUZZLE
+// PUZZLE CLASS
 // ============================================================================
 class ConnectWiresPuzzle : public PuzzleBase {
 public:
     ConnectWiresPuzzle() : PuzzleBase(11) {}
 
     void setupHardware() override {
-        Serial.println(F("[WIRES] Setup iniciado"));
+        Serial.println(F("[WIRES] Setup started"));
 
-        // Relé da trava (nativo)
+        // Lock relay (native)
         hw.pinMode(LOCK_PIN, OUTPUT);
         hw.digitalWrite(LOCK_PIN, LOCK_ACTIVE);
 
@@ -94,21 +94,21 @@ public:
             switches.addSwitch(BUTTON_UNLOCK_PIN, onButtonPressed, NO_REPEAT, false);
             Serial.println(F("[WIRES] SwitchInput OK"));
         } else {
-            Serial.println(F("[WIRES] ERRO: PCF8575 nao detectado!"));
+            Serial.println(F("[WIRES] ERROR: PCF8575 not detected!"));
         }
 
-        // Soquetes no PCF
+        // Sockets on the PCF
         for (int i = 0; i < NUM_SOCKETS; i++) {
             hw.io()->pinMode(SOCKET_PINS[i], INPUT_PULLUP);
         }
 
-        // Zera voltímetro PCA9685
+        // Reset PCA9685 voltmeter
         hw.setAnalogOutput(VOLTMETER_CHANNEL, 0);
 
-        // Gera conexões
+        // Generate connections
         randomizeConnections();
         setState(PuzzleState::Idle);
-        Serial.println(F("[WIRES] Pronto."));
+        Serial.println(F("[WIRES] Ready."));
     }
 
     void update() override {
@@ -137,25 +137,25 @@ public:
     // HA SETUP
     // ========================================================================
     void setupHA() {
-        haSensorState.setName("Estado");  haSensorState.setIcon("mdi:cable-data");
-        haSensorConnections.setName("Conexões Ativas"); haSensorConnections.setIcon("mdi:connection");
-        haSensorPairs.setName("Pares Conectados"); haSensorPairs.setIcon("mdi:electric-switch");
+        haSensorState.setName("State");  haSensorState.setIcon("mdi:cable-data");
+        haSensorConnections.setName("Active Connections"); haSensorConnections.setIcon("mdi:connection");
+        haSensorPairs.setName("Connected Pairs"); haSensorPairs.setIcon("mdi:electric-switch");
 
-        haLock.setName("Fechadura"); haLock.setIcon("mdi:lock");
+        haLock.setName("Lock"); haLock.setIcon("mdi:lock");
         haLock.onCommand(haLockCallback);
 
-        haBtnStart.setName("Iniciar / Resetar"); haBtnStart.setIcon("mdi:play");
+        haBtnStart.setName("Start / Reset"); haBtnStart.setIcon("mdi:play");
         haBtnStart.onCommand(haStartCallback);
-        haBtnUnlock.setName("Liberar Trava"); haBtnUnlock.setIcon("mdi:lock-open");
+        haBtnUnlock.setName("Release Lock"); haBtnUnlock.setIcon("mdi:lock-open");
         haBtnUnlock.onCommand(haUnlockCallback);
 
-        haNumPairs.setName("Pares"); haNumPairs.setIcon("mdi:numeric");
+        haNumPairs.setName("Pairs"); haNumPairs.setIcon("mdi:numeric");
         haNumPairs.setMin(1); haNumPairs.setMax(4); haNumPairs.setStep(1);
         haNumPairs.onCommand(haPairsCallback);
         haNumPairs.setState((int32_t)NUM_CONNECTIONS);
 
-        haSelectMode.setName("Modo dos Pares"); haSelectMode.setIcon("mdi:tune");
-        haSelectMode.setOptions("Fixo;Aleatório");
+        haSelectMode.setName("Pair Mode"); haSelectMode.setIcon("mdi:tune");
+        haSelectMode.setOptions("Fixed;Random");
         haSelectMode.onCommand(haModeCallback);
 
         publishAllHA();
@@ -183,7 +183,7 @@ public:
         haSensorPairs.setValue(p.c_str());
     }
 
-    // Callbacks HA
+    // HA callbacks
     static void haLockCallback(HALock::LockCommand cmd, HALock*) {
         auto& _hw = esp32_escaperoom::Hardware::instance();
         _hw.digitalWrite(LOCK_PIN, cmd == HALock::CommandLock ? LOCK_ACTIVE : LOCK_INACTIVE);
@@ -200,11 +200,11 @@ public:
         esp32_escaperoom::Hardware::instance().digitalWrite(LOCK_PIN, LOCK_INACTIVE);
     }
     static void haPairsCallback(HANumeric val, HANumber*) {
-        // Apenas armazena — reset aplica
+        // Only stores — reset applies
         (void)val;
     }
     static void haModeCallback(int8_t idx, HASelect*) {
-        // 0=Fixo, 1=Aleatório — reset aplica
+        // 0=Fixed, 1=Random — reset applies
         (void)idx;
     }
 
@@ -231,10 +231,10 @@ private:
                 stateChanged = true;
                 lastState_[i] = currentState;
                 if (currentState) {
-                    Serial.printf("[WIRES] Conexao %d: P%d <-> P%d\n", i+1, pin1, pin2);
+                    Serial.printf("[WIRES] Connection %d: P%d <-> P%d\n", i+1, pin1, pin2);
                     hw.sound().playOnce("/connected.mp3");
                 } else {
-                    Serial.printf("[WIRES] Conexao %d removida\n", i+1);
+                    Serial.printf("[WIRES] Connection %d removed\n", i+1);
                 }
                 updatePairsSensor();
             }
@@ -277,9 +277,9 @@ private:
             connections_[i][0] = pins[i * 2];
             connections_[i][1] = pins[i * 2 + 1];
         }
-        Serial.println(F("[WIRES] Novas conexoes geradas:"));
+        Serial.println(F("[WIRES] New connections generated:"));
         for (int i = 0; i < NUM_CONNECTIONS; i++) {
-            Serial.printf("  %d: Pino %d <-> Pino %d\n",
+            Serial.printf("  %d: Pin %d <-> Pin %d\n",
                           i + 1, connections_[i][0], connections_[i][1]);
         }
     }
@@ -299,7 +299,7 @@ private:
     }
 
     void handleSolve() {
-        Serial.println(F("[WIRES] Puzzle resolvido!"));
+        Serial.println(F("[WIRES] Puzzle solved!"));
         startSolveEffect();
         hw.sound().playOnce("/success.mp3");
         setState(PuzzleState::Solved);
@@ -322,7 +322,7 @@ private:
     }
 
     void handleUnsolve() {
-        Serial.println(F("[WIRES] Puzzle desfeito!"));
+        Serial.println(F("[WIRES] Puzzle unsolved!"));
         hw.digitalWrite(LOCK_PIN, LOCK_ACTIVE);
         setState(PuzzleState::Running);
         haSensorState.setValue("running");
@@ -357,7 +357,7 @@ private:
 };
 
 // ============================================================================
-// CALLBACKS + GLOBAIS
+// CALLBACKS + GLOBALS
 // ============================================================================
 volatile bool btnPressed[2] = {false, false};
 
@@ -407,7 +407,7 @@ void setup() {
     master.addPuzzle(&puzzle);
     master.begin();
     puzzle.run();
-    Serial.println(F("[WIRES] Pronto!"));
+    Serial.println(F("[WIRES] Ready!"));
 }
 
 // ============================================================================

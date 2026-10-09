@@ -1,10 +1,10 @@
-Inclua o arquivo lock.json no LittleFS e os seguintes audios em /sfx/:
+Include the lock.json file in LittleFS and the following audio files in /sfx/:
 
-Arquivos necessarios:
-- /sfx/beep.mp3     (Bip de tecla pressionada)
-- /sfx/error.mp3    (Som de erro/acesso negado)
-- /sfx/magic.mp3    (Som de acesso liberado)
-- /sfx/cancel.mp3   (Som ao resetar/limpar)
+Required files:
+- /sfx/beep.mp3     (Key press beep)
+- /sfx/error.mp3    (Error/access denied sound)
+- /sfx/magic.mp3    (Access granted sound)
+- /sfx/cancel.mp3   (Reset/clear sound)
 
-Nota: Se /lock.json nao existir no LittleFS, o codigo usa valores padrao
-embutidos (code=1234, mode=KEYPAD_OR_RFID, lockPin=10).
+Note: If /lock.json does not exist in LittleFS, the code uses the built-in
+default values (code=1234, mode=KEYPAD_OR_RFID, lockPin=10).
