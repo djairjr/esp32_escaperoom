@@ -65,34 +65,34 @@ The Helix decoder behind that pipeline is published on GitHub only as well.
    git clone https://github.com/pschatzmann/arduino-libhelix.git
    ```
 
-### `RotaryDial` — the pulse dial (**not the same-name library in the Manager**)
+### `RotaryDialUnified` — the pulse dial (**not in the Library Manager**)
 
 `RotaryDialReader` needs the pulse-dial library with this API:
 
 ```cpp
-RotaryDial::begin(pin, ROTARYDIAL_MECHANICAL | ROTARYDIAL_OPTICAL);
-RotaryDial::setDebounce(ms); setMaxGap(ms); setDigitEnd(ms); reset();
+RotaryDialUnified::begin(pin, ROTARYDIAL_UNIFIED_MECHANICAL | ROTARYDIAL_UNIFIED_OPTICAL);
+RotaryDialUnified::setDebounce(ms); setMaxGap(ms); setDigitEnd(ms); reset();
 ```
 
-⚠️ **The library that goes by the name `RotaryDial` in the Arduino Library Manager is a
-different project, by another author.** It has neither the optical-encoder support nor this
-API, so `arduino-cli lib install RotaryDial` installs the wrong library and the build then
-fails with:
+It is not published in the Arduino Library Manager, so `arduino-cli lib install RotaryDialUnified`
+finds nothing. The Manager does have a **`RotaryDial` 0.0.1, by Tomas Mudrunka** — the original,
+mechanical-only project this library derives from — and it is a different project: no
+optical-encoder support and not this API. Installing it does not provide our header, and the build
+stops on the first include:
 
 ```
-RotaryDialReader.cpp:7:17: error: 'begin' is not a member of 'RotaryDial'
-RotaryDialReader.cpp:7:28: error: 'ROTARYDIAL_MECHANICAL' was not declared in this scope
+sketch.ino:1:10: fatal error: RotaryDialUnified.h: No such file or directory
 ```
 
-The library this code needs is the customized mechanical/optical one. Clone it:
+Clone the library this code needs:
 
 ```bash
 cd <arduino>/libraries
-git clone https://github.com/djairjr/RotaryDial.git
+git clone https://github.com/djairjr/RotaryDialUnified.git
 ```
 
-Without `arduino-audio-tools` or `arduino-libhelix` the library does not compile; without the
-customized `RotaryDial` the rotary-dial path does not compile.
+Without `arduino-audio-tools` or `arduino-libhelix` the library does not compile; without
+`RotaryDialUnified` the rotary-dial path does not compile.
 
 ---
 

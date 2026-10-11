@@ -31,8 +31,8 @@ jobs:
           arduino-cli lib update-index
           # The version pins are the combination that builds on the ESP32 core 3.x:
           # IoAbstraction 5.x and TaskManagerIO 5.x do not compile there.
-          # RotaryDial is not installed here either: the same-name library in the Manager is
-          # a different project. The customized copy is cloned in the next step.
+          # RotaryDialUnified is not in the Manager either (the Manager's RotaryDial is the
+          # original project it derives from). The customized copy is cloned in the next step.
           arduino-cli lib install \
             ArduinoJson "IoAbstraction@4.5.3" "TaskManagerIO@1.5.2" \
             "Adafruit NeoPixel" "Adafruit LED Backpack Library" "Adafruit LIS3DH" \
@@ -46,11 +46,11 @@ jobs:
             "$HOME/Arduino/libraries/arduino-libhelix"
           git clone --depth 1 https://github.com/pschatzmann/arduino-audio-tools.git \
             "$HOME/Arduino/libraries/arduino-audio-tools"
-          # RotaryDial too: the library that goes by that name in the Manager is a different
-          # project, without the optical-encoder support and without the API RotaryDialReader
-          # uses. This customized copy is the one it needs.
-          git clone --depth 1 https://github.com/djairjr/RotaryDial.git \
-            "$HOME/Arduino/libraries/RotaryDial"
+          # RotaryDialUnified too: it is not in the Manager, and the RotaryDial that is there
+          # (0.0.1, the original mechanical-only project this derives from) does not provide
+          # the header or the API RotaryDialReader uses. This is the copy it needs.
+          git clone --depth 1 https://github.com/djairjr/RotaryDialUnified.git \
+            "$HOME/Arduino/libraries/RotaryDialUnified"
 
       - name: Patch IoAbstraction for ESP32 SoCs without a DAC
         run: |

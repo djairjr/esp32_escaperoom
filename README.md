@@ -399,17 +399,17 @@ does not compile on the ESP32 core 3.x.
   Install from <https://github.com/pschatzmann/arduino-libhelix> (Sketch → Include
   Library → Add .ZIP Library), or clone it into your `libraries/` folder.
 
-- **`RotaryDial`** — the pulse-dial library behind `RotaryDialReader`
-  (`begin(pin, ROTARYDIAL_MECHANICAL | ROTARYDIAL_OPTICAL)`, `setDebounce`, `setMaxGap`,
+- **`RotaryDialUnified`** — the pulse-dial library behind `RotaryDialReader`
+  (`begin(pin, ROTARYDIAL_UNIFIED_MECHANICAL | ROTARYDIAL_UNIFIED_OPTICAL)`, `setDebounce`, `setMaxGap`,
   `setDigitEnd`, `reset`), which reads both the mechanical dial and the optical encoder disc.
-  ⚠️ The library that goes **by this name in the Arduino Library Manager is a different
-  project**, by another author, which has neither the optical-encoder support nor this API:
-  installing it by name breaks the build with `'begin' is not a member of 'RotaryDial'`.
-  Clone the right one:
+  It is **not in the Arduino Library Manager**. The Manager does have a `RotaryDial` (0.0.1) — the
+  original mechanical-only project this one derives from — but it has neither the optical-encoder
+  support nor this API, and installing it does not provide our header: the build stops with
+  `fatal error: RotaryDialUnified.h: No such file or directory`. Clone the right one:
 
   ```
   cd <arduino>/libraries
-  git clone https://github.com/djairjr/RotaryDial.git
+  git clone https://github.com/djairjr/RotaryDialUnified.git
   ```
 
 Example sketches additionally use `lvgl`; install it only for the examples that need it
