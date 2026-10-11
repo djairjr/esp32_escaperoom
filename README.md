@@ -401,11 +401,16 @@ does not compile on the ESP32 core 3.x.
 
 - **`RotaryDial`** — the pulse-dial library behind `RotaryDialReader`
   (`begin(pin, ROTARYDIAL_MECHANICAL | ROTARYDIAL_OPTICAL)`, `setDebounce`, `setMaxGap`,
-  `setDigitEnd`, `reset`). ⚠️ The library that goes **by this name in the Arduino Library
-  Manager is a different project**, by another author, which has neither the optical-encoder
-  support nor this API: installing it by name breaks the build with `'begin' is not a member
-  of 'RotaryDial'`. The library this code needs is the customized mechanical/optical one and
-  it is **not published** — keep your copy of it next to the other libraries.
+  `setDigitEnd`, `reset`), which reads both the mechanical dial and the optical encoder disc.
+  ⚠️ The library that goes **by this name in the Arduino Library Manager is a different
+  project**, by another author, which has neither the optical-encoder support nor this API:
+  installing it by name breaks the build with `'begin' is not a member of 'RotaryDial'`.
+  Clone the right one:
+
+  ```
+  cd <arduino>/libraries
+  git clone https://github.com/djairjr/RotaryDial.git
+  ```
 
 Example sketches additionally use `lvgl`; install it only for the examples that need it
 (see [`docs/EXAMPLES.md`](docs/EXAMPLES.md)).

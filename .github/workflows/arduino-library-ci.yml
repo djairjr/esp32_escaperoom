@@ -31,11 +31,8 @@ jobs:
           arduino-cli lib update-index
           # The version pins are the combination that builds on the ESP32 core 3.x:
           # IoAbstraction 5.x and TaskManagerIO 5.x do not compile there.
-          # RotaryDial is deliberately NOT installed here: the library that goes by that
-          # name in the Manager is a different project, without the optical-encoder support
-          # and without the API RotaryDialReader uses. The one this library needs is a
-          # customized copy with no published source, so the compile step below cannot have
-          # it — expect 'RotaryDial.h: No such file or directory' until that changes.
+          # RotaryDial is not installed here either: the same-name library in the Manager is
+          # a different project. The customized copy is cloned in the next step.
           arduino-cli lib install \
             ArduinoJson "IoAbstraction@4.5.3" "TaskManagerIO@1.5.2" \
             "Adafruit NeoPixel" "Adafruit LED Backpack Library" "Adafruit LIS3DH" \
@@ -44,12 +41,16 @@ jobs:
 
       - name: Install the libraries the Library Manager does NOT have
         run: |
-          # Both live on GitHub only: neither arduino-audio-tools nor arduino-libhelix
-          # is published in the Arduino Library Manager index.
+          # None of these is published in the Arduino Library Manager index.
           git clone --depth 1 https://github.com/pschatzmann/arduino-libhelix.git \
             "$HOME/Arduino/libraries/arduino-libhelix"
           git clone --depth 1 https://github.com/pschatzmann/arduino-audio-tools.git \
             "$HOME/Arduino/libraries/arduino-audio-tools"
+          # RotaryDial too: the library that goes by that name in the Manager is a different
+          # project, without the optical-encoder support and without the API RotaryDialReader
+          # uses. This customized copy is the one it needs.
+          git clone --depth 1 https://github.com/djairjr/RotaryDial.git \
+            "$HOME/Arduino/libraries/RotaryDial"
 
       - name: Patch IoAbstraction for ESP32 SoCs without a DAC
         run: |

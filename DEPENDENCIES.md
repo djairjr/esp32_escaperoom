@@ -84,8 +84,12 @@ RotaryDialReader.cpp:7:17: error: 'begin' is not a member of 'RotaryDial'
 RotaryDialReader.cpp:7:28: error: 'ROTARYDIAL_MECHANICAL' was not declared in this scope
 ```
 
-The library this code needs is the customized mechanical/optical one, and it is **not
-published**: keep your copy of it next to the other libraries in `libraries/`.
+The library this code needs is the customized mechanical/optical one. Clone it:
+
+```bash
+cd <arduino>/libraries
+git clone https://github.com/djairjr/RotaryDial.git
+```
 
 Without `arduino-audio-tools` or `arduino-libhelix` the library does not compile; without the
 customized `RotaryDial` the rotary-dial path does not compile.
