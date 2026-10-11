@@ -20,9 +20,9 @@ namespace esp32_escaperoom {
  *   - Connect the other terminal to GND
  *   - Use INPUT_PULLUP or INPUT (depending on the telephone model)
  */
-class RotaryDialReader {
+class RotaryDialUnifiedReader {
  public:
-  RotaryDialReader() : initialized_(false), lastPin_(0) {}
+  RotaryDialUnifiedReader() : initialized_(false), lastPin_(0) {}
 
   /**
    * Initializes the rotary dial reader in the default mode (MECHANICAL).

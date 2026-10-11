@@ -48,7 +48,7 @@ jobs:
             "$HOME/Arduino/libraries/arduino-audio-tools"
           # RotaryDialUnified too: it is not in the Manager, and the RotaryDial that is there
           # (0.0.1, the original mechanical-only project this derives from) does not provide
-          # the header or the API RotaryDialReader uses. This is the copy it needs.
+          # the header or the API RotaryDialUnifiedReader uses. This is the copy it needs.
           git clone --depth 1 https://github.com/djairjr/RotaryDialUnified.git \
             "$HOME/Arduino/libraries/RotaryDialUnified"
 

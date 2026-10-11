@@ -18,7 +18,7 @@ Display14Seg	KEYWORD1
 NfcReader	KEYWORD1
 Pcf857x	KEYWORD1
 RfidBus	KEYWORD1
-RotaryDialReader	KEYWORD1
+RotaryDialUnifiedReader	KEYWORD1
 EscapeRoomRotaryEncoder	KEYWORD1
 ConfigManager	KEYWORD1
 SerialDebug	KEYWORD1
@@ -89,8 +89,8 @@ hasOled	KEYWORD2
 hasAdc	KEYWORD2
 hasNfc	KEYWORD2
 createEncoder	KEYWORD2
-createRotaryDial	KEYWORD2
-createRotaryDialOptical	KEYWORD2
+createRotaryDialUnified	KEYWORD2
+createRotaryDialUnifiedOptical	KEYWORD2
 createNfcReader	KEYWORD2
 setActuator	KEYWORD2
 readVoltage	KEYWORD2

@@ -327,7 +327,7 @@ Everything is reached through the `hw` macro (a singleton:
 | ADC | `hw.readVoltage(ch)`, `hw.readAnalogRaw(ch)` | ADS1115 |
 | Accelerometer | `hw.isShaking()`, `hw.isSingleTapped()`, `hw.isDoubleTapped()` | LIS3DH |
 | NFC | `hw.createNfcReader()` | PN532 (I2C) |
-| Rotary dial | `hw.createRotaryDial(pin)` / `createRotaryDialOptical(...)` | phone pulse dial |
+| Rotary dial | `hw.createRotaryDialUnified(pin)` / `createRotaryDialUnifiedOptical(...)` | phone pulse dial |
 | Rotary encoder | `hw.createEncoder(pinA, pinB)` | quadrature encoder |
 | Battery | `hw.readBatteryVoltage()`, `hw.readBatteryPercent()`, `hw.setLowPowerMode()` | LiPo divider |
 | Detection | `hw.hasAccelerometer()`, `hasDisplay()`, `hasAdc()`, `hasPwmDriver()`, `hasRtc()`, `hasOled()`, `hasNfc()` | boot I2C scan |
@@ -399,7 +399,7 @@ does not compile on the ESP32 core 3.x.
   Install from <https://github.com/pschatzmann/arduino-libhelix> (Sketch → Include
   Library → Add .ZIP Library), or clone it into your `libraries/` folder.
 
-- **`RotaryDialUnified`** — the pulse-dial library behind `RotaryDialReader`
+- **`RotaryDialUnified`** — the pulse-dial library behind `RotaryDialUnifiedReader`
   (`begin(pin, ROTARYDIAL_UNIFIED_MECHANICAL | ROTARYDIAL_UNIFIED_OPTICAL)`, `setDebounce`, `setMaxGap`,
   `setDigitEnd`, `reset`), which reads both the mechanical dial and the optical encoder disc.
   It is **not in the Arduino Library Manager**. The Manager does have a `RotaryDial` (0.0.1) — the

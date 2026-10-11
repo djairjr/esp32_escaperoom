@@ -16,7 +16,7 @@
 #include "NfcReader.h"
 #include "PlatformPins.h"
 #include "RotaryEncoder.h"
-#include "RotaryDialReader.h"
+#include "RotaryDialUnifiedReader.h"
 #include "AudioPlayer.h"
 #ifndef ESP32_ESCAPEROOM_NO_IOABSTRACTION
 #include <IoAbstractionWire.h>
@@ -202,8 +202,8 @@ public:
   }
 
   // Rotary Dial Factory (telephone rotary dial)
-  RotaryDialReader *createRotaryDial(uint8_t pin) {
-    RotaryDialReader *dial = new RotaryDialReader();
+  RotaryDialUnifiedReader *createRotaryDialUnified(uint8_t pin) {
+    RotaryDialUnifiedReader *dial = new RotaryDialUnifiedReader();
     if (dial->begin(pin)) {
       return dial;
     }
@@ -212,11 +212,11 @@ public:
   }
 
   // Rotary Dial Factory — Optical Mode with calibrated timings
-  RotaryDialReader *createRotaryDialOptical(uint8_t pin,
+  RotaryDialUnifiedReader *createRotaryDialUnifiedOptical(uint8_t pin,
                                               unsigned long debounce = 50,
                                               unsigned long maxgap = 0,
                                               unsigned long digitend = 800) {
-    RotaryDialReader *dial = new RotaryDialReader();
+    RotaryDialUnifiedReader *dial = new RotaryDialUnifiedReader();
     if (dial->beginOptical(pin, debounce, maxgap, digitend)) {
       return dial;
     }

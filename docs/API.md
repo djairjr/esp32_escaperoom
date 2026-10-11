@@ -95,8 +95,8 @@ Puzzles should prefer `PuzzlePixelView` (per-puzzle windows) over raw indices.
 | Method | Returns |
 |--------|---------|
 | `EscapeRoomRotaryEncoder* createEncoder(uint8_t pinA, uint8_t pinB)` | Native quadrature encoder. |
-| `RotaryDialReader* createRotaryDial(uint8_t pin)` | Mechanical pulse dial. |
-| `RotaryDialReader* createRotaryDialOptical(uint8_t pin, debounce=50, maxgap=0, digitend=800)` | Optical dial with calibrated timings. |
+| `RotaryDialUnifiedReader* createRotaryDialUnified(uint8_t pin)` | Mechanical pulse dial. |
+| `RotaryDialUnifiedReader* createRotaryDialUnifiedOptical(uint8_t pin, debounce=50, maxgap=0, digitend=800)` | Optical dial with calibrated timings. |
 | `NfcReader* createNfcReader(uint8_t irq = 255, uint8_t reset = 255)` | PN532 over I²C; also sets `hasNfc_`. |
 
 Factories return `nullptr` on failure, so always check.
@@ -279,7 +279,7 @@ Available only when `MFRC522.h` is present (`__has_include`).
 
 ---
 
-## `RotaryDialReader` — phone pulse dial
+## `RotaryDialUnifiedReader` — phone pulse dial
 
 `bool begin(uint8_t pin)` (mechanical), `bool beginOptical(uint8_t pin, unsigned long debounce, unsigned long maxgap, unsigned long digitend)`,
 `bool available()`, `int read()` (0–9 or `-1`), `void reset()`, `bool isInitialized()`, `uint8_t getPin()`.

@@ -67,7 +67,7 @@ The Helix decoder behind that pipeline is published on GitHub only as well.
 
 ### `RotaryDialUnified` — the pulse dial (**not in the Library Manager**)
 
-`RotaryDialReader` needs the pulse-dial library with this API:
+`RotaryDialUnifiedReader` needs the pulse-dial library with this API:
 
 ```cpp
 RotaryDialUnified::begin(pin, ROTARYDIAL_UNIFIED_MECHANICAL | ROTARYDIAL_UNIFIED_OPTICAL);
