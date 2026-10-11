@@ -24,7 +24,7 @@ orchestration model and the two ways of writing a puzzle.
 │  HARDWARE ABSTRACTION  —  Hardware singleton (`hw`)                       │
 │    boot I2C/SPI scan, detection flags, one uniform API per peripheral    │
 │    AudioPlayer · Display14Seg · NeoPixel (int/ext) · Servo · ADS1115 ·    │
-│    PCA9685 · LIS3DH · PN532 · PCF857x · RotaryDialReader · Encoder ·      │
+│    PCA9685 · LIS3DH · PN532 · PCF857x · RotaryDialUnifiedReader · Encoder ·      │
 │    battery/low-power                                                      │
 ├───────────────────────────────────────────────────────────────────────────┤
 │  BOARD PIN MAP  —  PlatformPins.h → pins/<board>.h                        │
@@ -245,7 +245,7 @@ esp32_escaperoom/
 │       ├── NfcReader.h            ← PN532
 │       ├── RfidBus.h              ← multiple MFRC522 on one SPI bus
 │       ├── Pcf857x.h              ← PCF8574/8575 wrapper
-│       ├── RotaryDialReader.h/.cpp← phone pulse dial
+│       ├── RotaryDialUnifiedReader.h/.cpp← phone pulse dial
 │       ├── RotaryEncoder.h        ← native quadrature encoder
 │       ├── ConfigManager.h        ← SD/LittleFS/AP + JSON
 │       ├── SerialDebug.h          ← serial command console

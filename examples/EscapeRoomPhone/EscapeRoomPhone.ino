@@ -118,7 +118,7 @@ void IRAM_ATTR handleHookISR() {
 // ============================================================================
 
 #ifdef USE_ROTARY_DIAL
-RotaryDialReader* rotaryDial = nullptr;
+RotaryDialUnifiedReader* rotaryDial = nullptr;
 
 #elif defined(KEYPAD_GPIO)
 const byte KEYPAD_ROWS = 4, KEYPAD_COLS = 3;
@@ -527,7 +527,7 @@ void setup() {
     haMqtt.begin(netConfig.mqttBroker(), netConfig.mqttUser(), netConfig.mqttPass());
 
     #if defined(USE_ROTARY_DIAL)
-    rotaryDial = hw.createRotaryDial(PIN_ROTARY_PULSE);
+    rotaryDial = hw.createRotaryDialUnified(PIN_ROTARY_PULSE);
     if(rotaryDial) Serial.println(F("[SETUP] Rotary OK"));
     else Serial.println(F("[SETUP] Rotary ERROR"));
     #elif defined(KEYPAD_GPIO)

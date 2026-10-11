@@ -9,8 +9,8 @@ namespace esp32_escaperoom {
  * Provides a simple interface for reading dialed digits.
  *
  * Supported modes (defined in the library):
- *   ROTARYDIAL_MECHANICAL (default) — metallic contacts
- *   ROTARYDIAL_OPTICAL            — optical encoder
+ *   ROTARYDIAL_UNIFIED_MECHANICAL (default) — metallic contacts
+ *   ROTARYDIAL_UNIFIED_OPTICAL            — optical encoder
  *
  * External dependency:
  *   RotaryDial library v1.0.0+ in Documents/Arduino/libraries/RotaryDial
@@ -20,9 +20,9 @@ namespace esp32_escaperoom {
  *   - Connect the other terminal to GND
  *   - Use INPUT_PULLUP or INPUT (depending on the telephone model)
  */
-class RotaryDialReader {
+class RotaryDialUnifiedReader {
  public:
-  RotaryDialReader() : initialized_(false), lastPin_(0) {}
+  RotaryDialUnifiedReader() : initialized_(false), lastPin_(0) {}
 
   /**
    * Initializes the rotary dial reader in the default mode (MECHANICAL).

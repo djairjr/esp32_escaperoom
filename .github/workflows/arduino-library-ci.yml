@@ -26,22 +26,69 @@ jobs:
           arduino-cli core update-index
           arduino-cli core install esp32:esp32
 
-      - name: Install managed dependencies
+      - name: Install the libraries the Library Manager has
         run: |
           arduino-cli lib update-index
+          # The version pins are the combination that builds on the ESP32 core 3.x:
+          # IoAbstraction 5.x and TaskManagerIO 5.x do not compile there.
+          # RotaryDialUnified is not in the Manager either (the Manager's RotaryDial is the
+          # original project it derives from). The customized copy is cloned in the next step.
           arduino-cli lib install \
-            ArduinoJson IoAbstraction TaskManagerIO arduino-audio-tools \
+            ArduinoJson "IoAbstraction@4.5.3" "TaskManagerIO@1.5.2" \
             "Adafruit NeoPixel" "Adafruit LED Backpack Library" "Adafruit LIS3DH" \
             "Adafruit BusIO" "Adafruit PN532" ADS1115_WE PCA9685 ESP32Servo \
-            RotaryDial M5Unified
+            M5Unified home-assistant-integration
 
-      - name: Install arduino-libhelix (not in the Library Manager)
+      - name: Install the libraries the Library Manager does NOT have
         run: |
+          # None of these is published in the Arduino Library Manager index.
           git clone --depth 1 https://github.com/pschatzmann/arduino-libhelix.git \
             "$HOME/Arduino/libraries/arduino-libhelix"
+          git clone --depth 1 https://github.com/pschatzmann/arduino-audio-tools.git \
+            "$HOME/Arduino/libraries/arduino-audio-tools"
+          # RotaryDialUnified too: it is not in the Manager, and the RotaryDial that is there
+          # (0.0.1, the original mechanical-only project this derives from) does not provide
+          # the header or the API RotaryDialUnifiedReader uses. This is the copy it needs.
+          git clone --depth 1 https://github.com/djairjr/RotaryDialUnified.git \
+            "$HOME/Arduino/libraries/RotaryDialUnified"
+
+      - name: Patch IoAbstraction for ESP32 SoCs without a DAC
+        run: |
+          # IoAbstraction gates its DAC code on __has_include(<driver/dac.h>), and that
+          # header exists on the ESP32-S3/C3 even though those SoCs have no DAC, so the
+          # build dies on "'DAC1' was not declared in this scope". Gate it on the hardware
+          # capability instead. The permanent fix belongs upstream:
+          # https://github.com/TcMenu/IoAbstraction
+          IOA_CPP="$HOME/Arduino/libraries/IoAbstraction/src/esp32/ESP32AnalogDevice.cpp" \
+          python3 - <<'PY'
+          import os
+          import pathlib
+
+          path = pathlib.Path(os.environ["IOA_CPP"])
+          src = path.read_text()
+          gate = "#if __has_include(<driver/dac.h>) && defined(SOC_DAC_SUPPORTED)\n"
+          stock = "#if __has_include(<driver/dac.h>)\n"
+          guard = (
+              "#if __has_include(<soc/soc_caps.h>)\n"
+              "#include <soc/soc_caps.h>\n"
+              "#endif\n"
+              "#if __has_include(<driver/dac.h>) && defined(SOC_DAC_SUPPORTED)\n"
+          )
+          if gate in src:
+              print("IoAbstraction already patched")
+          elif stock in src:
+              path.write_text(src.replace(stock, guard, 1))
+              print("IoAbstraction patched")
+          else:
+              raise SystemExit("IoAbstraction changed: the DAC gate was not found, review the patch")
+          PY
 
       - name: Compile the smoke test (Seeed XIAO ESP32-S3)
         run: |
+          # The sketch lives inside the library, so the library must also be visible as a
+          # library: without this the compiler finds the headers but never links the
+          # library's own translation units.
+          ln -s "$PWD" "$HOME/Arduino/libraries/esp32_escaperoom"
           arduino-cli compile \
             --fqbn esp32:esp32:XIAO_ESP32S3 \
             --libraries "$HOME/Arduino/libraries" \

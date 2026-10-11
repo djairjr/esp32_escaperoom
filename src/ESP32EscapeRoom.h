@@ -45,7 +45,7 @@
 #endif
 
 #include "esp32_escaperoom/RotaryEncoder.h"            // GPIO native
-#include "esp32_escaperoom/RotaryDialReader.h"         // RotaryDial library wrapper
+#include "esp32_escaperoom/RotaryDialUnifiedReader.h"         // RotaryDial library wrapper
 
 // Core hardware and puzzle framework
 #include "esp32_escaperoom/Hardware.h"
