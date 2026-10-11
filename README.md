@@ -573,6 +573,7 @@ locally.
 | [`docs/BOARDS.md`](docs/BOARDS.md) | Pin contract, the seven board files, adding a new board. |
 | [`docs/CONFIGURATION.md`](docs/CONFIGURATION.md) | Config resolution, JSON schema, AP-mode portal. |
 | [`docs/HOME_ASSISTANT.md`](docs/HOME_ASSISTANT.md) | MQTT discovery, entity patterns. |
+| [`docs/HOME_ASSISTANT_IN_ESCAPE_ROOMS.md`](docs/HOME_ASSISTANT_IN_ESCAPE_ROOMS.md) | The room-level view: what the integration is for, the Green box, how a room is organized in HA. |
 | [`docs/EXAMPLES.md`](docs/EXAMPLES.md) | Every example, its board and what it teaches. |
 | [`DEPENDENCIES.md`](DEPENDENCIES.md) | Dependency list, versions and manual install. |
 

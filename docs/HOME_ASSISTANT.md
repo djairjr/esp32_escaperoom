@@ -5,8 +5,12 @@ library drops RS485: the puzzle is a network device instead. The examples use **
 which wraps MQTT and speaks Home Assistant's **MQTT discovery** protocol, so a puzzle appears
 in HA automatically — no manual YAML per entity.
 
-The library itself does not hard-depend on ArduinoHA; it is the examples that add it. What
-the *library* provides for this integration is:
+The library itself does not hard-depend on ArduinoHA; it is the examples that add it. For the
+room-level view — what the integration is for, the Home Assistant Green, and how a room is
+organized in HA (floors and areas) — see
+[`HOME_ASSISTANT_IN_ESCAPE_ROOMS.md`](HOME_ASSISTANT_IN_ESCAPE_ROOMS.md).
+
+What the *library* provides for this integration is:
 
 - `ConfigManager` — broker, port, credentials and device identity (`device.name`,
   `device.room`, `device.puzzle_id`), read from `/wifi.json`;
