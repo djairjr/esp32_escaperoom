@@ -32,6 +32,7 @@ I/O expanders, displays, LEDs, sensors and Home Assistant integration.
 - [Examples](#examples)
 - [Documentation](#documentation)
 - [Adding a board](#adding-a-board)
+- [Support](#support)
 - [License](#license)
 
 ---
@@ -585,6 +586,14 @@ locally.
 5. Compile at least `LibrarySmokeTest` for the new board.
 
 The full contract is in [`docs/BOARDS.md`](docs/BOARDS.md).
+
+---
+
+## Support
+
+This library is maintained by **Nicolau dos Brinquedos** (Djair Guilherme da Silva Junior).
+If it saves you time in a build, you can buy me a coffee:
+<https://buymeacoffee.com/nicolaudosbrinquedos>
 
 ---
 
