@@ -23,6 +23,7 @@ I/O expanders, displays, LEDs, sensors and Home Assistant integration.
 - [Multi-puzzle orchestration](#multi-puzzle-orchestration)
 - [Supported boards](#supported-boards)
 - [Hardware features](#hardware-features)
+- [Design notes](#design-notes)
 - [Installation](#installation)
 - [Quick start](#quick-start)
 - [Per-puzzle LED ranges](#per-puzzle-led-ranges)
@@ -340,35 +341,73 @@ Boot prints a full hardware report (I2C scan, filesystem mount, expanders, audio
 
 ---
 
+## Design notes
+
+### An I2C-first build
+
+A puzzle needs far more inputs and outputs than a board has GPIO pins: buttons, sensors,
+locks, relays, LEDs, keypads, a display. The library is designed so that a build can be
+wired around **I2C** instead of around the few free pins — two pins can carry the whole
+installation:
+
+| Peripheral | Device | Address recognised at boot |
+|------------|--------|----------------------------|
+| digital I/O | PCF8574 / PCF8575 (through IoAbstraction) | `0x20`–`0x27` (PCF8574A/PCF8575A: `0x38`–`0x3F`) |
+| display | HT16K33 14-segment | `0x70`–`0x77` |
+| PWM (servos, dimmers) | PCA9685 | `0x40`–`0x47`, `0x4C`–`0x4F` |
+| analog input (potentiometers) | ADS1115 | `0x48`–`0x4B` |
+| NFC / RFID | PN532 | `0x24` |
+| accelerometer | LIS3DH | `0x18`–`0x19` |
+| real-time clock | PCF8563 | `0x51` |
+
+`Hardware::begin()` runs `Wire.begin()` and then a full I2C scan, printing every device it
+finds; each `hw.hasX()` flag comes from that scan, so a sketch adapts to the hardware that
+is physically there. Adding a peripheral costs an I2C address, not a GPIO pin — which is
+what keeps a puzzle box buildable when the board has run out of free pins.
+
+---
+
 ## Installation
 
 **Dependencies** (Arduino Library Manager):
 
-| Library | Manager name |
-|---------|--------------|
-| ArduinoJson | `ArduinoJson` |
-| IoAbstraction | `IoAbstraction` |
-| TaskManagerIO | `TaskManagerIO` |
-| audio-tools | `arduino-audio-tools` |
-| Adafruit NeoPixel | `Adafruit NeoPixel` |
-| Adafruit LED Backpack | `Adafruit LED Backpack Library` |
-| Adafruit LIS3DH | `Adafruit LIS3DH` |
-| Adafruit BusIO | `Adafruit BusIO` |
-| Adafruit PN532 | `Adafruit PN532` |
-| ADS1115 | `ADS1115_WE` |
-| PCA9685 | `PCA9685` |
-| Servo | `ESP32Servo` |
-| RotaryDial | `RotaryDial` |
-| M5Unified | `M5Unified` |
+| Library | Manager name | Version |
+|---------|--------------|---------|
+| ArduinoJson | `ArduinoJson` | |
+| IoAbstraction | `IoAbstraction` | `4.5.3` |
+| TaskManagerIO | `TaskManagerIO` | `1.5.2` |
+| Adafruit NeoPixel | `Adafruit NeoPixel` | |
+| Adafruit LED Backpack | `Adafruit LED Backpack Library` | |
+| Adafruit LIS3DH | `Adafruit LIS3DH` | |
+| Adafruit BusIO | `Adafruit BusIO` | |
+| Adafruit PN532 | `Adafruit PN532` | |
+| ADS1115 | `ADS1115_WE` | |
+| PCA9685 | `PCA9685` | |
+| Servo | `ESP32Servo` | |
+| RotaryDial | `RotaryDial` | |
+| M5Unified | `M5Unified` | |
+| Home Assistant | `home-assistant-integration` (header `ArduinoHA.h`) | |
 
-**Manual dependency** (not in the Library Manager):
+The IoAbstraction and TaskManagerIO versions are pinned on purpose: the 5.x line of both
+does not compile on the ESP32 core 3.x.
+
+**Manual dependencies** — published on GitHub only, they are **not** in the Arduino Library
+Manager, so the manager cannot install them:
+
+- **`arduino-audio-tools`** — the audio pipeline (`AudioTools.h`, MP3 over I2S).
+  Install from <https://github.com/pschatzmann/arduino-audio-tools>:
+
+  ```
+  cd <arduino>/libraries
+  git clone https://github.com/pschatzmann/arduino-audio-tools.git
+  ```
 
 - **`arduino-libhelix`** — MP3 decoder used by the audio pipeline.
   Install from <https://github.com/pschatzmann/arduino-libhelix> (Sketch → Include
   Library → Add .ZIP Library), or clone it into your `libraries/` folder.
 
-Example sketches additionally use `ArduinoHA` and `lvgl`; install those only
-for the examples that need them (see [`docs/EXAMPLES.md`](docs/EXAMPLES.md)).
+Example sketches additionally use `lvgl`; install it only for the examples that need it
+(see [`docs/EXAMPLES.md`](docs/EXAMPLES.md)).
 
 **Library**: clone this repository into your Arduino `libraries/` folder and restart the
 IDE. Verify with the smoke test:
@@ -486,6 +525,12 @@ The ESP32 port replaces the RP2040's RS485 bus with MQTT and Home Assistant auto
 (ArduinoHA). A puzzle publishes its state and entities, and the room's automation can drive
 it back. See [`docs/HOME_ASSISTANT.md`](docs/HOME_ASSISTANT.md) and the `BombTimer` example
 for the full entity set (sensors, lock, buttons, select, numbers, switch).
+
+The integration exists for one reason: to bring the **game automation** (puzzle state, locks,
+timers, sequences) and the **room automation** (cameras, lights, sound, doors) under a single
+management. With the puzzle registered as one more device of the room, the room can drive the
+game and the game can drive the room — no second control system in between, and no separate
+place to look at what the installation is doing.
 
 ---
 
