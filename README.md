@@ -379,15 +379,13 @@ what keeps a puzzle box buildable when the board has run out of free pins.
 | ADS1115 | `ADS1115_WE` | |
 | PCA9685 | `PCA9685` | |
 | Servo | `ESP32Servo` | |
-| RotaryDial | `RotaryDial` | |
 | M5Unified | `M5Unified` | |
 | Home Assistant | `home-assistant-integration` (header `ArduinoHA.h`) | |
 
 The IoAbstraction and TaskManagerIO versions are pinned on purpose: the 5.x line of both
 does not compile on the ESP32 core 3.x.
 
-**Manual dependencies** — published on GitHub only, they are **not** in the Arduino Library
-Manager, so the manager cannot install them:
+**Manual dependencies** — not installable from the Arduino Library Manager:
 
 - **`arduino-audio-tools`** — the audio pipeline (`AudioTools.h`, MP3 over I2S).
   Install from <https://github.com/pschatzmann/arduino-audio-tools>:
@@ -400,6 +398,14 @@ Manager, so the manager cannot install them:
 - **`arduino-libhelix`** — MP3 decoder used by the audio pipeline.
   Install from <https://github.com/pschatzmann/arduino-libhelix> (Sketch → Include
   Library → Add .ZIP Library), or clone it into your `libraries/` folder.
+
+- **`RotaryDial`** — the pulse-dial library behind `RotaryDialReader`
+  (`begin(pin, ROTARYDIAL_MECHANICAL | ROTARYDIAL_OPTICAL)`, `setDebounce`, `setMaxGap`,
+  `setDigitEnd`, `reset`). ⚠️ The library that goes **by this name in the Arduino Library
+  Manager is a different project**, by another author, which has neither the optical-encoder
+  support nor this API: installing it by name breaks the build with `'begin' is not a member
+  of 'RotaryDial'`. The library this code needs is the customized mechanical/optical one and
+  it is **not published** — keep your copy of it next to the other libraries.
 
 Example sketches additionally use `lvgl`; install it only for the examples that need it
 (see [`docs/EXAMPLES.md`](docs/EXAMPLES.md)).

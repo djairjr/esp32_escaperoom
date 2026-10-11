@@ -2,7 +2,8 @@
 
 Everything the library and its examples need. The core dependencies are declared in
 `library.properties` so the Arduino Library Manager installs them automatically — **except
-the two that are not in the Library Manager at all** (section 2), which have to be cloned.
+the ones that are not in the Library Manager at all** (section 2), which have to be installed
+by hand.
 
 ---
 
@@ -21,7 +22,6 @@ the two that are not in the Library Manager at all** (section 2), which have to 
 | ADS1115_WE | `ADS1115_WE` | | ADC |
 | PCA9685 | `PCA9685` | | PWM driver |
 | ESP32Servo | `ESP32Servo` | | servo |
-| RotaryDial | `RotaryDial` | | phone pulse dial |
 | M5Unified | `M5Unified` | | M5Stack and other M5 boards (also pulled by `pins/cardputer.h` / `pins/stamplc.h`) |
 
 The IoAbstraction and TaskManagerIO versions are pinned on purpose: the 5.x line of both does
@@ -34,7 +34,7 @@ not compile on the ESP32 core 3.x. These are the versions the CI installs.
 
 ---
 
-## 2. Manual dependencies (published on GitHub, **not** in the Library Manager)
+## 2. Dependencies that are NOT installable from the Library Manager
 
 ### `arduino-audio-tools` — the audio pipeline
 
@@ -65,7 +65,30 @@ The Helix decoder behind that pipeline is published on GitHub only as well.
    git clone https://github.com/pschatzmann/arduino-libhelix.git
    ```
 
-Without either of them the library does not compile.
+### `RotaryDial` — the pulse dial (**not the same-name library in the Manager**)
+
+`RotaryDialReader` needs the pulse-dial library with this API:
+
+```cpp
+RotaryDial::begin(pin, ROTARYDIAL_MECHANICAL | ROTARYDIAL_OPTICAL);
+RotaryDial::setDebounce(ms); setMaxGap(ms); setDigitEnd(ms); reset();
+```
+
+⚠️ **The library that goes by the name `RotaryDial` in the Arduino Library Manager is a
+different project, by another author.** It has neither the optical-encoder support nor this
+API, so `arduino-cli lib install RotaryDial` installs the wrong library and the build then
+fails with:
+
+```
+RotaryDialReader.cpp:7:17: error: 'begin' is not a member of 'RotaryDial'
+RotaryDialReader.cpp:7:28: error: 'ROTARYDIAL_MECHANICAL' was not declared in this scope
+```
+
+The library this code needs is the customized mechanical/optical one, and it is **not
+published**: keep your copy of it next to the other libraries in `libraries/`.
+
+Without `arduino-audio-tools` or `arduino-libhelix` the library does not compile; without the
+customized `RotaryDial` the rotary-dial path does not compile.
 
 ---
 

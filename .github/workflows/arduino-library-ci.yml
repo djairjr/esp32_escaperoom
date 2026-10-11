@@ -31,11 +31,16 @@ jobs:
           arduino-cli lib update-index
           # The version pins are the combination that builds on the ESP32 core 3.x:
           # IoAbstraction 5.x and TaskManagerIO 5.x do not compile there.
+          # RotaryDial is deliberately NOT installed here: the library that goes by that
+          # name in the Manager is a different project, without the optical-encoder support
+          # and without the API RotaryDialReader uses. The one this library needs is a
+          # customized copy with no published source, so the compile step below cannot have
+          # it — expect 'RotaryDial.h: No such file or directory' until that changes.
           arduino-cli lib install \
             ArduinoJson "IoAbstraction@4.5.3" "TaskManagerIO@1.5.2" \
             "Adafruit NeoPixel" "Adafruit LED Backpack Library" "Adafruit LIS3DH" \
             "Adafruit BusIO" "Adafruit PN532" ADS1115_WE PCA9685 ESP32Servo \
-            RotaryDial M5Unified home-assistant-integration
+            M5Unified home-assistant-integration
 
       - name: Install the libraries the Library Manager does NOT have
         run: |
